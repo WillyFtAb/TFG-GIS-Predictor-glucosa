@@ -1,0 +1,37 @@
+Simulación 2 - 2000 cal - alta variabilidad - no ejercicio - OpenLoop
+
+
++-------------------------+--------------------+
+|         Setting         |       Value        |
++=========================+====================+
+|     number_of_days      |         30         |
+|      sampling_time      |         1          |
+|         profile         |       False        |
+|       random_seed       |        402         |
+|       multi_scale       |       False        |
+|     no_progress_bar     |       False        |
+|        no_print         |       False        |
+|       model_name        |  T1DM.ExtHovorka   |
+|      patient_names      |                    |
+| renal_function_category |         1          |
+|    body_weight_range    |      [60, 80]      |
+|   number_of_subjects    |         20         |
+|     controller_name     |      OpenLoop      |
+|  controller_parameters  |         []         |
+|    bolus_multiplier     |        1.0         |
+|    basal_multiplier     |        1.0         |
+|  sglt2i_dose_magnitude  |         0          |
+|  breakfast_carb_range   |    [33.8, 56.2]    |
+|   am_snack_carb_range   |    [16.9, 28.1]    |
+|    lunch_carb_range     |    [59.1, 98.5]    |
+|   pm_snack_carb_range   |    [16.9, 28.1]    |
+|    dinner_carb_range    |    [42.2, 70.2]    |
+|   running_start_time    | ['16:00', '18:00'] |
+|    running_duration     |       [0.0]        |
+|     running_incline     |     [0.0, 6.0]     |
+|      running_speed      |       [0.0]        |
+|   cycling_start_time    | ['16:00', '18:00'] |
+|    cycling_duration     |       [0.0]        |
+|      cycling_power      |       [0.0]        |
+|        to_excel         |        True        |
++-------------------------+--------------------+
