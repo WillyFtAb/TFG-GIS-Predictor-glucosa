@@ -1,4 +1,4 @@
-Simulación 1 - 2000 cal - baja variabilidad - no ejercicio - OpenLoop
+Simulación 1 - 2000 cal - baja variabilidad (5%) - horario regular - no ejercicio - OpenLoop
 
 +-------------------------+--------------------+
 |         Setting         |       Value        |

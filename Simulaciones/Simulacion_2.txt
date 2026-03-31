@@ -1,4 +1,4 @@
-Simulación 2 - 2000 cal - alta variabilidad - no ejercicio - OpenLoop
+Simulación 2 - 2000 cal - alta variabilidad (25%) - horario regular - no ejercicio - OpenLoop
 
 
 +-------------------------+--------------------+
