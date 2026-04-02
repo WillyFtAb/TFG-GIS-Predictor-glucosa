@@ -36,7 +36,7 @@ knitr:
 
 ```{=latex}
 %% ── Portada anexos ──────────────────────────────────────────
-\title{Título del Trabajo Fin de Grado}
+\title{Desarrollo de un modelo predictivo de glucemia a corto plazo mediante técnicas de aprendizaje automático en pacientes con diabetes tipo 1 en terapia MDI}
 \author{\nombre}
 \date{\today}
 
