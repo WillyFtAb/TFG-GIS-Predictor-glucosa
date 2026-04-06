@@ -1,0 +1,28 @@
+# Ignorar archivos de sistema operativo Windows
+Thumbs.db
+desktop.ini
+
+# Ignorar archivos y directorios de compilación
+build/
+dist/
+*.class
+*.o
+*.so
+*.exe
+
+# Ignorar dependencias de Python
+__pycache__/
+*.py[cod]
+.Python
+env/
+venv/
+.venv/
+
+#ignorar la carpeta decheckpoints
+.ipynb_checkpoints/
+
+#ignorar 
+.DS_Store
+
+# ignorar carpeta del simulador (tamaño excesivo)
+.py-mgipsim-main/
