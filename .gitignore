@@ -25,4 +25,7 @@ venv/
 .DS_Store
 
 # ignorar carpeta del simulador (tamaño excesivo)
-.py-mgipsim-main/
+py-mgipsim-main/
+
+# Ignorar historia R
+Memoria/.Rhistory
