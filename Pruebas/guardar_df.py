@@ -71,7 +71,7 @@ def juntar_datos(r_json, r_xlsx, n=20):
 import pickle
 
 if __name__ == "__main__":
-    for i in range(1,10):
+    for i in range(1,7):
         r_json = f'../py-mgipsim-main/SimulationResults/Simulacion_{i}/simulation_settings.json'
         r_xlsx =f'../py-mgipsim-main/SimulationResults/Simulacion_{i}/model_state_results.xlsx'
 
