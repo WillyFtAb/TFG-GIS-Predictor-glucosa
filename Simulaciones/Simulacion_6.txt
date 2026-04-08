@@ -1,5 +1,4 @@
-Simulación 6 - 2000 cal - baja variabilidad (5%) - horario regular - sí ejercicio - StochasticOpenLoop
-
+Simulación 6 - 2000 cal - baja variabilidad (5%) - horario regular - sí ejercicio - StochasticOpenLoop (10% error bolo)
 
 +-------------------------+--------------------+
 |         Setting         |       Value        |

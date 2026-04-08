@@ -1,4 +1,4 @@
-Simulación 5 - 2000 cal - alta variabilidad (25%) - horario regular - no ejercicio - StochasticOpenLoop
+Simulación 5 - 2000 cal - alta variabilidad (25%) - horario regular - no ejercicio - StochasticOpenLoop (10% error bolo)
 
 +-------------------------+--------------------+
 |         Setting         |       Value        |
