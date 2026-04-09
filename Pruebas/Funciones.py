@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 def remuestrear(df, columnas, t_muestreo: int):
     """
@@ -32,3 +33,10 @@ def remuestrear(df, columnas, t_muestreo: int):
     df_limpio = df_copy[df_copy.index % t_muestreo == 0]
                 
     return df_limpio
+
+def escalar(df, columnas = ['gluc_mg', 'glu_mmol', 'meal_carb', 'snack_carb',
+                                                     'bolus_insulin', 'basal_insulin','running_speed' ]):
+    df_resultado = df.copy()
+    scaler = MinMaxScaler()
+    df[columnas] = scaler.fit_transform(df[columnas])
+    return df_resultado
