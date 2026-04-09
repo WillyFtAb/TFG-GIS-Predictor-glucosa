@@ -43,5 +43,5 @@ def escalar(df, columnas = ['gluc_mg', 'glu_mmol', 'meal_carb', 'snack_carb', 'b
 def estandarizar(df, columnas = ['gluc_mg', 'glu_mmol', 'meal_carb', 'snack_carb', 'bolus_insulin', 'basal_insulin','running_speed' ]):
     df_resultado = df.copy()
     scaler = StandardScaler()
-    df_resultado[columnas] = scaler.fit_transform(df_resultado)
+    df_resultado[columnas] = scaler.fit_transform(df_resultado[columnas])
     return df_resultado
