@@ -39,4 +39,17 @@ significativa en el desarrollo del trabajo.
   \item 10/04
   \item @académico busca casos de utilización del algoritmo xgboost para la predicción de series temporales con multiples variables de entrada
   \item Descubrimiento de la librería \textit{Skforecast.}
+\end{itemize}
+
+\begin{itemize}
+  \item perplexity
+  \item 10/04
+  \item @académico find scientific papers about the effect of past blood glucose levels, insulin bolus and exercice on future glucose value
+  \begin{itemize}
+    \item[] Effects of postprandial exercise on blood glucose levels in adults with type 1 diabetes: a review of the literature (2023). Resume cómo el ejercicio después de comer cambia la glucosa futura y cómo las reducciones de insulina prandial antes del ejercicio modifican el riesgo de hipoglucemia.
+    \item[] The impact of brief high-intensity exercise on blood glucose levels (2013). Revisa estudios sobre ejercicio intenso breve y muestra efectos agudos y también a 1–3 días sobre sensibilidad a la insulina y glucosa.
+    \item[] Ejercicio y niveles de glucosa en la diabetes (ADA, 2024). Explica que el ejercicio suele bajar la glucosa, pero algunos tipos pueden subirla por adrenalina, y que el efecto puede durar horas o incluso hasta 48 horas.
+  \end{itemize}
+  \item Utilización para el diseño y creación de \textit{lags} en el dataframe de entrada para los algoritmos y base científica.
+\end{itemize}
 ```
