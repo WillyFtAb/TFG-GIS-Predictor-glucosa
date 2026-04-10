@@ -45,3 +45,25 @@ def estandarizar(df, columnas = ['gluc_mg', 'glu_mmol', 'meal_carb', 'snack_carb
     scaler = StandardScaler()
     df_resultado[columnas] = scaler.fit_transform(df_resultado[columnas])
     return df_resultado
+
+def estadisticas_rango(df, nombre_col = 'gluc_mg', lim = [0, 70, 181, 700], n_rang = ['TBR','TIR','TAR']):
+    est =pd.DataFrame()
+    columna = nombre_col
+
+    # Definir los límites de los rangos (bins)
+    # Esto creará los rangos por defecto: (0-70], (70-181], (181-700]
+    limites = lim
+
+    # Definir etiquetas
+    nombres_rangos = n_rang
+
+    # Clasificar los valores de la columna en los rangos usando pd.cut()
+    est['Tiempo_en_rango'] = pd.cut(df[columna], bins=limites, labels=nombres_rangos)
+
+    # Calcular el porcentaje
+    porcentajes = est['Tiempo_en_rango'].value_counts(normalize=True) * 100
+
+    porcentajes_dic = {'TIR':[round(porcentajes['TIR'],2)],
+                      'TAR':[round(porcentajes['TAR'],2)],
+                      'TBR':[round(porcentajes['TBR'],2)]}
+    return porcentajes_dic
