@@ -32,6 +32,11 @@ menos, la siguiente información:
 
 Este anexo podrá estructurarse en forma de tablas o listados numerados, y
 solo deberá incluir aquellas interacciones que hayan tenido una influencia
-significativa en el desarrollo del trabajo. 
-```
+significativa en el desarrollo del trabajo.
 
+\begin{itemize}
+  \item perplexity
+  \item 10/04
+  \item @académico busca casos de utilización del algoritmo xgboost para la predicción de series temporales con multiples variables de entrada
+  \item Descubrimiento de la librería \textit{Skforecast.}
+```
