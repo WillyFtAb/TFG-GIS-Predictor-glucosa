@@ -19,7 +19,8 @@ def remuestrear(df, columnas, t_muestreo: int):
     for idx_orig, idx_nuevo in zip(indices_originales, indices_nuevos):
         # Asegurar que el índice destino existe
         if idx_nuevo not in df_copy.index:
-            df_copy.loc[idx_nuevo] = 0
+            # Copy the nearest row as base (preserves blood_glucose, t_min, etc.)
+            df_copy.loc[idx_nuevo] = df_copy.loc[idx_orig]
             
         # Mover valores para todas las columnas especificadas
         for col in columnas:
