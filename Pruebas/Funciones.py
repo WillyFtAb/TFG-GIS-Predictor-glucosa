@@ -118,3 +118,31 @@ def crear_features (df: pd.DataFrame):
     df = df.dropna()
 
     return df['gluc_mg'], df.drop(columns=['gluc_mg'])
+
+def indexar_temp(df: pd.DataFrame, start:str = '2026-01-01'):
+    """
+    Convierte una columna de tiempo relativo en un DatetimeIndex y remuestrea el DataFrame.
+
+    Esta función toma un DataFrame con una columna 't_min' (minutos transcurridos), 
+    genera una estampa de tiempo absoluta sumando esos minutos a una fecha de inicio, 
+    y establece dicha estampa como el nuevo índice con una frecuencia de 5 minutos.
+
+    Parámetros
+    ----------
+        df (pd.DataFrame): El DataFrame original que debe contener la columna 't_min'.
+        start (str, opcional): Fecha de inicio en formato 'YYYY-MM-DD'. 
+            Por defecto es '2026-01-01'.
+
+    Devuelve
+    --------
+        pd.DataFrame: Una copia del DataFrame original con:
+            - Un DatetimeIndex basado en el tiempo transcurrido.
+            - Frecuencia fija de 5 minutos ("5min").
+            - La columna 't_min' eliminada.
+    """
+    df = df.copy()
+    df.index = pd.to_datetime(start) + pd.to_timedelta(df['t_min'], unit='min')
+    df = df.drop(columns=['t_min'])
+    df = df.asfreq("5min")
+
+    return df
