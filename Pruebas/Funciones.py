@@ -69,3 +69,52 @@ def estadisticas_rango(df, nombre_col = 'gluc_mg', lim = [0, 70, 181, 700], n_ra
                       'TAR':[round(porcentajes['TAR'],2)],
                       'TBR':[round(porcentajes['TBR'],2)]}
     return porcentajes_dic
+
+def crear_features (df: pd.DataFrame):
+    """
+    Añade características exógenas retardadas al DataFrame y devuelve
+    la serie objetivo (y) y el DataFrame con variables exógenas (exog) por separado.
+
+    Para cada variable en EXOG_VARS (excepto insulina basal), añadimos su valor acumulado cada 20 min hasta t-240 min. 
+    como columnas separadas. 
+    Esto proporciona al modelo información explícita sobre lo ocurrido en las últimas 4 horas con una
+    resolución de 20 minutos.
+
+    Se descartan los primeros 240 minutos de filas porque sus columnas de retardo
+    contendrían NaN (no hay suficiente historial).
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame preparado a una frecuencia de 5 minutos.
+
+    Devuelve
+    -------
+    y: pd.Series
+        Serie objetivo de glucosa en sangre.
+    exog: pd.DataFrame
+        Todas las características exógenas, incluidas las columnas rezagadas.
+
+    """
+    df = df.copy()
+    df['basal_-24h'] = df['basal_insulin'].rolling(window=287, closed='left', min_periods = 0).sum()
+
+    for col in ['meal_carb', 'snack_carb', 'bolus_insulin', 'running_speed']:
+
+        df[f'{col}_-20m'] = df[col].rolling(window=4, closed='left').sum()
+        df[f'{col}_-40m'] = df[col].rolling(window=8, closed='left').sum() - df[col].rolling(window=4, closed='left').sum()
+        df[f'{col}_-60m'] = df[col].rolling(window=12, closed='left').sum() - df[col].rolling(window=8, closed='left').sum()
+        df[f'{col}_-80m'] = df[col].rolling(window=16, closed='left').sum() - df[col].rolling(window=12, closed='left').sum()
+        df[f'{col}_-100m'] = df[col].rolling(window=20, closed='left').sum() - df[col].rolling(window=16, closed='left').sum()
+        df[f'{col}_-120m'] = df[col].rolling(window=24, closed='left').sum() - df[col].rolling(window=20, closed='left').sum()
+        df[f'{col}_-140m'] = df[col].rolling(window=28, closed='left').sum() - df[col].rolling(window=24, closed='left').sum()
+        df[f'{col}_-160m'] = df[col].rolling(window=32, closed='left').sum() - df[col].rolling(window=28, closed='left').sum()
+        df[f'{col}_-180m'] = df[col].rolling(window=36, closed='left').sum() - df[col].rolling(window=32, closed='left').sum()
+        df[f'{col}_-200m'] = df[col].rolling(window=40, closed='left').sum() - df[col].rolling(window=36, closed='left').sum()
+        df[f'{col}_-220m'] = df[col].rolling(window=44, closed='left').sum() - df[col].rolling(window=40, closed='left').sum()
+        df[f'{col}_-240m'] = df[col].rolling(window=48, closed='left').sum() - df[col].rolling(window=44, closed='left').sum()
+
+    df = df.reset_index(drop = True)
+    df = df.dropna()
+
+    return df['gluc_mg'], df.drop(columns=['gluc_mg'])
