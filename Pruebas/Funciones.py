@@ -22,13 +22,14 @@ def remuestrear(df, columnas, t_muestreo: int):
             # Copia los valores de la celda y ajusta el nuevo valor de tiempo
             df_copy.loc[idx_nuevo] = df_copy.loc[idx_orig]
             df_copy.loc[idx_nuevo, 't_min'] = round(df_copy.loc[idx_orig,'t_min']/t_muestreo)*t_muestreo
-            
-        # Mover valores para todas las columnas especificadas
-        for col in columnas:
-            valor = df_copy.at[idx_orig, col]
-            if valor != 0:
-                df_copy.at[idx_nuevo, col] += valor
-                df_copy.at[idx_orig, col] = 0
+        
+        else: 
+            # Mover valores para todas las columnas especificadas
+            for col in columnas:
+                valor = df_copy.at[idx_orig, col]
+                if valor != 0:
+                    df_copy.at[idx_nuevo, col] += valor
+                    df_copy.at[idx_orig, col] = 0
     
     # 3. Se queda con los indices de interes
 
