@@ -115,7 +115,6 @@ def crear_features (df: pd.DataFrame):
         df[f'{col}_-220m'] = df[col].rolling(window=44, closed='left').sum() - df[col].rolling(window=40, closed='left').sum()
         df[f'{col}_-240m'] = df[col].rolling(window=48, closed='left').sum() - df[col].rolling(window=44, closed='left').sum()
 
-    df = df.reset_index(drop = True)
     df = df.dropna()
 
     return df['gluc_mg'], df.drop(columns=['gluc_mg'])
