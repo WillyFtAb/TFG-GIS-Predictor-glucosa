@@ -3,13 +3,31 @@
 \capitulo{2}{Objetivos}
 ```
 
-Objetivos del trabajo realizado.
+El objetivo general del trabajo es realizar un estudio comparativo del rendimiento de modelos de predicción de glucosa en sangre aplicados a series temporales de monitorización continua con variables exógenas en pacientes con DM1 en tratamiento mediante MDI, bajo distintas condiciones experimentales simuladas, para horizontes de predicción de 15 y 30 minutos.
 
-En este apartado se definen de forma clara y concisa los objetivos del Trabajo Fin de Grado. 
+Para alcanzarlo, se definen los siguientes objetivos específicos:
 
-Es recomendable distinguir entre:
+1. Generar los conjuntos de datos necesarios para el estudio a partir de un simulador validado.
+2. Comparar el rendimiento global de los modelos seleccionados mediante métricas de error y criterios de seguridad clínica en los horizontes de predicción establecidos.
+3. Analizar el efecto de las condiciones de manejo de  la diabetes -variabilidad en la ingesta de hidratos de carbono, práctica de ejercicio físico y error en el cálculo de la dosis de insulina- sobre la precisión de los modelos.
+4. Analizar la degradación del rendimiento de los modelos al aumentar el horizonte de predicción de 15 a 30 minutos.
 
-- Un **objetivo general** que describa el propósito principal.
-- **Objetivos específicos** de carácter técnico, experimental o clínico.
-- **Objetivos marcados por los requisitos del software/hardware/análisis** a desarrollar.
-- **Objetivos de aprendizaje** relacionados con competencias adquiridas.
+Asímismo, el desarrollo del trabajo ha permitido adquirir y consolidar las
+siguientes competencias:
+
+- **Conocimiento clínico aplicado:** comprensión de la fisiopatología
+  de la DM1, las modalidades de tratamiento con insulina y el
+  funcionamiento de los sistemas de monitorización continua de glucosa,
+  así como de los criterios de seguridad clínica empleados en la
+  evaluación de modelos predictivos (Clarke Error Grid).
+- **Diseño experimental:** planificación de condiciones experimentales
+  simuladas, definición de variables de interés y generación de conjuntos
+  de datos a partir de un simulador biomédico validado.
+- **Tratamiento y análisis de datos:** manipulación de series temporales
+  biomédicas mediante herramientas de programación (Python),
+  incluyendo preprocesamiento, transformación y análisis exploratorio.
+- **Modelado predictivo:** implementación y ajuste de modelos
+  estadísticos y de aprendizaje automático aplicados a series temporales
+  con variables exógenas, y evaluación comparativa de su rendimiento
+  mediante métricas cuantitativas.
+
