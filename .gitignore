@@ -28,4 +28,4 @@ venv/
 py-mgipsim-main/
 
 # Ignorar historia R
-Memoria/.Rhistory
+.Rhistory
