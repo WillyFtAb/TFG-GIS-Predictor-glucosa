@@ -71,11 +71,231 @@ También puede ser necesario utilizar notas al pie \footnote{como por ejemplo es
 \section{Estado del arte y trabajos relacionados.}
 ```
 
+### 3.1. Diabetes mellitus tipo 1
 
-Revisión del estado del arte y fundamentos teóricos necesarios para
-comprender el trabajo. Se pueden incluir referencias bibliográficas con
-`[@bortolot2005]` tal como se haría en R Markdown [@bortolot2005].
+La diabetes mellitus tipo 1 (DM1) es una enfermedad autoinmune crónica
+en la que el sistema inmunitario destruye de forma progresiva las células
+beta de los islotes de Langerhans del páncreas, responsables de la
+secreción de insulina. La consecuencia directa es una deficiencia absoluta
+de esta hormona, lo que impide la captación celular de glucosa y provoca
+hiperglucemia crónica. A diferencia de la diabetes tipo 2, la DM1 no está
+asociada a resistencia a la insulina ni a factores de estilo de vida, y su
+aparición se produce habitualmente en la infancia o la adolescencia, aunque
+puede manifestarse a cualquier edad [@gregory2022].
 
-Se realizará una revisión crítica de los trabajos previos relevantes, tanto en el ámbito académico como en el industrial, relacionados con el problema abordado. 
-Se debe poner de manifiesto la contribución del TFG respecto a las soluciones existentes.
-Enumeración y resumen de todos los trabajos relacionados de interés.
+La hiperglucemia mantenida se asocia a complicaciones microvasculares
+(retinopatía, nefropatía, neuropatía) y macrovasculares (enfermedad
+cardiovascular) que determinan de forma significativa la morbimortalidad
+a largo plazo. El control glucémico estricto, cuantificado principalmente
+mediante la hemoglobina glicada (HbA1c) y el tiempo en rango (TIR),
+constituye el principal objetivo terapéutico [@calvo2004diabetes]. El TIR se define
+como el porcentaje de tiempo en que la glucemia se mantiene entre 70 y
+180 mg/dL, y se ha consolidado como indicador clínico de referencia
+gracias a su correlación con el riesgo de complicaciones [@rodbard2025].
+La magnitud epidemiológica de la enfermedad, con una prevalencia global
+estimada en 9,5 millones de personas en 2025 [@ogle2025], subraya la
+necesidad de desarrollar herramientas tecnológicas que mejoren su gestión.
+
+
+### 3.2. Tratamiento con múltiples dosis diarias de insulina
+
+El tratamiento con múltiples dosis diarias de insulina (MDI) es la
+modalidad terapéutica más extendida en pacientes con DM1. Consiste en la
+administración de insulina basal de acción prolongada —generalmente una dosis
+diaria— combinada con insulina de acción rápida en cada
+ingesta, cuya dosis se calcula en función de la cantidad de hidratos de
+carbono consumidos y de la glucemia preprandial del paciente [@calvo2004diabetes].
+
+El cálculo de la dosis de insulina prandial se basa en dos parámetros
+individualizados: la ratio insulina/ración (I:R), que determina las
+unidades de insulina necesarias para metabolizar una cantidad fija de
+hidratos de carbono (habitualmente 10 g), y el factor de sensibilidad a
+la insulina (FSI), que estima el descenso glucémico esperado por cada
+unidad de insulina administrada. Ambos parámetros presentan variabilidad
+interindividual e intraindividual significativa, lo que convierte su
+estimación precisa en uno de los principales retos del manejo clínico
+de la DM1 [@calvo2004diabetes].
+
+La eficacia del régimen MDI depende en gran medida de la capacidad del
+paciente para estimar con precisión los hidratos de carbono ingeridos, un
+proceso sujeto a error sistemático y aleatorio. Estudios previos han
+documentado que los errores en el recuento de hidratos de carbono son
+frecuentes incluso en pacientes entrenados, con desviaciones que pueden
+superar el 20% de la cantidad real, y que tienen un impacto directo sobre
+el control glucémico postprandial [@calvo2004diabetes]. La práctica de ejercicio físico
+añade una capa adicional de complejidad, dado que modifica la sensibilidad
+a la insulina de forma aguda y prolongada, induciendo tanto episodios
+hipoglucémicos durante o tras el ejercicio como respuestas hiperglucémicas
+en ejercicio de alta intensidad [@helleputte_effects_2023].
+
+### 3.3. Monitorización continua de glucosa
+
+Los sistemas de monitorización continua de glucosa (MCG) miden la
+concentración de glucosa en el líquido intersticial mediante un sensor
+electroquímico implantado en el tejido subcutáneo, proporcionando
+lecturas automáticas con una frecuencia típica de 5 minutos
+[@rodbard2025]. A diferencia de la glucometría capilar tradicional,
+que ofrece mediciones puntuales, la MCG genera series temporales
+continuas que permiten caracterizar la dinámica glucémica a lo largo
+del día, identificar patrones postprandiales, episodios nocturnos y
+la respuesta glucémica al ejercicio físico.
+
+La evidencia disponible muestra que el uso de MCG en pacientes con DM1
+se asocia a reducciones significativas de la HbA1c, incremento del TIR
+y disminución de la frecuencia e intensidad de los episodios
+hipoglucémicos [@rodbard2025].
+
+Entre los dispositivos más extendidos en la práctica clínica actual
+destacan el FreeStyle Libre 2 Plus y el FreeStyle Libre 3 (Abbott), que
+proporcionan lecturas transmitidas cada 5 minutos, con una vida útil
+del sensor de 15 días y sin necesidad de calibración. El Dexcom ONE+
+ofrece características similares con transmisión en tiempo real
+continua. En el sistema de Salud de Castilla y León (SaCyL), el FreeStyle
+Libre 2 es el dispositivo financiado para pacientes con DM1 en régimen
+MDI, mientras que el FreeStyle Libre 3 se asigna a los usuarios de
+bomba de insulina.
+
+Desde el punto de vista de las capacidades predictivas integradas,
+la mayoría de los dispositivos MCG comerciales incorporan únicamente
+indicadores de tendencia glucémica —flechas de dirección y velocidad
+de cambio basadas en el comportamiento reciente de la señal— y alarmas
+configurables por umbral. La única solución que actualmente incorpora
+predicción cuantitativa de glucosa es el sistema Accu-Chek SmartGuide
+(Roche), cuya aplicación complementaria Accu-Chek SmartGuide Predict
+estima la evolución de la glucosa en los siguientes 30 minutos y 2
+horas, así como el riesgo de hipoglucemia nocturna, a partir de los
+valores de MCG y las entradas manuales de insulina y carbohidratos
+registradas por el usuario [@accuchek]. Este sistema no está incluido
+en la cartera de financiación pública del sistema de Salud de Castilla
+y León a la fecha de elaboración de este trabajo.
+
+#### Métricas de evaluación clínica
+
+La evaluación del control glucémico en pacientes con MCG se apoya en
+indicadores estandarizados. El tiempo en rango (TIR) cuantifica el
+porcentaje de lecturas dentro del intervalo 70–180 mg/dL, mientras
+que el tiempo por debajo del rango (TBR, <70 mg/dL) y el tiempo por
+encima del rango (TAR, >180 mg/dL) caracterizan la exposición a
+hipoglucemia e hiperglucemia respectivamente. El coeficiente de
+variación (CV) de la glucosa refleja la variabilidad glucémica, con
+un umbral clínico de referencia del 36% [@rodbard2025].
+
+#### Clarke Error Grid y Parkes Error Grid
+
+La Clarke Error Grid (CEG) es un método de evaluación de la seguridad
+clínica de las estimaciones glucémicas que clasifica los pares (valor
+real, valor predicho) en cinco zonas según su impacto potencial sobre
+la toma de decisiones terapéuticas [@clarke_evaluating_1987]. La zona A agrupa las
+estimaciones clínicamente precisas (error $\le$ 20% o dentro del rango
+normoglucémico); la zona B incluye estimaciones con desviación aceptable
+que no inducen tratamiento erróneo; las zonas C, D y E recogen,
+respectivamente, estimaciones que llevarían a correcciones innecesarias,
+a omitir tratamiento necesario, o a tratamiento opuesto al requerido.
+En el contexto de modelos predictivos de glucemia, la distribución de
+predicciones en zonas A y B es el criterio de seguridad clínica más
+relevante, ya que determina si el modelo es utilizable en la práctica
+asistencial [@sengupta_clarke_2022].
+
+La Parkes Error Grid, también conocida como Consensus Error Grid,
+constituye una revisión posterior de la CEG que amplía su aplicabilidad
+a dispositivos de monitorización modernos y refina la delimitación de
+las zonas de riesgo clínico [@pfutzner_technical_2013]. Si bien no ha sido aplicada
+en el presente trabajo, su existencia es relevante como marco de
+referencia para estudios futuros que busquen una evaluación de
+seguridad clínica más actualizada.
+
+
+### 3.4. Simulación de pacientes virtuales con DM1
+
+La obtención de datos reales de pacientes con DM1 para el desarrollo
+y evaluación de algoritmos presenta barreras éticas, burocráticas y
+logísticas que dificultan su disponibilidad en el contexto académico.
+Los simuladores de pacientes virtuales constituyen una alternativa
+consolidada en la investigación en tecnologías para la diabetes,
+permitiendo generar datos controlados y reproducibles bajo condiciones
+experimentales definidas [@siket_py-mgipsim_2025].
+
+El simulador de referencia en este campo es el UVA/Padova metabolic
+simulator, desarrollado conjuntamente por la Universidad de Virginia
+y la Universidad de Padova [@man2014]. Este simulador está aceptado
+por la Food and Drug Administration (FDA) de Estados Unidos como
+sustituto de los estudios preclínicos en animales para el desarrollo
+y evaluación de algoritmos de control glucémico, lo que acredita su
+validez como entorno de pruebas [@man2014]. El modelo reproduce la
+dinámica glucosa-insulina mediante un sistema de ecuaciones
+diferenciales que describe los compartimentos de absorción
+gastrointestinal, distribución de glucosa, acción de la insulina y
+producción hepática de glucosa, parametrizado a partir de datos
+fisiológicos reales.
+
+En el presente trabajo se ha utilizado py-mgipsim, una librería Python
+de código abierto que implementa y extiende el modelo UVA/Padova
+[@siket_py-mgipsim_2025]. La librería proporciona una cohorte de 20 pacientes
+virtuales con conjuntos de parámetros individualizados y datos
+demográficos diferenciados, e incorpora implementaciones de los
+regímenes terapéuticos MDI, bomba de insulina con sensor aumentado
+(SAP) y sistemas de asa cerrada híbrida. Entre sus características
+relevantes para el presente trabajo se encuentran la posibilidad de
+introducir incertidumbre en el recuento de hidratos de carbono,
+variabilidad estocástica en los tiempos de ingesta y ejercicio físico,
+y la exportación de variables de estado en formato estructurado
+[@siket_py-mgipsim_2025].
+
+
+### 3.5. Modelos predictivos para series temporales
+
+La predicción de series temporales consiste en estimar valores futuros
+de una variable a partir de su historia pasada y, en su caso, de
+variables externas relacionadas. En el contexto de la glucemia, la
+serie temporal está formada por las lecturas periódicas del sensor MCG,
+y las variables externas incluyen la insulina administrada, la ingesta
+de hidratos de carbono y el ejercicio realizado. El horizonte de predicción define el intervalo
+temporal entre el último dato disponible y el instante predicho; en
+este trabajo se trabaja con horizontes de 15 y 30 minutos, equivalentes
+a 3 y 6 pasos temporales respectivamente, dada la frecuencia de
+muestreo de 5 minutos.
+
+#### ARIMAX
+
+Los modelos ARIMA (AutoRegressive Integrated Moving Average) son una
+familia de modelos estadísticos lineales para series temporales
+estacionarias que combinan tres componentes: un término autorregresivo
+(AR) que modela la dependencia lineal con valores pasados de la propia
+serie, un término de media móvil (MA) que modela la dependencia con
+errores de predicción pasados, y un operador de diferenciación (I) que
+transforma la serie en estacionaria mediante diferencias sucesivas. El
+modelo se parametriza mediante el triplete (p, d, q), donde p es el
+orden autorregresivo, d el grado de diferenciación y q el orden de la
+media móvil [@box2015].
+
+La extensión ARIMAX (ARIMA with eXogenous inputs) incorpora variables
+exógenas como regresores adicionales al modelo, lo que permite capturar
+el efecto de entradas externas  sobre la evolución de la serie. Esta extensión es
+especialmente relevante en el modelado de la glucemia, dado que las
+excursiones postprandiales y el efecto de la insulina constituyen
+perturbaciones exógenas con un perfil temporal conocido. 
+
+#### XGBoost
+
+XGBoost (eXtreme Gradient Boosting) es un algoritmo de aprendizaje
+automático basado en la construcción secuencial de árboles de decisión,
+donde cada árbol nuevo se entrena para corregir los errores residuales
+del conjunto de árboles anteriores mediante el descenso de gradiente
+sobre una función de pérdida [@chen2016]. A diferencia de los modelos
+estadísticos clásicos, XGBoost no impone supuestos sobre la linealidad
+de las relaciones entre variables, lo que lo hace apto para capturar
+interacciones no lineales entre la glucemia pasada, la insulina y los
+hidratos de carbono. Su aplicación a series temporales requiere
+una transformación previa de la serie en formato supervisado, dado que
+el algoritmo no opera de forma nativa sobre datos secuenciales.
+
+#### Selección de hiperparámetros
+
+Ambos modelos requieren la optimización de sus hiperparámetros para
+maximizar el rendimiento predictivo. En el presente trabajo, la
+búsqueda de hiperparámetros se ha realizado sobre un paciente virtual
+de referencia, común a ambos modelos, con el objetivo de garantizar
+la comparabilidad de los resultados. Los hiperparámetros obtenidos
+se han aplicado posteriormente al resto de la cohorte sin reajuste
+individual, lo que permite evaluar la capacidad de generalización
+de cada modelo ante la variabilidad interpaciente.
