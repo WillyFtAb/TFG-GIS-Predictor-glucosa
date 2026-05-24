@@ -3,42 +3,169 @@
 \capitulo{4}{Metodología}
 ```
 
-## Descripción de los datos
+## 4. Metodología
 
-Se describirán los datos utilizados en el proyecto.
+### 4.1. Descripción de los datos
 
-## Técnicas y herramientas
+Los datos utilizados en el trabajo fueron generados mediante el
+simulador py-mgipsim [@siket_py-mgipsim_2025] sobre una cohorte de 20
+pacientes virtuales con DM1 en régimen MDI. Para cada paciente se
+simularon seis escenarios experimentales que combinan tres factores
+clínicamente relevantes: la variabilidad en la ingesta de hidratos de
+carbono, la presencia de ejercicio físico regular y el error en el
+cálculo de la ratio insulina/ración (I:R), tal como se recoge en la
+@tbl-escenarios.
 
-A continuación se muestra un **ejemplo de tabla generada con R** usando
-`knitr::kable()`:
+```{r}
+#| label: tbl-escenarios
+#| echo: false
+#| tbl-cap: "Definición de los escenarios experimentales."
 
-```{r tabla-ejemplo,}
-#| label: tbl-iris
-#| tbl-cap: "Estadísticos descriptivos del conjunto de datos iris"
+escenarios <- data.frame(
+  Escenario = c("E1", "E2", "E3", "E4", "E5", "E6"),
+  Codigo    = c("HC$^{-}$ E$_{0}$ Er$_{0}$",
+                "HC$^{+}$ E$_{0}$ Er$_{0}$",
+                "HC$^{-}$ E$^{+}$ Er$_{0}$",
+                "HC$^{-}$ E$_{0}$ Er$^{+}$",
+                "HC$^{+}$ E$_{0}$ Er$^{+}$",
+                "HC$^{-}$ E$^{+}$ Er$^{+}$"),
+  HC        = c("Baja", "Alta", "Baja", "Baja", "Alta", "Baja"),
+  Ejercicio = c("No", "No", "S\u00ed", "No", "No", "S\u00ed"),
+  Error_IR  = c("0\\%", "0\\%", "0\\%", "10\\%", "10\\%", "10\\%")
+)
 
-library(knitr)
-library(dplyr)
-
-iris |>
-  group_by(Species) |>
-  summarise(
-    N           = n(),
-    Media_SL    = round(mean(Sepal.Length), 2),
-    SD_SL       = round(sd(Sepal.Length), 2),
-    Media_PL    = round(mean(Petal.Length), 2),
-    SD_PL       = round(sd(Petal.Length), 2)
-  ) |>
-  kable(
-    col.names = c("Especie", "N", "Media Sep.L",
-                  "SD Sep.L", "Media Pet.L", "SD Pet.L"),
-    booktabs  = TRUE,
-    format    = "latex"
-  )
+knitr::kable(
+  escenarios,
+  col.names = c("Escenario", "Código", "HC", "Ejercicio", "Error I:R"),
+  align     = c("c", "c", "c", "c", "c"),
+  booktabs  = TRUE,
+  escape    = FALSE
+)
 ```
 
-Y podremos referenciar esta tabla en el texto como la tabla \ref{tbl-iris} que aparece en la página \pageref{tbl-iris}.
+E1 actúa como escenario de referencia o línea base, con condiciones
+ideales de manejo. Los escenarios E2, E3 y E4 introducen cada factor
+de variabilidad de forma aislada respecto a E1, mientras que E5 y E6
+combinan el error en la dosis con variabilidad en HC y con ejercicio
+respectivamente. Los horarios de ingesta son comunes a todos los
+escenarios. Esta estructura permite analizar el efecto individual y
+combinado de cada factor sobre el rendimiento predictivo.
 
-## Metodología de Ingeniería del Software
+El simulador genera un conjunto amplio de variables fisiológicas y de
+control distribuidas en dos archivos de salida por paciente y escenario.
+De entre ellas se seleccionaron las relevantes para el estudio: glucemia
+(convertida de mmol/L a mg/dL), ejercicio físico, insulina en bolo,
+insulina basal, y la ingesta de comidas y tentempiés. Cabe señalar que
+los tentempiés generados por el simulador no conllevan administración
+de insulina en bolo. El resto de variables proporcionadas por el
+simulador —como señales fisiológicas internas del modelo metabólico—
+fueron descartadas por no ser relevantes para el problema de predicción
+planteado. El conjunto de datos resultante comprende 120 series
+temporales independientes (20 pacientes × 6 escenarios). La descripción
+detallada de las variables y la estructura de los ficheros se recoge en
+el Anexo F.
 
-Si el TFG incluye desarrollo software, indicar la metodología seguida.
-Se pueden incluir diagramas de casos de uso, diagramas de clases, diagramas de secuencia, etc. para describir el diseño del software desarrollado.
+### 4.2. Técnicas y herramientas
+
+#### Preprocesamiento
+
+Las series temporales generadas por py-mgipsim presentan una frecuencia
+de muestreo de 1 minuto. Para alinearlas con la resolución temporal de
+los dispositivos MCG comerciales y reducir la carga computacional, se
+aplicó un remuestreo a 5 minutos mediante una función propia que
+desplaza las variables de evento —ingesta de hidratos de carbono,
+insulina en bolo e insulina basal— al instante de muestreo más cercano
+dentro de cada intervalo de 5 minutos. A continuación se asignó un
+índice temporal de tipo datetime al dataframe de cada paciente,
+requisito necesario para el correcto funcionamiento de las funciones
+de predicción con series temporales de skforecast [@skforecast].
+
+#### Ingeniería de características
+
+A partir de las series preprocesadas se construyeron dos tipos de
+características de entrada, comunes a ambos modelos:
+
+- **Retardos de glucemia:** valores pasados de la glucosa en los
+  instantes previos al horizonte de predicción, seleccionados durante
+  la optimización de hiperparámetros.
+- **Variables exógenas acumuladas:** para la insulina en bolo, los
+  hidratos de carbono y el ejercicio se calcularon valores acumulados
+  por tramos de 20 minutos durante las últimas 4 horas, capturando el
+  perfil temporal de acción de cada variable sobre la glucemia. De
+  forma excepcional, la insulina basal se acumuló sobre las últimas
+  24 horas, dado su perfil de acción prolongada.
+
+Se implementaron funciones de escalado y estandarización que
+finalmente no se aplicaron en la evaluación, dado que los resultados
+sin transformación fueron satisfactorios y su inclusión habría
+incrementado de forma significativa el coste computacional.
+
+#### División train/test y backtesting
+
+Cada serie temporal se dividió en un 80% para entrenamiento y un 20%
+para test, respetando el orden cronológico. La evaluación se realizó
+mediante backtesting con tamaño de ventana de entrenamiento fijo y
+reajuste del modelo en cada paso (refit), simulando el comportamiento
+de un predictor en producción que se actualiza periódicamente con
+nuevos datos. El proceso se aplicó de forma independiente para cada
+combinación de paciente, escenario y horizonte de predicción (15 y 30
+minutos), generando un total de 240 evaluaciones por modelo
+(20 pacientes × 6 escenarios × 2 horizontes).
+
+#### Optimización de hiperparámetros
+
+La búsqueda de hiperparámetros se realizó sobre un paciente de
+referencia único (paciente 1, escenario E3), común a ambos modelos,
+tomando el MAE como métrica objetivo y garantizando la comparabilidad.
+Los hiperparámetros obtenidos se aplicaron al resto de la cohorte sin
+reajuste individual. Para ARIMAX se empleó `grid_search_stats` de
+skforecast, descartando la componente de estacionalidad. Para XGBoost [@chen2016] se
+empleó optimización bayesiana con validación `OneStepAheadFold`. Los
+hiperparámetros detallados de ambos modelos se recogen en el Anexo G.
+
+#### Métricas de evaluación
+
+El rendimiento predictivo se cuantificó mediante el error absoluto
+medio (MAE) y la raíz del error cuadrático medio (RMSE). La seguridad
+clínica se evaluó mediante la Clarke Error Grid [@clarke_evaluating_1987],
+extrayendo el porcentaje de predicciones en zona A, en zonas A+B
+(clínicamente aceptables) y en zonas D+E (clínicamente peligrosas).
+
+Dado que los tests de normalidad de Shapiro-Wilk aplicados sobre las
+distribuciones de MAE y RMSE rechazaron la hipótesis de normalidad en
+la mayoría de los escenarios, la comparación estadística entre pares
+de escenarios se realizó mediante el test de Wilcoxon de rangos con
+signo [@scipy]. Los pares analizados fueron E1–E2, E1–E3, E1–E4,
+E2–E5 y E4–E6, seleccionados para aislar el efecto individual de cada
+factor experimental sobre el rendimiento predictivo de cada modelo.
+
+#### Herramientas
+
+El desarrollo se llevó a cabo en Python. Las principales librerías
+utilizadas fueron skforecast [@skforecast] para la implementación y
+evaluación de los modelos predictivos, xgboost [@chen2016] para el
+regresor base del modelo de gradient boosting, statsmodels para ARIMAX,
+pandas y numpy para la manipulación de datos, scipy [@scipy] para los
+tests estadísticos y matplotlib para la visualización de resultados.
+
+Se valoró la incorporación de la librería SHAP para el análisis de
+importancia y explicabilidad de las variables de entrada. Sin embargo,
+su integración no pudo llevarse a cabo debido a incompatibilidades entre
+las versiones de las dependencias del entorno de desarrollo. Adicionalmente,
+una modificación de la versión de Python habría comprometido la
+reproducibilidad de los resultados al afectar al comportamiento de los
+generadores de números aleatorios de las librerías utilizadas. Por este
+motivo, el análisis de explicabilidad mediante SHAP se identifica como
+una línea de trabajo futura (véase Capítulo 8).
+
+### 4.3. Metodología de ingeniería del software
+
+El trabajo siguió una metodología experimental iterativa, centrada en
+el análisis de datos y la evaluación de modelos más que en el desarrollo
+de un sistema software completo. El proceso se organizó en fases
+sucesivas: generación de datos mediante simulación, desarrollo del
+pipeline de preprocesamiento, implementación y ajuste de los modelos,
+y evaluación comparativa de resultados. Dado que el trabajo no comprende
+el ciclo de vida completo de un desarrollo software, se remite al
+Anexo A para la planificación temporal detallada y la descripción de
+las fases realizadas y pendientes.
