@@ -3,30 +3,125 @@
 \capitulo{5}{Resultados}
 ```
 
-## Resumen de resultados
+Este capítulo presenta los resultados obtenidos para los modelos
+ARIMAX y XGBoost en los seis escenarios experimentales definidos,
+para los horizontes de predicción de 15 y 30 minutos. Los resultados
+se organizan en torno a los ejes de análisis establecidos en los
+objetivos: rendimiento global mediante métricas de error, seguridad
+clínica mediante la Clarke Error Grid, degradación del rendimiento
+con el horizonte de predicción, y relación entre el perfil glucémico
+del paciente y el error predictivo. Los resultados detallados por
+paciente y escenario se recogen en el Anexo G.
 
-Breve resumen de los resultados. En caso de ser un trabajo muy experimental, los resultados completos pueden aparecer en su anexo correspondiente.
+### 5.1. Rendimiento global
+
+![MAE medio por escenario y horizonte de predicción para ARIMAX y
+XGBoost.](img/Resultados/grafica1_barras_mae.png){#fig-barras-mae}
+
+En términos de MAE, XGBoost superó a ARIMAX en todos los escenarios
+y horizontes (@fig-barras-mae). En el escenario de referencia E1, los
+valores medios fueron 0,121 mg/dL frente a 0,249 mg/dL a 15 minutos,
+y 0,126 mg/dL frente a 0,249 mg/dL a 30 minutos. El test de Wilcoxon
+inter-modelo confirmó que las diferencias fueron estadísticamente
+significativas en todos los escenarios a 15 minutos (p < 0,001 en E1,
+E2, E3 y E4; p < 0,01 en E5; p < 0,05 en E6), mientras que a 30
+minutos la diferencia dejó de ser significativa en E5 y E6. Sin
+embargo, el rendimiento de XGBoost presentó mayor variabilidad
+interpaciente, especialmente en los escenarios con error estocástico:
+en E5 y E6 el MAE medio alcanzó 0,195 y 0,194 mg/dL a 15 minutos y
+0,215 y 0,216 mg/dL a 30 minutos. ARIMAX, por el contrario, mantuvo
+un MAE prácticamente constante en todos los escenarios
+(0,249–0,251 mg/dL) con desviación típica notablemente inferior.
+
+![RMSE medio por escenario y horizonte de predicción para ARIMAX y
+XGBoost.](img/Resultados/grafica2_barras_rmse.png){#fig-barras-rmse}
+
+En términos de RMSE, el patrón fue distinto (@fig-barras-rmse).XGBoost obtuvo
+un RMSE comparable a ARIMAX en los escenarios sin error en la dosis (E1, E2,
+E3), sin diferencias estadísticamente significativas entre modelos. En
+los escenarios con error en la dosis (E4, E5, E6), ARIMAX resultó
+significativamente mejor que XGBoost en RMSE (p < 0,05 en E4 a 15
+min; p < 0,01 en E5 y E6 a 15 min; p < 0,05 en E4 y E6 a 30 min;
+p < 0,001 en E5 a 30 min), con valores medios de XGBoost de 0,344,
+0,414 y 0,457 mg/dL a 15 minutos frente a 0,288, 0,307 y 0,291 mg/dL
+de ARIMAX en esos mismos escenarios. Este resultado refleja que
+XGBoost genera errores puntuales de mayor magnitud bajo condiciones
+de perturbación, penalizados en mayor medida por el RMSE.
+
+El test de Wilcoxon inter-simulación reveló patrones diferenciados
+entre modelos. Para ARIMAX, ningún par de escenarios mostró diferencias
+estadísticamente significativas en MAE ni en RMSE (p > 0,05 en todos
+los casos), lo que indica que el modelo no ha sido sensible a ninguno de
+los factores experimentales introducidos. Para XGBoost, la variabilidad
+en la ingesta de HC (E1–E2) y el error en la dosis de insulina (E1–E4)
+produjeron incrementos significativos del error en ambos horizontes y
+métricas (p < 0,001). El error en la dosis sobre escenarios de HC
+variable (E2–E5) también resultó significativo en MAE (p < 0,001) y en
+RMSE (p < 0,01 a 15 min; p < 0,05 a 30 min). El error en la dosis sobre
+el escenario con ejercicio (E3–E6) fue significativo en MAE (p < 0,001)
+y en RMSE a 15 minutos (p < 0,01). El ejercicio por sí solo (E1–E3) no
+produjo diferencias significativas en ningún modelo, horizonte ni
+métrica.
+
+### 5.2. Seguridad clínica
+
+Ambos modelos obtuvieron el 100% de las predicciones clasificadas en
+zona A de la CEG en todos los escenarios y horizontes de predicción,
+sin ninguna predicción en zonas B, C, D o E (@fig-clarke). Esto implica
+que la totalidad de las predicciones presentaron un error inferior al 20%
+del valor real de glucemia, umbral de precisiónclínica más estricto de la CEG.
+El resultado fue idéntico para el horizonte de 30 minutos (véase Anexo G). 
+La interpretación de este hallazgo se discute en el siguiente capítulo.
+
+![Distribución de predicciones en zonas de la Clarke Error Grid para
+XGBoost y ARIMAX en el horizonte de 15 minutos, por
+escenario.](img/Resultados/grafica6_clarke_15min.png){#fig-clarke}
 
 
-Debería haber una correspondencia entre los objetivos y los resultados explicados en esta sección
+### 5.3. Degradación del rendimiento con el horizonte
 
-A continuación se muestra un **ejemplo de figura generada con R**:
+ARIMAX mostró una degradación prácticamente nula al pasar de 15 a 30
+minutos, con ratios MAE~30~/MAE~15~ iguales a 1,00 en todos los escenarios
+y ratios RMSE~30~/RMSE~15~ entre 0,99 y 1,03 (@fig-degradacion-mae,
+@fig-degradacion-rmse). XGBoost presentó una degradación moderada
+pero consistente, con ratios MAE~30~/MAE~15~ entre 1,05 y 1,12 y ratios
+RMSE~30~/RMSE~15~ entre 1,05 y 1,20 según el escenario. La degradación
+fue más pronunciada en los escenarios con mayor perturbación (E5 y
+E6), lo que sugiere que la complejidad del escenario amplifica el
+efecto del horizonte sobre el rendimiento de XGBoost.
 
-```{r fig-ejemplo}
-#| label: fig-boxplot
-#| fig-cap: "Distribución de la longitud de sépalo por especie en el conjunto iris"
+![Degradación del MAE al aumentar el horizonte de predicción.
+Izquierda: valores absolutos por escenario. Derecha: ratio
+MAE~30~/MAE~15~ por escenario y
+modelo.](img/Resultados/grafica5_degradacion_mae.png){#fig-degradacion-mae}
 
-library(ggplot2)
+![Degradación del RMSE al aumentar el horizonte de predicción.
+Izquierda: valores absolutos por escenario. Derecha: ratio
+RMSE~30~/RMSE~15~ por escenario y
+modelo.](img/Resultados/grafica5_degradacion_rmse.png){#fig-degradacion-rmse}
 
-ggplot(iris, aes(x = Species, y = Sepal.Length, fill = Species)) +
-  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
-  labs(
-    x = "Especie",
-    y = "Longitud del sépalo (cm)"
-  ) +
-  theme_minimal(base_size = 11) +
-  theme(panel.grid.minor = element_blank())
-```
+### 5.4. Relación entre perfil glucémico y rendimiento predictivo
 
-Debería existir correspondencia entre los objetivos definidos y los
-resultados mostrados [@koza92].
+Para XGBoost se observó una correlación negativa fuerte y altamente
+significativa entre el TIR del paciente y su error predictivo en todos
+los escenarios, tanto para MAE (r entre -0,76 y -0,81 a 15 min;
+r entre -0,75 y -0,82 a 30 min; p < 0,001 en todos los casos) como
+para RMSE (r entre -0,65 y -0,77 a 15 min; r entre -0,60 y -0,80 a
+30 min; p < 0,01 o inferior). Agregando los resultados sobre los seis
+escenarios, los coeficientes de correlación fueron r = -0,85 (MAE,
+15 min), r = -0,89 (MAE, 30 min), r = -0,83 (RMSE, 15 min) y
+r = -0,84 (RMSE, 30 min), todos con p < 0,001 (@fig-scatter-mae,
+@fig-scatter-rmse). Para ARIMAX, la correlación entre TIR y error no
+fue estadísticamente significativa en ningún escenario ni horizonte,
+a excepción del escenario E5 en MAE a 15 minutos (r = -0,48,
+p = 0,031). Los resultados detallados por escenario se recogen en el
+Anexo G.
+
+![Correlación de Spearman entre MAE medio por paciente (promediado
+sobre los seis escenarios) y TIR, para ambos modelos y horizontes de
+predicción.](img/Resultados/grafica9_scatter_mae_tir_agregado.png){#fig-scatter-mae}
+
+![Correlación de Spearman entre RMSE medio por paciente (promediado
+sobre los seis escenarios) y TIR, para ambos modelos y horizontes de
+predicción.](img/Resultados/grafica9_scatter_rmse_tir_agregado.png){#fig-scatter-rmse}
+
