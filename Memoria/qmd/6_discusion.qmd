@@ -3,4 +3,190 @@
 \capitulo{6}{Discusión}
 ```
 
-Se realizará un análisis crítico de los resultados, interpretando su significado y, cuando sea pertinente, comparándolos con los resultados de trabajos previos, obtenidos con la revisión del estado del arte; de forma que se destaquen las mejoras y aportes sobre el mismo.
+### 6.1. Interpretación del rendimiento global
+
+Los resultados muestran un patrón diferenciado entre modelos según la
+métrica de evaluación considerada. La ventaja de XGBoost en MAE es
+coherente con su capacidad para capturar interacciones no lineales
+entre la glucemia pasada y las variables exógenas, algo que un modelo
+lineal como ARIMAX no puede representar. Sin embargo, esta capacidad
+tiene como contrapartida una mayor sensibilidad a las perturbaciones
+del escenario, que se manifiesta en una variabilidad interpaciente
+notablemente superior y, en particular, en un RMSE más elevado bajo
+condiciones de error en la dosis de insulina.
+
+ARIMAX exhibe un comportamiento notablemente estable en todos los
+escenarios y horizontes. Esta estabilidad refleja que el modelo captura
+fundamentalmente la componente autorregresiva de la serie glucémica,
+cuya estructura es altamente regular en los datos simulados, sin que
+las variables exógenas aporten valor predictivo adicional significativo.
+En escenarios con perturbaciones exógenas, su linealidad actúa como
+mecanismo de regularización implícito, evitando los errores puntuales
+de gran magnitud que acumula XGBoost.
+
+La divergencia entre MAE y RMSE como criterios de comparación tiene
+implicaciones clínicas directas: el RMSE amplifica los errores grandes,
+que son precisamente los más peligrosos en el contexto de la predicción
+de glucemia. Desde esta perspectiva, ARIMAX ofrece un perfil de
+seguridad más conservador en escenarios de perturbación, mientras que
+XGBoost resulta más preciso en condiciones favorables.
+
+### 6.2. Efecto de los factores experimentales
+
+La sensibilidad de XGBoost al error en la dosis de insulina y a la
+variabilidad en la ingesta de HC, frente a la insensibilidad de ARIMAX
+a todos los factores experimentales, refleja una diferencia estructural
+entre ambos modelos. XGBoost aprende patrones complejos a partir de
+los datos de entrenamiento y, al optimizarse sobre un escenario sin
+error en la dosis (E3), carece de ejemplos representativos de esta
+perturbación, lo que limita su capacidad de generalización cuando dicho
+error está presente.
+
+La ausencia de efecto significativo del ejercicio en ambos modelos
+puede explicarse por la naturaleza del escenario simulado: el ejercicio
+se introduce con un perfil temporal predefinido y regular, sin la
+variabilidad e imprevisibilidad propias del ejercicio real. En este
+contexto, ambos modelos incorporan su efecto dentro de la dinámica
+general de la serie sin que suponga una perturbación diferencial
+respecto al escenario base. Esta interpretación es coherente con lo
+señalado por @cinar2025, que identifica la actividad física como una
+característica especialmente impactante cuando su intensidad y momento
+son variables, condiciones que no se reproducen en los escenarios
+simulados de este trabajo.
+
+La insensibilidad de ARIMAX a todos los factores experimentales es
+coherente con su formulación: en datos con una estructura temporal tan
+regular como la de los escenarios simulados, la glucemia pasada es
+suficiente para predecir la glucemia futura con un error estable,
+independientemente de las perturbaciones exógenas introducidas.
+
+### 6.3. Resultados de la CEG y validez clínica
+
+El 100% de predicciones en zona A de la CEG en todos los escenarios,
+modelos y horizontes es un resultado que debe interpretarse con cautela.
+Los valores de error obtenidos son dos órdenes de magnitud inferiores
+a los reportados en la literatura con datos reales [@butt2023;
+@liu2023], lo que hace que la comparación directa no sea válida. Esta
+discrepancia se atribuye a la naturaleza periódica y determinista de
+los datos generados por py-mgipsim: las series simuladas presentan
+patrones de ingesta y actividad altamente regulares que facilitan el
+aprendizaje de la tendencia glucémica y eliminan el ruido e
+imprevisibilidad propios de los datos reales. La ausencia total de
+predicciones en zonas B, C, D o E confirma que el problema de
+predicción planteado sobre datos simulados es intrínsecamente más
+sencillo que sobre datos reales, y que los resultados de la CEG no son
+extrapolables a un contexto clínico sin validación previa.
+
+### 6.4. Relación entre perfil glucémico y rendimiento predictivo
+
+El TIR se empleó como indicador del control glucémico de cada paciente
+por ser una métrica de uso clínico habitual que permite categorizar de
+forma rápida el perfil glucémico individual como primera aproximación
+[@rodbard2025]. La correlación negativa fuerte y significativa entre
+el TIR y el error predictivo de XGBoost, consistente en todos los
+escenarios y horizontes, indica que el modelo comete errores mayores
+en pacientes con peor control glucémico. Esta dependencia del perfil
+del paciente sugiere que la estrategia de hiperparámetros globales,
+optimizados sobre un único paciente de referencia, no generaliza de
+forma uniforme a toda la cohorte: los pacientes con perfiles glucémicos
+más complejos o atípicos representan casos en los que dicha estrategia
+resulta insuficiente.
+
+Cabe señalar que algunos pacientes virtuales de la cohorte presentan
+un TIR del 0%, no como consecuencia de hipoglucemia mantenida sino
+porque sus valores de glucemia se encuentran sistemáticamente por
+encima del rango normoglucémico, con perfiles regulares pero
+desplazados hacia la hiperglucemia. Este fenómeno refleja una
+característica del simulador más que un perfil clínico real, y debe
+tenerse en cuenta al interpretar los extremos de la correlación
+TIR-error (véase Anexo G para la distribución de TIR por paciente y
+escenario).
+
+La ausencia de correlación significativa entre TIR y error en ARIMAX
+refleja una limitación estructural del modelo lineal, incapaz de
+adaptar su comportamiento a la variabilidad interpaciente, pero también
+una ventaja en términos de equidad predictiva: ningún subgrupo de
+pacientes es sistemáticamente peor predicho que otro.
+
+### 6.5. Comparación con trabajos previos
+
+La comparación con la literatura debe realizarse con las reservas
+metodológicas señaladas en el apartado 6.3. El estudio más directamente
+comparable en términos de diseño es el de @butt2023, que aplica un
+modelo Bi-LSTM con transformación de características de insulina y
+carbohidratos sobre el dataset OhioT1DM. La revisión sistemática de
+@liu2023 ofrece un marco de referencia más amplio sobre el rendimiento
+esperado en datos reales. En ambos casos, los errores reportados son
+sustancialmente superiores a los obtenidos en este trabajo, lo que
+confirma que la regularidad de los datos simulados produce un escenario
+de predicción artificialmente favorable.
+
+Desde el punto de vista del diseño experimental, la contribución de
+este trabajo respecto al estado del arte reside en tres aspectos. En
+primer lugar, la delimitación explícita al régimen MDI, modalidad
+terapéutica mayoritaria pero infrarepresentada en la literatura, donde
+predominan los estudios sobre sistemas de asa cerrada o ISCI. En
+segundo lugar, el análisis sistemático del efecto de variables
+clínicamente relevantes —variabilidad en la ingesta, ejercicio y error
+en la dosis— sobre el rendimiento predictivo bajo condiciones
+controladas, algo difícil de aislar con datos reales. En tercer lugar,
+la evidencia de que el perfil glucémico del paciente, cuantificado
+mediante el TIR, es un predictor significativo del rendimiento de
+XGBoost pero no de ARIMAX, lo que tiene implicaciones directas para
+la selección del modelo en función del perfil del paciente.
+
+### 6.6. Limitaciones
+
+La principal limitación del trabajo es el uso exclusivo de datos
+simulados. Aunque py-mgipsim está basado en el modelo UVA/Padova
+[@man2014], aceptado por la FDA como sustituto de estudios preclínicos,
+la regularidad de las series generadas no reproduce la complejidad y
+variabilidad propias de los datos reales.
+
+La disponibilidad de datasets públicos adecuados para este problema
+específico es estructuralmente escasa: los conjuntos de datos con
+registros simultáneos de glucemia, insulina, ingesta de hidratos de
+carbono y ejercicio en pacientes con DM1 en régimen MDI son escasos
+[@COMPLETAR revisión sistemática de datasets]. El estándar de referencia
+en la literatura es el dataset OhioT1DM [@Ohio], cuyo
+acceso requería una solicitud formal por parte del tutor académico,
+lo que habría supeditado el desarrollo del trabajo a una respuesta
+afirmativa en un plazo incierto. Se identificó además un dataset con
+datos de pacientes de Shanghai, descartado por seguir un modelo de
+control glucémico significativamente distinto al protocolo clínico
+occidental, criterio corroborado por la cotutora especialista en
+diabetes. Ante estas circunstancias, el uso del simulador validado
+constituyó la alternativa más viable para garantizar la reproducibilidad
+y el control experimental del estudio.
+
+Una segunda limitación es la estrategia de hiperparámetros globales:
+la optimización sobre un único paciente de referencia y su aplicación
+sin reajuste al resto de la cohorte limita el rendimiento de XGBoost
+en pacientes con perfiles glucémicos alejados del paciente de
+referencia, como evidencia la correlación entre TIR y error predictivo.
+
+Una tercera limitación fue la capacidad de cómputo disponible. El
+backtesting sobre 120 series temporales con refit en cada paso supone
+un coste computacional elevado, lo que restringió el número de
+escenarios y configuraciones que pudieron evaluarse. Se exploró el uso
+de computación en la nube mediante Google Colab, pero la ausencia de
+un plan de pago limitó tanto la velocidad de procesamiento como la
+disponibilidad continua de los recursos de cálculo. Esta restricción
+condicionó decisiones como la optimización de hiperparámetros sobre un
+único paciente de referencia en lugar de realizar una búsqueda
+individualizada, y descartó la exploración de un mayor número de
+escenarios o la inclusión de modelos adicionales como Prophet.
+
+Finalmente, dos análisis de explicabilidad previstos inicialmente no
+pudieron completarse. El análisis mediante SHAP no pudo implementarse
+por incompatibilidades entre las versiones de las dependencias del
+entorno de desarrollo. Por su parte, la extracción sistemática de la
+importancia de características de ambos modelos sobre toda la cohorte
+no se integró en el pipeline de backtesting, lo que habría requerido
+reprocesar los 120 escenarios con un coste computacional inasumible en
+el tiempo disponible. Ambos análisis habrían permitido cuantificar la
+contribución de cada variable exógena al rendimiento predictivo de
+cada modelo, complementando los resultados del análisis de variabilidad
+experimental. A modo ilustrativo, se incluye en el Anexo G la
+importancia de características obtenida para el paciente de referencia
+en ambos modelos.
