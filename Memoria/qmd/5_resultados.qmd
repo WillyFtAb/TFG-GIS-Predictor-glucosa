@@ -36,7 +36,7 @@ un MAE prácticamente constante en todos los escenarios
 ![RMSE medio por escenario y horizonte de predicción para ARIMAX y
 XGBoost.](img/Resultados/grafica2_barras_rmse.png){#fig-barras-rmse}
 
-En términos de RMSE, el patrón fue distinto (@fig-barras-rmse).XGBoost obtuvo
+En términos de RMSE, el patrón fue distinto (@fig-barras-rmse). XGBoost obtuvo
 un RMSE comparable a ARIMAX en los escenarios sin error en la dosis (E1, E2,
 E3), sin diferencias estadísticamente significativas entre modelos. En
 los escenarios con error en la dosis (E4, E5, E6), ARIMAX resultó
@@ -69,7 +69,7 @@ Ambos modelos obtuvieron el 100% de las predicciones clasificadas en
 zona A de la CEG en todos los escenarios y horizontes de predicción,
 sin ninguna predicción en zonas B, C, D o E (@fig-clarke). Esto implica
 que la totalidad de las predicciones presentaron un error inferior al 20%
-del valor real de glucemia, umbral de precisiónclínica más estricto de la CEG.
+del valor real de glucemia, umbral de precisión clínica más estricto de la CEG.
 El resultado fue idéntico para el horizonte de 30 minutos (véase Anexo G). 
 La interpretación de este hallazgo se discute en el siguiente capítulo.
 

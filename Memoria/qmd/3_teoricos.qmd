@@ -21,10 +21,10 @@ La hiperglucemia mantenida se asocia a complicaciones microvasculares
 cardiovascular) que determinan de forma significativa la morbimortalidad
 a largo plazo. El control glucémico estricto, cuantificado principalmente
 mediante la hemoglobina glicada (HbA1c) y el tiempo en rango (TIR),
-constituye el principal objetivo terapéutico [@calvo2004diabetes]. El TIR se define
+constituye el principal objetivo terapéutico [@calvo2004diabetes; @gpc_dm1_2026]. El TIR se define
 como el porcentaje de tiempo en que la glucemia se mantiene entre 70 y
-180 mg/dL, y se ha consolidado como indicador clínico de referencia
-gracias a su correlación con el riesgo de complicaciones [@rodbard2025].
+180 mg/dL, y se ha consolidado como indicador clínico 
+gracias a su correlación con el riesgo de complicaciones [@rizos_continuous_2025].
 La magnitud epidemiológica de la enfermedad, con una prevalencia global
 estimada en 9,5 millones de personas en 2025 [@ogle2025], subraya la
 necesidad de desarrollar herramientas tecnológicas que mejoren su gestión.
@@ -34,8 +34,8 @@ necesidad de desarrollar herramientas tecnológicas que mejoren su gestión.
 
 El tratamiento con múltiples dosis diarias de insulina (MDI) es la
 modalidad terapéutica más extendida en pacientes con DM1. Consiste en la
-administración de insulina basal de acción prolongada —generalmente una dosis
-diaria— combinada con insulina de acción rápida en cada
+administración de insulina basal de acción prolongada -generalmente una dosis
+diaria- combinada con insulina de acción rápida en cada
 ingesta, cuya dosis se calcula en función de la cantidad de hidratos de
 carbono consumidos y de la glucemia preprandial del paciente [@calvo2004diabetes].
 
@@ -47,15 +47,15 @@ la insulina (FSI), que estima el descenso glucémico esperado por cada
 unidad de insulina administrada. Ambos parámetros presentan variabilidad
 interindividual e intraindividual significativa, lo que convierte su
 estimación precisa en uno de los principales retos del manejo clínico
-de la DM1 [@calvo2004diabetes].
+de la DM1 [@calvo2004diabetes; @gpc_dm1_2026].
 
 La eficacia del régimen MDI depende en gran medida de la capacidad del
 paciente para estimar con precisión los hidratos de carbono ingeridos, un
 proceso sujeto a error sistemático y aleatorio con impacto directo sobre
-el control glucémico postprandial [@calvo2004diabetes]. La práctica de
+el control glucémico postprandial [@calvo2004diabetes; @gpc_dm1_2026]. La práctica de
 ejercicio físico añade una capa adicional de complejidad, dado que
 modifica la sensibilidad a la insulina de forma aguda y prolongada,
-induciendo tanto episodios hipoglucémicos durante o tras el ejercicio
+induciendo tanto episodios hipoglucémicos durante o tras el ejercicio,
 como respuestas hiperglucémicas en ejercicio de alta intensidad
 [@helleputte_effects_2023].
 
@@ -65,7 +65,7 @@ Los sistemas de monitorización continua de glucosa (MCG) miden la
 concentración de glucosa en el líquido intersticial mediante un sensor
 electroquímico implantado en el tejido subcutáneo, proporcionando
 lecturas automáticas con una frecuencia típica de 5 minutos
-[@rodbard2025]. A diferencia de la glucometría capilar tradicional,
+[@rizos_continuous_2025]. A diferencia de la glucometría capilar tradicional,
 que ofrece mediciones puntuales, la MCG genera series temporales
 continuas que permiten caracterizar la dinámica glucémica a lo largo
 del día, identificar patrones postprandiales, episodios nocturnos y
@@ -74,7 +74,7 @@ la respuesta glucémica al ejercicio físico.
 La evidencia disponible muestra que el uso de MCG en pacientes con DM1
 se asocia a reducciones significativas de la HbA1c, incremento del TIR
 y disminución de la frecuencia e intensidad de los episodios
-hipoglucémicos [@rodbard2025].
+hipoglucémicos [@rizos_continuous_2025].
 
 Entre los dispositivos más extendidos en la práctica clínica actual
 destacan el FreeStyle Libre 2 Plus y el FreeStyle Libre 3 (Abbott), que
@@ -88,8 +88,8 @@ bomba de insulina.
 
 Desde el punto de vista de las capacidades predictivas integradas,
 la mayoría de los dispositivos MCG comerciales incorporan únicamente
-indicadores de tendencia glucémica —flechas de dirección y velocidad
-de cambio basadas en el comportamiento reciente de la señal— y alarmas
+indicadores de tendencia glucémica -flechas de dirección y velocidad
+de cambio basadas en el comportamiento reciente de la señal- y alarmas
 configurables por umbral. La única solución que actualmente incorpora
 predicción cuantitativa de glucosa es el sistema Accu-Chek SmartGuide
 (Roche), cuya aplicación complementaria Accu-Chek SmartGuide Predict
@@ -107,9 +107,7 @@ indicadores estandarizados. El tiempo en rango (TIR) cuantifica el
 porcentaje de lecturas dentro del intervalo 70–180 mg/dL, mientras
 que el tiempo por debajo del rango (TBR, <70 mg/dL) y el tiempo por
 encima del rango (TAR, >180 mg/dL) caracterizan la exposición a
-hipoglucemia e hiperglucemia respectivamente. El coeficiente de
-variación (CV) de la glucosa refleja la variabilidad glucémica, con
-un umbral clínico de referencia del 36% [@rodbard2025].
+hipoglucemia e hiperglucemia respectivamente.  
 
 #### Clarke Error Grid y Parkes Error Grid
 
@@ -117,7 +115,7 @@ La Clarke Error Grid (CEG) es un método de evaluación de la seguridad
 clínica de las estimaciones glucémicas que clasifica los pares (valor
 real, valor predicho) en cinco zonas según su impacto potencial sobre
 la toma de decisiones terapéuticas [@clarke_evaluating_1987]. La zona A agrupa las
-estimaciones clínicamente precisas (error $\le$ 20% o dentro del rango
+estimaciones clínicamente precisas (error $\leq$ 20% o dentro del rango
 normoglucémico); la zona B incluye estimaciones con desviación aceptable
 que no inducen tratamiento erróneo; las zonas C, D y E recogen,
 respectivamente, estimaciones que llevarían a correcciones innecesarias,
@@ -131,7 +129,7 @@ La Parkes Error Grid, también conocida como Consensus Error Grid,
 constituye una revisión posterior de la CEG que amplía su aplicabilidad
 a dispositivos de monitorización modernos y refina la delimitación de
 las zonas de riesgo clínico [@pfutzner_technical_2013]. Si bien no ha sido aplicada
-en el presente trabajo, su existencia es relevante como marco de
+en este estudio, su existencia es relevante como marco de
 referencia para estudios futuros que busquen una evaluación de
 seguridad clínica más actualizada.
 
@@ -154,23 +152,22 @@ sustituto de los estudios preclínicos en animales para el desarrollo
 y evaluación de algoritmos de control glucémico, lo que acredita su
 validez como entorno de pruebas [@man2014]. El modelo reproduce la
 dinámica glucosa-insulina mediante un sistema de ecuaciones
-diferenciales que describe los compartimentos de absorción
+diferenciales que describe los comportamientos de absorción
 gastrointestinal, distribución de glucosa, acción de la insulina y
 producción hepática de glucosa, parametrizado a partir de datos
 fisiológicos reales.
 
-En el presente trabajo se ha utilizado py-mgipsim, una librería Python
+Para el presente trabajo se ha utilizado py-mgipsim, una librería Python
 de código abierto que implementa y extiende el modelo UVA/Padova
 [@siket_py-mgipsim_2025]. La librería proporciona una cohorte de 20 pacientes
 virtuales con conjuntos de parámetros individualizados y datos
 demográficos diferenciados, e incorpora implementaciones de los
 regímenes terapéuticos MDI, bomba de insulina con sensor aumentado
 (SAP) y sistemas de asa cerrada híbrida. Entre sus características
-relevantes para el presente trabajo se encuentran la posibilidad de
-introducir incertidumbre en el recuento de hidratos de carbono,
-variabilidad estocástica en los tiempos de ingesta y ejercicio físico,
-y la exportación de variables de estado en formato estructurado
-[@siket_py-mgipsim_2025].
+relevantes se encuentran la posibilidad de introducir incertidumbre
+en las unidades de insulina administrada, variabilidad en los tiempos de 
+ingesta y ejercicio físico, y la exportación de variables de estado en formato 
+estructurado [@siket_py-mgipsim_2025].
 
 
 ### 3.5. Modelos predictivos para series temporales
@@ -190,7 +187,7 @@ muestreo de 5 minutos.
 
 Los modelos ARIMA (AutoRegressive Integrated Moving Average) son una
 familia de modelos estadísticos lineales para series temporales
-estacionarias que combinan tres componentes: un término autorregresivo
+que combinan tres componentes: un término autorregresivo
 (AR) que modela la dependencia lineal con valores pasados de la propia
 serie, un término de media móvil (MA) que modela la dependencia con
 errores de predicción pasados, y un operador de diferenciación (I) que
@@ -200,11 +197,9 @@ orden autorregresivo, d el grado de diferenciación y q el orden de la
 media móvil [@box2015].
 
 La extensión ARIMAX (ARIMA with eXogenous inputs) incorpora variables
-exógenas como regresores adicionales al modelo, lo que permite capturar
-el efecto de entradas externas  sobre la evolución de la serie. Esta extensión es
-especialmente relevante en el modelado de la glucemia, dado que las
-excursiones postprandiales y el efecto de la insulina constituyen
-perturbaciones exógenas con un perfil temporal conocido. 
+exógenas como regresores adicionales al modelo, lo que permite
+capturar el efecto de entradas externas sobre la evolución de 
+la serie.
 
 #### XGBoost
 
@@ -223,7 +218,7 @@ el algoritmo no opera de forma nativa sobre datos secuenciales.
 #### Selección de hiperparámetros
 
 Ambos modelos requieren la optimización de sus hiperparámetros para
-maximizar el rendimiento predictivo. En el presente trabajo, la
+maximizar el rendimiento predictivo. Para este trabajo, la
 búsqueda de hiperparámetros se ha realizado sobre un paciente virtual
 de referencia, común a ambos modelos, con el objetivo de garantizar
 la comparabilidad de los resultados. Los hiperparámetros obtenidos
@@ -242,10 +237,7 @@ continuos de alta frecuencia. Una revisión sistemática y metaanálisis
 en red que incluyó 46 estudios cifra el RMSE medio para horizontes de
 15, 30 y 60 minutos en 18,88, 21,40 y 30,01 mg/dL respectivamente,
 con los modelos de redes neuronales mostrando el mejor rendimiento
-relativo en todos los horizontes [@liu2023]. Esta tendencia al aumento
-del error con el horizonte de predicción es consistente en la
-literatura y constituye uno de los ejes de análisis del presente
-trabajo.
+relativo en todos los horizontes [@liu2023].
 
 Entre los enfoques estadísticos, los modelos de la familia ARIMA y
 sus extensiones con variables exógenas han sido utilizados ampliamente
@@ -255,9 +247,8 @@ automático, las arquitecturas LSTM han mostrado resultados competitivos
 gracias a su capacidad para capturar dependencias temporales de largo
 alcance [@carvalho2024; @butt2023]. El trabajo de Butt et al.
 [-@butt2023], que aplica transformación de características de insulina
-y carbohidratos sobre el dataset OhioT1DM con un modelo Bi-LSTM,
-obtiene un RMSE de 14,76 mg/dL a 30 minutos, constituyendo una
-referencia de comparación directa para el presente trabajo. Enfoques
+y carbohidratos sobre el dataset OhioT1DM [@Ohio] con un modelo Bi-LSTM,
+obtiene un RMSE de 14,76 mg/dL a 30 minutos. Enfoques
 basados en programación genética han explorado la predicción
 individualizada a 30 y 60 minutos sobre datos reales de pacientes,
 logrando que el 98% y el 90% de las predicciones respectivamente caigan
@@ -277,12 +268,10 @@ por analizar el comportamiento de modelos individuales ante distintos
 horizontes antes de explorar combinaciones.
 
 La mayoría de los trabajos existentes se han desarrollado sobre datos
-reales procedentes de datasets públicos —como el OhioT1DM— o sobre
+reales procedentes de datasets públicos —como el OhioT1DM [@Ohio]— o sobre
 cohortes de pacientes con sistemas de asa cerrada o ISCI, mientras
 que los estudios centrados específicamente en poblaciones MDI son
-menos frecuentes. En el ámbito nacional, se han explorado sistemas
-de predicción de glucosa portátiles [@glucop] y algoritmos de control
-avanzado basados en modelos predictivos [@controlAvanzado].
+menos frecuentes.
 
 El presente trabajo se distingue de los precedentes en tres aspectos:
 la delimitación explícita al régimen MDI, la comparación directa entre
@@ -290,5 +279,4 @@ un modelo estadístico lineal (ARIMAX) y un modelo de aprendizaje
 automático no lineal (XGBoost) bajo condiciones experimentales
 controladas mediante simulador validado, y el análisis del efecto de
 variables clínicamente relevantes —variabilidad en la ingesta,
-ejercicio físico y error en la dosis de insulina— sobre el rendimiento
-predictivo de cada modelo.
+ejercicio físico y error en la dosis de insulina— sobre el rendimiento predictivo de cada modelo.

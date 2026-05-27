@@ -9,10 +9,10 @@ Para alcanzarlo, se definen los siguientes objetivos específicos:
 
 1. Generar los conjuntos de datos necesarios para el estudio a partir de un simulador validado.
 2. Comparar el rendimiento global de los modelos seleccionados mediante métricas de error y criterios de seguridad clínica en los horizontes de predicción establecidos.
-3. Analizar el efecto de las condiciones de manejo de  la diabetes -variabilidad en la ingesta de hidratos de carbono, práctica de ejercicio físico y error en el cálculo de la dosis de insulina- sobre la precisión de los modelos.
+3. Analizar el efecto de las condiciones de manejo de la diabetes -variabilidad en la ingesta de hidratos de carbono, práctica de ejercicio físico y error en el cálculo de la dosis de insulina- sobre la precisión de los modelos.
 4. Analizar la degradación del rendimiento de los modelos al aumentar el horizonte de predicción de 15 a 30 minutos.
 
-Asímismo, el desarrollo del trabajo ha permitido adquirir y consolidar las
+Asimismo, el desarrollo del trabajo ha permitido adquirir y consolidar las
 siguientes competencias:
 
 - **Conocimiento clínico aplicado:** comprensión de la fisiopatología

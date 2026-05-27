@@ -49,7 +49,7 @@ variabilidad e imprevisibilidad propias del ejercicio real. En este
 contexto, ambos modelos incorporan su efecto dentro de la dinámica
 general de la serie sin que suponga una perturbación diferencial
 respecto al escenario base. Esta interpretación es coherente con lo
-señalado por @cinar2025, que identifica la actividad física como una
+señalado por @arxiv2025review , que identifica la actividad física como una
 característica especialmente impactante cuando su intensidad y momento
 son variables, condiciones que no se reproducen en los escenarios
 simulados de este trabajo.
@@ -67,8 +67,8 @@ modelos y horizontes es un resultado que debe interpretarse con cautela.
 Los valores de error obtenidos son dos órdenes de magnitud inferiores
 a los reportados en la literatura con datos reales [@butt2023;
 @liu2023], lo que hace que la comparación directa no sea válida. Esta
-discrepancia se atribuye a la naturaleza periódica y determinista de
-los datos generados por py-mgipsim: las series simuladas presentan
+discrepancia se atribuye a la naturaleza periódica de
+los datos generados por py-mgipsim [@siket_py-mgipsim_2025]: las series simuladas presentan
 patrones de ingesta y actividad altamente regulares que facilitan el
 aprendizaje de la tendencia glucémica y eliminan el ruido e
 imprevisibilidad propios de los datos reales. La ausencia total de
@@ -82,7 +82,7 @@ extrapolables a un contexto clínico sin validación previa.
 El TIR se empleó como indicador del control glucémico de cada paciente
 por ser una métrica de uso clínico habitual que permite categorizar de
 forma rápida el perfil glucémico individual como primera aproximación
-[@rodbard2025]. La correlación negativa fuerte y significativa entre
+[@rizos_continuous_2025; @gpc_dm1_2026]. La correlación negativa fuerte y significativa entre
 el TIR y el error predictivo de XGBoost, consistente en todos los
 escenarios y horizontes, indica que el modelo comete errores mayores
 en pacientes con peor control glucémico. Esta dependencia del perfil
@@ -103,9 +103,7 @@ TIR-error (véase Anexo G para la distribución de TIR por paciente y
 escenario).
 
 La ausencia de correlación significativa entre TIR y error en ARIMAX
-refleja una limitación estructural del modelo lineal, incapaz de
-adaptar su comportamiento a la variabilidad interpaciente, pero también
-una ventaja en términos de equidad predictiva: ningún subgrupo de
+refleja una ventaja en términos de equidad predictiva: ningún subgrupo de
 pacientes es sistemáticamente peor predicho que otro.
 
 ### 6.5. Comparación con trabajos previos
@@ -122,18 +120,14 @@ confirma que la regularidad de los datos simulados produce un escenario
 de predicción artificialmente favorable.
 
 Desde el punto de vista del diseño experimental, la contribución de
-este trabajo respecto al estado del arte reside en tres aspectos. En
+este trabajo respecto al estado del arte reside en dos aspectos. En
 primer lugar, la delimitación explícita al régimen MDI, modalidad
 terapéutica mayoritaria pero infrarepresentada en la literatura, donde
 predominan los estudios sobre sistemas de asa cerrada o ISCI. En
 segundo lugar, el análisis sistemático del efecto de variables
 clínicamente relevantes —variabilidad en la ingesta, ejercicio y error
 en la dosis— sobre el rendimiento predictivo bajo condiciones
-controladas, algo difícil de aislar con datos reales. En tercer lugar,
-la evidencia de que el perfil glucémico del paciente, cuantificado
-mediante el TIR, es un predictor significativo del rendimiento de
-XGBoost pero no de ARIMAX, lo que tiene implicaciones directas para
-la selección del modelo en función del perfil del paciente.
+controladas, algo difícil de aislar con datos reales.
 
 ### 6.6. Limitaciones
 
@@ -147,12 +141,12 @@ La disponibilidad de datasets públicos adecuados para este problema
 específico es estructuralmente escasa: los conjuntos de datos con
 registros simultáneos de glucemia, insulina, ingesta de hidratos de
 carbono y ejercicio en pacientes con DM1 en régimen MDI son escasos
-[@COMPLETAR revisión sistemática de datasets]. El estándar de referencia
+[@prioleau2025glucoseml]. El estándar de referencia
 en la literatura es el dataset OhioT1DM [@Ohio], cuyo
-acceso requería una solicitud formal por parte del tutor académico,
+acceso requería una solicitud formal,
 lo que habría supeditado el desarrollo del trabajo a una respuesta
 afirmativa en un plazo incierto. Se identificó además un dataset con
-datos de pacientes de Shanghai, descartado por seguir un modelo de
+datos de pacientes de Shanghai [@zhao_chinese_2023], descartado por seguir un modelo de
 control glucémico significativamente distinto al protocolo clínico
 occidental, criterio corroborado por la cotutora especialista en
 diabetes. Ante estas circunstancias, el uso del simulador validado
@@ -166,16 +160,16 @@ en pacientes con perfiles glucémicos alejados del paciente de
 referencia, como evidencia la correlación entre TIR y error predictivo.
 
 Una tercera limitación fue la capacidad de cómputo disponible. El
-backtesting sobre 120 series temporales con refit en cada paso supone
+backtesting sobre 120 series temporales con refit en cada paso supuso
 un coste computacional elevado, lo que restringió el número de
 escenarios y configuraciones que pudieron evaluarse. Se exploró el uso
-de computación en la nube mediante Google Colab, pero la ausencia de
+de computación en la nube mediante Google Colab [@googlecolab], pero la ausencia de
 un plan de pago limitó tanto la velocidad de procesamiento como la
 disponibilidad continua de los recursos de cálculo. Esta restricción
 condicionó decisiones como la optimización de hiperparámetros sobre un
 único paciente de referencia en lugar de realizar una búsqueda
 individualizada, y descartó la exploración de un mayor número de
-escenarios o la inclusión de modelos adicionales como Prophet.
+escenarios o la inclusión de modelos adicionales como Prophet [@taylor2018].
 
 Finalmente, dos análisis de explicabilidad previstos inicialmente no
 pudieron completarse. El análisis mediante SHAP no pudo implementarse

@@ -5,10 +5,10 @@
 
 ### 4.1. Descripción de los datos
 
-Los datos utilizados en el trabajo fueron generados mediante el
-simulador py-mgipsim [@siket_py-mgipsim_2025] sobre una cohorte de 20
-pacientes virtuales con DM1 en régimen MDI. Para cada paciente se
-simularon seis escenarios experimentales que combinan tres factores
+Los datos utilizados en el trabajo han sido generados mediante el
+simulador *py-mgipsim* [@siket_py-mgipsim_2025] sobre una cohorte de 20
+pacientes virtuales con DM1 en régimen MDI. Para cada paciente se han
+simulado seis escenarios experimentales que combinan tres factores
 clínicamente relevantes: la variabilidad en la ingesta de hidratos de
 carbono, la presencia de ejercicio físico regular y el error en el
 cálculo de la ratio insulina/ración (I:R), tal como se recoge en la
@@ -51,13 +51,13 @@ combinado de cada factor sobre el rendimiento predictivo.
 
 El simulador genera un conjunto amplio de variables fisiológicas y de
 control distribuidas en dos archivos de salida por paciente y escenario.
-De entre ellas se seleccionaron las relevantes para el estudio: glucemia
+De entre ellas se han seleccionado las relevantes para el estudio: glucemia
 (convertida de mmol/L a mg/dL), ejercicio físico, insulina en bolo,
 insulina basal, y la ingesta de comidas y tentempiés. Cabe señalar que
 los tentempiés generados por el simulador no conllevan administración
 de insulina en bolo. El resto de variables proporcionadas por el
 simulador —como señales fisiológicas internas del modelo metabólico—
-fueron descartadas por no ser relevantes para el problema de predicción
+han sido descartadas por no ser relevantes para el problema de predicción
 planteado. El conjunto de datos resultante comprende 120 series
 temporales independientes (20 pacientes × 6 escenarios). La descripción
 detallada de las variables y la estructura de los ficheros se recoge en
@@ -67,13 +67,13 @@ el Anexo F.
 
 #### Preprocesamiento
 
-Las series temporales generadas por py-mgipsim presentan una frecuencia
+Las series temporales generadas por *py-mgipsim* [@siket_py-mgipsim_2025] presentan una frecuencia
 de muestreo de 1 minuto. Para alinearlas con la resolución temporal de
-los dispositivos MCG comerciales y reducir la carga computacional, se
+los dispositivos MCG comerciales y reducir la carga computacional, se 
 aplicó un remuestreo a 5 minutos mediante una función propia que
 desplaza las variables de evento —ingesta de hidratos de carbono,
 insulina en bolo e insulina basal— al instante de muestreo más cercano
-dentro de cada intervalo de 5 minutos. A continuación se asignó un
+dentro de cada intervalo de 5 minutos. A continuación, se asignó un
 índice temporal de tipo datetime al dataframe de cada paciente,
 requisito necesario para el correcto funcionamiento de las funciones
 de predicción con series temporales de skforecast [@skforecast].

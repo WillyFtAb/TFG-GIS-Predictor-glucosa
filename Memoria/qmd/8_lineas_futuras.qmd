@@ -38,7 +38,7 @@ de cómputo disponible; futuros trabajos podrían explorar niveles
 adicionales de variabilidad en los factores estudiados, incorporar
 nuevas variables como el estrés o la variabilidad en los horarios de
 ingesta, o extender el análisis a horizontes de predicción más largos.
-En este marco, la inclusión de modelos adicionales como Prophet [@taylor2018] —
+En este marco, la inclusión de modelos adicionales como Prophet  [@taylor2018] -
 descartado en este trabajo por restricciones de tiempo— o arquitecturas
 de aprendizaje profundo como LSTM [@hochreiter1997] permitiría una comparativa más
 completa con el estado del arte.

@@ -3,15 +3,42 @@
 \capitulo{7}{Conclusiones}
 ```
 
-Todo proyecto debe incluir las conclusiones que se derivan de su desarrollo. Éstas pueden ser de diferente índole, dependiendo de la tipología del proyecto, pero normalmente van a estar presentes un conjunto de conclusiones relacionadas con los resultados del proyecto y un conjunto de conclusiones técnicas. 
+Este trabajo ha abordado el estudio comparativo de modelos
+predictivos de glucemia en pacientes con DM1 en régimen MDI, empleando
+datos generados mediante un simulador validado ante la imposibilidad
+de acceder a datos reales en el tiempo disponible. Esta circunstancia,
+lejos de ser un obstáculo menor, condicionó de forma determinante el
+diseño del estudio y pone de manifiesto la importancia de planificar
+con antelación los aspectos críticos del proyecto: la disponibilidad
+de datos, los requisitos de acceso y los tiempos burocráticos asociados
+deben evaluarse en las fases iniciales, ya que su resolución puede
+comprometer el alcance del trabajo si se abordan tardíamente.
 
+En la misma línea, la experiencia con el pipeline de backtesting
+ha evidenciado que una planificación cuidadosa del proceso de evaluación
+—incluyendo qué métricas e indicadores se extraerán en cada paso—
+evita tener que reprocesar series completas con un coste computacional
+elevado. Decisiones aparentemente menores en el diseño del código,
+como no integrar la extracción de importancia de características en el
+bucle de backtesting, se tradujeron en análisis que no pudieron
+completarse en el tiempo disponible. Este tipo de experiencia práctica
+es difícilmente documentable en la literatura pero resulta de gran
+valor para futuros desarrollos similares.
 
-## Aspectos relevantes
+Respecto a los resultados, ambos modelos demostraron un rendimiento
+clínicamente aceptable sobre los datos simulados, con el 100% de
+predicciones en zona A de la CEG. XGBoost superó a ARIMAX en MAE en
+condiciones favorables, pero mostró mayor degradación ante
+perturbaciones exógenas, especialmente el error en la dosis de
+insulina, donde ARIMAX resultó significativamente más robusto en RMSE.
+El ejercicio físico, tal como fue modelado en el simulador, no produjo
+un efecto significativo sobre el rendimiento de ningún modelo. La
+correlación entre el TIR del paciente y el error de XGBoost sugiere
+que este modelo requiere una estrategia de personalización para
+generalizar de forma equitativa sobre cohortes heterogéneas, mientras
+que ARIMAX ofrece un comportamiento más uniforme entre pacientes.
 
-Este apartado pretende recoger los aspectos más interesantes del **desarrollo del proyecto**, comentados por los autores del mismo y que den respuesta a los objetivos planteados.
-
-Debe incluir los detalles más relevantes en cada fase del desarrollo, justificando los caminos tomados, especialmente aquellos que no sean triviales. 
-
-Puede ser el lugar más adecuado para documentar los aspectos más interesantes del proyecto y también los resultados negativos obtenidos por soluciones previas a la solución entregada.
-
-Este apartado, debe convertirse en el resumen de la experiencia práctica del proyecto, y por sí mismo justifica que la memoria se convierta en un documento útil, fuente de referencia para los autores, los tutores y futuros alumnos.
+La regularidad de los datos simulados limita la extrapolación de estos
+resultados a un contexto clínico real, donde la variabilidad e
+imprevisibilidad de las series glucémicas plantean un problema de
+predicción sustancialmente más complejo. 
