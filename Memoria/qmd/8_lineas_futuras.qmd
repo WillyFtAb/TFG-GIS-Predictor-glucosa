@@ -3,4 +3,50 @@
 \capitulo{8}{Líneas de trabajo futuras}
 ```
 
-Este capítulo debería ser informe crítico indicando cómo se puede mejorar el proyecto, o cómo se puede continuar trabajando en la línea del proyecto realizado.
+La principal extensión natural del trabajo es la validación de los
+modelos sobre datos reales de pacientes con DM1 en régimen MDI. Los
+resultados obtenidos sobre datos simulados constituyen una prueba de
+concepto metodológica, pero su extrapolación clínica requiere
+necesariamente su contraste con series glucémicas reales, donde la
+variabilidad, el ruido y la imprevisibilidad propias del entorno
+clínico plantean un problema de predicción sustancialmente más exigente.
+El dataset OhioT1DM [@Ohio] representa el estándar de referencia para esta
+validación, y su acceso debería contemplarse como primer paso en
+trabajos futuros.
+
+La personalización de hiperparámetros por paciente es otra extensión
+relevante, especialmente para XGBoost, cuyo rendimiento mostró una
+dependencia significativa del perfil glucémico individual. Una
+estrategia de optimización individualizada, o alternativamente el uso
+del TIR como criterio de selección del modelo más adecuado para cada
+paciente, podría mejorar la equidad predictiva de la solución sobre
+cohortes heterogéneas.
+
+La comparativa de eficiencia computacional entre modelos merece
+atención en futuros trabajos. De forma empírica se observó que ARIMAX
+requería tiempos de optimización y entrenamiento superiores a XGBoost,
+si bien las condiciones de ejecución no fueron homogéneas a lo largo
+del desarrollo —con variabilidad en los recursos disponibles del
+equipo entre ejecuciones— lo que impidió obtener mediciones fiables y
+comparables. Una evaluación formal de los tiempos de cómputo bajo
+condiciones controladas aportaría información relevante para la
+selección del modelo en entornos con recursos limitados.
+
+La ampliación del diseño experimental es otra dirección de interés.
+El número de escenarios evaluados estuvo condicionado por la capacidad
+de cómputo disponible; futuros trabajos podrían explorar niveles
+adicionales de variabilidad en los factores estudiados, incorporar
+nuevas variables como el estrés o la variabilidad en los horarios de
+ingesta, o extender el análisis a horizontes de predicción más largos.
+En este marco, la inclusión de modelos adicionales como Prophet [@taylor2018] —
+descartado en este trabajo por restricciones de tiempo— o arquitecturas
+de aprendizaje profundo como LSTM [@hochreiter1997] permitiría una comparativa más
+completa con el estado del arte.
+
+Finalmente, el análisis de significación estadística de la contribución
+de cada variable exógena al rendimiento de los modelos, previsto
+inicialmente como objetivo del trabajo, constituye una extensión
+directa que permitiría determinar qué variables aportan valor
+predictivo real y cuáles son prescindibles, con implicaciones tanto
+para la simplificación del modelo como para el diseño de futuros
+sistemas de soporte a la decisión clínica en pacientes MDI.
