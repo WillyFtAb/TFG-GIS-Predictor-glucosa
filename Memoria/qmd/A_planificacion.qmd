@@ -3,30 +3,330 @@
 %%  APÉNDICE A – Plan de Proyecto
 %% ══════════════════════════════════════════════════════
 \apendice{Plan de Proyecto}
-
-\section{Introducción}
-
-En este apartado se describe de forma breve el propósito general del proyecto, su contexto y el alcance del trabajo realizado, indicando qué problema se aborda y qué se pretende conseguir con el TFG.
-
-
-\section{Metodología de ingeniería del software}
-Si procede.
-Se debe describir la metodología seguida durante el desarrollo del proyecto. En caso de existir desarrollo software, se indicará la metodología utilizada (por ejemplo, cascada, ágil o experimental)
-En cada apartado de los apéndices (A hasta el G) se deberá indicar que tarea o fase de la metodología utilizada se está realizando, o bien en este nuevo apéndice deberá quedar reflejado con detalle las tareas y fases que se han ido realizando.
-Si el TFG no contiene  todo el ciclo de vida de la metodología utilizada, deberá indicarse las fases y tareas que han quedado pendientes.
-Si el TFG no está centrado el desarrollo software, pero puede servir para un posterior desarrollo software, se deberá indicar qué metodología de desarrollo se recomienda y argumentar los motivos.
-
-
-\section{Planificación temporal}
-
-Se presentará la planificación temporal del proyecto, preferiblemente mediante un cronograma o diagrama de Gantt, donde se reflejen las principales tareas, fases y su duración aproximada.
-
-\subsection{Planificación económica}
-
-\subsection{Viabilidad legal}
-
-Si corresponde, incluir aquí el documento de aprovación por parte de la Comisión de Bioética.
-
-Ojo \footnote{Los anexos deben de tener su propia bibliografía, eso es tan fácil como utilizar referencias igual que en la memoria \cite{bortolot2005}}
 ```
 
+### Introducción
+
+Este trabajo aborda el estudio comparativo de modelos predictivos de
+glucemia en pacientes con DM1 en régimen MDI. El alcance definitivo
+no estuvo definido desde el inicio: los primeros meses se dedicaron
+a explorar la viabilidad de acceder a datos reales de pacientes, lo
+que condicionó el arranque formal del proyecto.
+
+A partir de octubre de 2025 se inició el contacto con la especialidad
+de endocrinología del Hospital Universitario de Burgos (HUBU) para identificar una
+cotutora clínica, valorar el tema y explorar el acceso a datos de
+pacientes reales. La reunión con el servicio hospitalario no pudo
+celebrarse hasta enero de 2026, momento en el que se constató que el
+acceso a datos reales presentaba barreras significativas: el proceso
+requería el consentimiento individualizado de cada paciente, los
+tiempos de respuesta dependían de las consultas clínicas y pocos
+pacientes disponían de registros completos de todas las variables de
+interés. Se exploró también la vía de la asociación local de diabetes (Asociación de Diabéticos de Burgos),
+con el mismo resultado. Paralelamente, desde enero de 2026 se inició
+la búsqueda de simuladores y datasets públicos como alternativa.
+
+Una vez definida y aprobada la línea de trabajo, la planificación se
+formalizó mediante milestones e issues en [GitHub](https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git)\footnote{url repositorio: https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git} [@github_platform], plataforma de
+gestión utilizada durante todo el desarrollo. No obstante, el trabajo
+previo de búsqueda de información, contacto con el hospital y
+exploración de alternativas no quedó reflejado en GitHub [@github_platform] al no
+haberse formalizado aún el proyecto.
+
+### Metodología de ingeniería del software
+
+El trabajo siguió una metodología experimental iterativa, centrada
+en el análisis de datos y la evaluación de modelos más que en el
+desarrollo de un sistema software completo. Las fases se organizaron
+de forma secuencial pero con retroalimentación entre ellas: los
+resultados del preprocesamiento condicionaron decisiones de diseño
+experimental, y los resultados de la evaluación determinaron el
+alcance final de los modelos desarrollados.
+
+La gestión de tareas se realizó mediante issues agrupadas en
+milestones en GitHub, lo que permitió un seguimiento incremental del
+progreso. Dado que el trabajo no incluye el desarrollo de un sistema
+software desplegable, no se aplicó ninguna metodología ágil formal.
+
+Las fases previstas inicialmente que no pudieron completarse fueron:
+la validación con un segundo simulador o con datos reales, el análisis de significación
+de variables exógenas y la implementación de Prophet [@prophet] como modelo
+adicional. Estas quedan identificadas como líneas futuras en el
+Capítulo 8 de la memoria.
+
+De cara a un desarrollo software futuro basado en este trabajo —por
+ejemplo, un sistema de soporte a la decisión clínica para pacientes
+MDI— se recomienda una metodología ágil con sprints cortos (Scrum),
+dado que el dominio clínico requiere validación iterativa con
+especialistas y los requisitos pueden evolucionar con los resultados
+experimentales.
+
+### Planificación temporal
+
+La planificación formal del proyecto se inició en marzo de 2026,
+una vez definida y aprobada la línea de trabajo. Se organizó en cinco
+milestones principales más un milestone de seguimiento para reuniones
+y tareas transversales. La @tbl-milestones resume los hitos y la
+@fig-gantt muestra su distribución temporal. A continuación se
+detallan las tareas asociadas a cada milestone.
+
+**Fase previa (oct. 2025 – ene. 2026):** contacto con el servicio de
+endocrinología del hospital, búsqueda de cotutora clínica, exploración
+de acceso a datos reales y búsqueda de simuladores y datasets públicos.
+Esta fase no está reflejada en GitHub al ser anterior a la
+formalización del proyecto.
+
+**M1 — Obtención y validación de datos** (ene. – mar. 2026):
+configuración del entorno y simuladores, diseño experimental,
+generación de datasets virtuales y validación clínica de los datos
+generados con la cotutora especialista.
+
+**M2 — Preprocesamiento de los datos** (feb. – mar. 2026):
+implementación de un parser multiformato para la lectura de los
+archivos del simulador, resampling y ajuste temporal de las series
+a 5 minutos, y exploración de funciones de estandarización y
+normalización.
+
+**M3 — Desarrollo y entrenamiento del predictor** (mar. – abr. 2026):
+implementación de XGBoost, implementación de ARIMAX, implementación
+y descarte de Prophet por incompatibilidad con el entorno, y ajuste
+de hiperparámetros mediante búsqueda bayesiana y grid search.
+
+**M4 — Validación clínica y métricas de error** (abr. – may. 2026):
+diseño de la estrategia de evaluación, implementación del backtesting
+y visualización de resultados mediante métricas de error y Clarke
+Error Grid.
+
+**M5 — Escritura de memoria** (may. – jun. 2026): redacción de todos
+los capítulos de la memoria, elaboración de anexos y revisión final
+para la entrega.
+
+**Seguimiento:** reuniones periódicas con tutores a lo largo de todo
+el desarrollo, envío del compromiso alumno-tutor y redacción de la
+propuesta de TFG.
+
+```{r}
+#| label: tbl-milestones
+#| echo: false
+#| tbl-cap: "Milestones del proyecto y fechas de entrega."
+
+milestones <- data.frame(
+  Milestone = c(
+    "Fase previa",
+    "M1: Obtención y validación de datos",
+    "M2: Preprocesamiento de datos",
+    "M3: Desarrollo y entrenamiento de modelos",
+    "M4: Validación clínica y métricas de error",
+    "M5: Escritura de memoria y entrega final"
+  ),
+  Inicio = c(
+    "Oct 2025", "Ene 2026", "Feb 2026",
+    "Mar 2026", "Abr 2026", "May 2026"
+  ),
+  Fin = c(
+    "Ene 2026", "Mar 2026", "Mar 2026",
+    "Abr 2026", "May 2026", "Jun 2026"
+  )
+)
+
+knitr::kable(
+  milestones,
+  col.names = c("Hito", "Inicio", "Fin previsto"),
+  align = c("l", "c", "c"),
+  booktabs = TRUE
+)
+```
+
+```{r}
+#| label: fig-gantt
+#| echo: false
+#| fig-cap: "Diagrama de Gantt del proyecto."
+#| fig-width: 10
+#| fig-height: 5
+
+library(ggplot2)
+
+tareas <- data.frame(
+  tarea = factor(c(
+    "M5: Memoria",
+    "M4: Validación clínica",
+    "M3: Modelos",
+    "M2: Preprocesamiento",
+    "M1: Datos",
+    "Fase previa"
+  ), levels = c(
+    "Fase previa",
+    "M1: Datos",
+    "M2: Preprocesamiento",
+    "M3: Modelos",
+    "M4: Validación clínica",
+    "M5: Memoria"
+  )),
+  inicio = as.Date(c(
+    "2026-05-01", "2026-04-01", "2026-03-01",
+    "2026-02-01", "2026-01-01", "2025-10-01"
+  )),
+  fin = as.Date(c(
+    "2026-06-07", "2026-05-28", "2026-03-31",
+    "2026-03-26", "2026-03-26", "2026-01-31"
+  ))
+)
+
+ggplot(tareas, aes(x = inicio, xend = fin,
+                   y = tarea, yend = tarea)) +
+  geom_segment(linewidth = 8, color = "#2c7bb6") +
+  geom_vline(xintercept = as.numeric(as.Date("2026-01-01")),
+             linetype = "dashed", color = "gray50",
+             linewidth = 0.5) +
+  scale_x_date(date_breaks = "1 month",
+               date_labels = "%b %Y",
+               limits = c(as.Date("2025-09-15"),
+                          as.Date("2026-06-30"))) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.y = element_line(color = "gray90"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+
+### Planificación económica
+
+La estimación económica del proyecto contempla los costes directos
+asociados al trabajo del alumno, la supervisión tutorial y el uso de
+equipamiento hardware. No se han incurrido costes de licencias de
+software, dado que todas las herramientas utilizadas —Python [@python2025], R [@r2025],
+Quarto [@quarto_software], GitHub[@github_platform] y Google Colab [@googlecolab] 
+en su modalidad gratuita— son de acceso libre.
+
+#### Costes de personal
+
+El coste del trabajo del alumno se estima a partir de las 360 horas
+previstas, aplicando el Salario Mínimo Interprofesional (SMI) vigente
+en 2026, fijado en 17.094 € brutos anuales por el Real Decreto
+126/2026, lo que equivale a 7,10 €/hora para una jornada de 1.694
+horas anuales [@rd126_2026]. El coste de supervisión de los tutores
+se estima a partir de 20 horas totales de tutoría, aplicando una
+tarifa orientativa de técnico senior:
+
+| Concepto | Horas | Coste/hora (€) | Total (€) |
+|----------|------:|---------------:|----------:|
+| Trabajo del alumno | 360 | 7,10 | 2.556,00 |
+| Supervisión tutores | 20 | 50,00 | 1000,00 |
+| **Total personal** | | | **3.556,00** |
+
+#### Costes de hardware
+
+El desarrollo se realizó sobre hardware personal del alumno. 
+La amortización de cada equipo durante el periodo de uso del proyecto
+se calcula según la expresión recogida en la figura
+\ref{fig-amortizacion}.
+
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\[
+\text{Amortización del periodo} = \frac{\text{Precio de compra}}{\text{Vida útil en años}} \times \frac{\text{Meses de uso}}{12}
+\]
+\caption{Fórmula para el cálculo de la amortización durante un periodo determinado.}
+\label{fig-amortizacion}
+\end{figure}
+```
+
+| Concepto | Coste (€) | Vida útil (años) | Meses de uso | Amortización (€) |
+|----------|----------:|-----------------:|-------------:|-----------------:|
+| Ordenador personal principal | [COMPLETAR] | 5 | 6 | [COMPLETAR] |
+| Ordenador personal secundario | [COMPLETAR] | 6 | 2 | [COMPLETAR] |
+| **Total hardware** | | | | **[COMPLETAR]** |
+
+
+
+#### Consideraciones sobre el uso de hardware personal
+
+El uso de ordenadores personales para el desarrollo del proyecto
+implica un coste temporal significativo derivado del tiempo de
+cómputo requerido por el backtesting y la optimización de
+hiperparámetros. Se estima un mínimo de 300 horas de uso intensivo,
+incluyendo pruebas y reinicios por fallos. Quien desee replicar el
+estudio debe contemplar este coste temporal como un factor limitante,
+especialmente si no se dispone de acceso a infraestructura de cómputo
+de alto rendimiento.
+
+#### Costes de infraestructura cloud (referencia)
+
+Aunque no se ha incurrido en coste alguno por uso de Google Colab [@googlecolab],
+se incluye como referencia el coste que habría supuesto el uso de
+la modalidad Colab Pro+ durante el periodo de desarrollo intensivo
+de modelos (aproximadamente 3 meses), a un precio de 49,99 $/mes
+[@googlecolab]:
+
+| Concepto | Coste mensual | Meses | Total |
+|----------|-------------:|------:|------:|
+| Google Colab Pro+ | 49,99 $ | 3 | 149,97 $ |
+
+#### Resumen económico
+
+| Concepto | Total (€) |
+|----------|----------:|
+| Personal | 3.156,00 |
+| Hardware (amortización) | [COMPLETAR] |
+| Software y licencias | 0,00 |
+| Cloud (referencia, no incurrido) | ~138,00 |
+| **Total del proyecto** | **[COMPLETAR]** |
+
+
+### Viabilidad legal
+
+El presente trabajo no ha requerido la aprobación de la Comisión de
+Bioética ni de ningún comité ético de investigación, dado que no
+involucra datos de pacientes reales. Todos los datos utilizados han
+sido generados mediante el simulador py-mgipsim [@siket_py-mgipsim_2025],
+que implementa el modelo UVA/Padova [@man2014] sobre una cohorte de pacientes
+virtuales. Al tratarse exclusivamente de datos sintéticos, el trabajo
+queda fuera del ámbito de aplicación de la normativa de protección de
+datos de carácter personal.
+
+#### Reglamento General de Protección de Datos (RGPD)
+
+El Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo,
+de 27 de abril de 2016, relativo a la protección de las personas
+físicas en lo que respecta al tratamiento de datos personales y a la
+libre circulación de estos datos [@rgpd2016], establece el marco
+normativo europeo en materia de privacidad. Su ámbito de aplicación
+material comprende el tratamiento total o parcialmente automatizado
+de datos personales, así como el tratamiento no automatizado de datos
+personales contenidos o destinados a ser incluidos en un fichero. 
+Los datos de salud se clasifican como categoría especial de datos,
+cuyo tratamiento está prohibido con carácter general, salvo en
+supuestos tasados como el consentimiento explícito del interesado,
+la protección de intereses vitales o el interés público en el ámbito
+de la salud pública.  Dado que el presente trabajo no trata datos
+personales de ningún paciente real, el RGPD no resulta de aplicación.
+
+#### Ley Orgánica 3/2018 de Protección de Datos Personales
+
+La Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos
+Personales y garantía de los derechos digitales (LOPDGDD)
+[@lopdgdd2018] adapta el RGPD al ordenamiento jurídico español y
+establece garantías adicionales para el tratamiento de datos
+sensibles. En materia de investigación sanitaria, la disposición
+adicional decimoséptima de la LOPDGDD introduce previsiones
+encaminadas a garantizar el adecuado desarrollo de la investigación
+en materia de salud, ponderando los beneficios que esta aporta a la
+sociedad con las debidas garantías del derecho fundamental a la
+protección de datos.  Al no existir tratamiento de datos de
+pacientes reales en este trabajo, tampoco resulta de aplicación
+esta norma.
+
+#### Licencias de software
+
+Las herramientas de software utilizadas son de código abierto o de
+uso libre, sin restricciones de licencia que limiten su uso académico.
+El simulador py-mgipsim [@siket_py-mgipsim_2025] se distribuye bajo licencia MIT [@mit_license], 
+que permite su uso, modificación y distribución sin restricciones. Las librerías
+de Python [@python2025] y R [@r2025] empleadas se distribuyen bajo licencias BSD [@bsd_license], Apache 2.0 [@apache_license]
+o GPL [@gpl_license], todas compatibles con el uso académico y la reproducibilidad
+del estudio.
