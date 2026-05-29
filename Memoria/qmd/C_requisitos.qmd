@@ -4,46 +4,152 @@
 %% ══════════════════════════════════════════════════════
 
 \apendice{Especificación de Requisitos}
+```
 
-Si procede.
+### Diagrama de casos de uso
+
+El trabajo no desarrolla un sistema software con interfaz de usuario
+final, por lo que el diagrama de casos de uso (\ref{fig:diag_cu}) se limita a las
+interacciones del investigador/alumno con las herramientas utilizadas durante
+el desarrollo. Se identifican tres casos de uso principales:
+
+- **CU-1:** Ejecutar simulación de pacientes virtuales.
+- **CU-2:** Visualizar series temporales de glucemia generadas.
+- **CU-3:** Exploración interactiva de datos por selección
+  de paciente y escenario.
+  
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/diagrama.png}
+    \caption{Diagrama de casos de uso del sistema.}
+    \label{fig:diag_cu}
+\end{figure}
 
 
-\section{Diagrama de casos de uso}
-Se presentará un diagrama de casos de uso que represente las funcionalidades principales del sistema y los actores que interactúan con él.
 
-\section{Explicación casos de uso.}
 
-Se puede describir mediante el uso de tablas o mediante lenguaje natural.    
 
-Una muestra de cómo podría ser una tabla de casos de uso:
+### Casos de uso
 
-% Caso de Uso 1 -> Consultar Experimentos.
-\begin{table}[p]
+
+```{=latex}
+\begin{table}[H]
 	\centering
 	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
 		\toprule
-		\textbf{CU-1}    & \textbf{Ejemplo de caso de uso}\\
+		\textbf{CU-1}    & \textbf{Ejecutar simulación de pacientes virtuales}\\
 		\toprule
 		\textbf{Versión}              & 1.0    \\
 		\textbf{Autor}                & Alumno \\
-		\textbf{Requisitos asociados} & RF-xx, RF-xx \\
-		\textbf{Descripción}          & La descripción del CU \\
-		\textbf{Precondición}         & Precondiciones (podría haber más de una) \\
-		\textbf{Acciones}             &
+		\textbf{Descripción}          & El investigador ejecuta el simulador py-mgipsim para generar series temporales de glucemia bajo un escenario experimental definido. \\
+		\textbf{Precondición}         & Python 3.12 instalado y dependencias del simulador instaladas mediante \textit{pip install -r requirements.txt} \\
+		\textbf{Acciones}             & El investigador selecciona la modalidad de ejecución (GUI o CLI). 
 		\begin{enumerate}
 			\def\labelenumi{\arabic{enumi}.}
 			\tightlist
-			\item Pasos del CU
-			\item Pasos del CU (añadir tantos como sean necesarios)
+			\item[] - \textbf{Modalidad GUI:} ejecutar \texttt{streamlit run interface\_gui.py} en terminal, configurar los parámetros del escenario mediante la interfaz web y lanzar la simulación. 
+			\item[] - \textbf{Modalidad CLI interactiva:} ejecutar \texttt{interface\_cmd.py}, cargar un escenario predefinido con \texttt{load -sn <nombre\_escenario>} y ejecutar \texttt{simulate}. 
+			\item[] \textbf{Modalidad CLI comando único:} ejecutar \texttt{interface\_cli.py [OPTIONS]} con los parámetros definidos en línea de comandos.
 		\end{enumerate}\\
-		\textbf{Postcondición}        & Postcondiciones (podría haber más de una) \\
-		\textbf{Excepciones}          & Excepciones \\
-		\textbf{Importancia}          & Alta o Media o Baja... \\
+		\textbf{Postcondición}        &  Los resultados se almacenan en \texttt{./SimulationResults/<carpeta\-con\-datetime>/}.  \\
+		\textbf{Excepciones}          & Versión de Python incompatible; dependencias no instaladas. \\
+		\textbf{Importancia}          & Alta \\
 		\bottomrule
 	\end{tabularx}
-	\caption{CU-1 Nombre del caso de uso.}
+	\caption{CU-1 Ejecutar simulación de pacientes virtuales}
+	\label{tbl-cu1}
 \end{table}
 
-\section{Prototipos de interfaz o interacción con el proyecto.}
-Se incluirán bocetos, prototipos o capturas de pantalla que muestren la interacción del usuario con el sistema desarrollado.
 ```
+
+
+
+
+```{=latex}
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{CU-1}    & \textbf{Ejecutar simulación de pacientes virtuales}\\
+		\toprule
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & Alumno \\
+		\textbf{Descripción}          & El investigador ejecuta una función de visualización sobre los datos generados por el simulador para inspeccionar la serie glucémica de los paciente en un escenario determinado. \\
+		\textbf{Precondición}         & Datos del simulador disponibles; entorno Python con matplotlib activo. \\
+		\textbf{Acciones}             & 
+		\begin{enumerate}
+			\def\labelenumi{\arabic{enumi}.}
+			\tightlist
+			\item El investigador abre el notebook de visualización. 
+			\item Especifica el número de escenario y el identificador de paciente.
+			\item Ejecuta la función de visualización.
+			\item Se generan las gráfica con la serie temporal de glucemia de los paciente.
+		\end{enumerate}\\
+		\textbf{Postcondición}        & La gráfica se muestra en pantalla y puede exportarse como imagen  \\
+		\textbf{Excepciones}          & Fichero de datos no encontrado \\
+		\textbf{Importancia}          & Media \\
+		\bottomrule
+	\end{tabularx}
+	\caption{CU-2 Visualizar series temporales de glucemia}
+	\label{tbl-cu2}
+\end{table}
+
+```
+
+
+```{=latex}
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{CU-1}    & \textbf{Exploración interactiva de datos por selección de paciente y escenario}\\
+		\toprule
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & Alumno \\
+		\textbf{Descripción}          & El alumno selecciona por teclado el escenario y el paciente de interés para obtener una visualización directa de la serie glucémica, sin necesidad de modificar el notebook. \\
+		\textbf{Precondición}         & Datos del simulador disponibles; entorno Python con matplotlib activo. \\
+		\textbf{Acciones}             & 
+		\begin{enumerate}
+			\def\labelenumi{\arabic{enumi}.}
+			\tightlist
+			\item El investigador ejecuta la función interactiva. 
+			\item El sistema solicita por teclado el número de escenario (1–6) y el identificador de paciente (0–19).
+			\item El sistema valida la entrada.
+			\item Se genera y muestra la gráfica correspondiente.
+		\end{enumerate}\\
+		\textbf{Postcondición}        & La gráfica se muestra en pantalla.  \\
+		\textbf{Excepciones}          & Entrada no válida; datos del escenario no disponibles. \\
+		\textbf{Importancia}          & Baja \\
+		\bottomrule
+	\end{tabularx}
+	\caption{CU-3 Exploración interactiva de datos por selección de paciente y escenario}
+	\label{tbl-cu3}
+\end{table}
+
+```
+
+### Prototipos de interfaz
+
+Las siguientes capturas muestran las dos modalidades de interacción
+con el simulador py-mgipsim [@siket_py-mgipsim_2025] disponibles para el investigador.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/sim_gui.png}
+    \caption{Interfaz gráfica del simulador py-mgipsim}
+    \label{fig:sim_gui}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/sim_cmd.png}
+    \caption{Línea de comandos del simulador py-mgipsim}
+    \label{fig:sim_gui}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/serie_vis.png}
+    \caption{Visualización de serie glucémica}
+    \label{fig:vis_serie}
+\end{figure}
