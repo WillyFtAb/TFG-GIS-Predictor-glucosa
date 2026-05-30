@@ -14,3 +14,125 @@ Se describirá el proceso de instalación y ejecución del sistema de forma clar
 \section{Manuales y/o Demostraciones prácticas}
 Se incluirán instrucciones de uso del sistema y ejemplos prácticos que faciliten su comprensión por parte del usuario final.
 ```
+
+
+### Requisitos software y hardware
+
+#### Requisitos software
+
+| Software | Versión | Descripción |
+|----------|---------|-------------|
+| Python | 3.12.0 | Lenguaje de programación principal |
+| R | 4.x | Entorno para la compilación del documento |
+| Quarto | 1.x | Sistema de publicación del documento |
+| conda | 23.x o superior | Gestor de entornos y dependencias |
+| Git | Reciente | Control de versiones |
+| py-mgipsim | Última versión (descargada en 2026) | Simulador de pacientes virtuales |
+
+: Requisitos software del proyecto. {#tbl-requisitos-software}
+
+
+Las dependencias de Python del proyecto se recogen en el fichero
+`environment.yml` del repositorio, que permite reproducir el entorno
+de forma completa. Las versiones exactas de cada librería se
+especifican en dicho fichero.
+
+#### Requisitos hardware
+
+El proyecto no presenta requisitos estrictos de almacenamiento: los
+datos generados por el simulador ocupan menos de 10 GB en disco,
+una cantidad asumible para el estándar de almacenamiento actual.
+
+El factor limitante es la capacidad de procesamiento y la memoria RAM
+disponibles. El backtesting con refit sobre 120 series temporales
+requiere tiempos de cómputo elevados; equipos con procesadores poco
+potentes o RAM insuficiente pueden hacer inviable la ejecución en
+tiempos razonables. El trabajo se ha desarrollado sobre un equipo con
+las siguientes especificaciones, que se proponen como referencia
+orientativa en la @tbl-requisitos-hardware:
+
+| Componente | Especificación |
+|------------|---------------|
+| Procesador | AMD Ryzen 7 5700U (1,80 GHz, 8 núcleos) |
+| RAM | 16,0 GB (15,4 GB usable) |
+| Tarjeta gráfica | AMD Radeon Graphics (496 MB) |
+| Sistema operativo | Windows 11 |
+
+: Especificaciones hardware del equipo de desarrollo utilizado como
+referencia. {#tbl-requisitos-hardware}
+
+### D.2. Instalación y puesta en marcha
+
+Los pasos siguientes describen el proceso completo para reproducir
+el entorno y ejecutar el pipeline de análisis. Los pasos 3 y 4
+(instalación y uso del simulador) son opcionales si se desea trabajar
+directamente con los datos ya generados incluidos en el repositorio.
+
+**Paso 1 — Clonar el repositorio**
+
+```bash
+git clone https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git
+cd TFG-GIS-Predictor-glucosa
+```
+
+**Paso 2 — Crear el entorno conda e instalar dependencias**
+
+```bash
+conda env create -f environment.yml
+conda activate tfg-glucosa
+```
+
+**Paso 3 — Instalar el simulador py-mgipsim (opcional)**
+
+```bash
+git clone https://github.com/illinoistech-itm/py-mgipsim.git
+cd py-mgipsim
+pip install -r requirements.txt
+```
+
+**Paso 4 — Generar nuevos datos con el simulador (opcional)**
+
+Una vez instalado el simulador, los datos pueden generarse mediante
+la interfaz gráfica o la interfaz de línea de comandos, tal como
+se describe en el Anexo C (CU-1). Los ficheros de resultados deben
+colocarse en la carpeta `data/` del repositorio para que el pipeline
+los localice correctamente.
+
+**Paso 5 — Visualizar los datos generados**
+
+Abrir y ejecutar el notebook de visualización:
+
+```bash
+jupyter notebook notebooks/visualizacion_datos.ipynb
+```
+
+**Paso 6 — Ejecutar el pipeline de análisis**
+
+Abrir y ejecutar el notebook principal con las celdas en orden:
+
+```bash
+jupyter notebook notebooks/pipeline_prediccion.ipynb
+```
+
+#### Uso del notebook de visualización
+
+El notebook de visualización permite inspeccionar las series
+temporales de glucemia generadas por el simulador. El usuario debe
+especificar en la celda de parámetros el número de escenario (1–6)
+y el identificador de paciente (0–19) para obtener la gráfica
+correspondiente. Las gráficas pueden exportarse como imagen desde
+la propia interfaz de Jupyter.
+
+#### Uso del notebook de pipeline
+
+El notebook de pipeline está organizado en secciones secuenciales
+que corresponden a las fases del análisis: preprocesamiento,
+ingeniería de características, optimización de hiperparámetros,
+backtesting y evaluación. Las celdas deben ejecutarse en orden.
+Los resultados se almacenan automáticamente en la carpeta
+`resultados/` del repositorio.
+
+Los parámetros configurables por el usuario se encuentran en la
+celda de configuración al inicio del notebook, e incluyen la
+selección de escenarios a evaluar, los horizontes de predicción
+y las rutas de entrada y salida de datos.
