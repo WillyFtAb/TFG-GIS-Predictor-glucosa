@@ -22,3 +22,88 @@ Se describirán las pruebas realizadas para validar el correcto funcionamiento d
 
 Se proporcionarán indicaciones y recomendaciones para facilitar futuras ampliaciones o mejoras del trabajo realizado.
 ```
+
+
+### Estructura de directorios
+
+[COMPLETAR cuando la estructura del repositorio esté definida]
+
+### Compilación, instalación y ejecución del proyecto
+
+El proceso de instalación y ejecución del entorno se describe en
+detalle en el Anexo D (apartado D.2). Desde el punto de vista del
+desarrollador, se señalan los siguientes aspectos técnicos
+adicionales:
+
+El entorno de desarrollo se gestiona mediante conda. El fichero
+`environment.yml` del repositorio recoge todas las dependencias con
+sus versiones exactas, garantizando la reproducibilidad del entorno.
+Para activar el entorno:
+
+```bash
+conda env create -f environment.yml
+conda activate tfg-glucosa
+```
+
+Las funciones de preprocesamiento, ingeniería de características y
+evaluación están implementadas en el módulo `[COMPLETAR].py`,
+importado por los notebooks principales. Cualquier modificación
+sobre estas funciones se propagará automáticamente a todos los
+notebooks que las utilicen, sin necesidad de duplicar código.
+
+### Pruebas del sistema
+
+El proyecto no incorpora un sistema formal de pruebas unitarias.
+La validación del correcto funcionamiento de las funciones de
+preprocesamiento, ingeniería de características y backtesting se
+realizó de forma manual durante el desarrollo, mediante la
+visualización de las series temporales de glucemia, la inspección
+de los dataframes intermedios y la comprobación de coherencia con
+los ficheros de origen (CSV y JSON) generados por el simulador.
+
+El notebook de visualización (véase Anexo D, apartado D.3) constituye
+la herramienta principal para verificar visualmente que los datos
+preprocesados son correctos antes de ejecutar el pipeline de análisis.
+Las celdas de prueba con datos sintéticos utilizadas durante el
+desarrollo han sido eliminadas del pipeline final, que contiene
+únicamente el flujo de trabajo definitivo.
+
+### Instrucciones para la modificación o mejora del proyecto
+
+El diagrama de la @fig-pipeline ilustra el flujo completo del
+pipeline de análisis, desde la generación de datos hasta la
+evaluación de resultados.
+
+![Diagrama del pipeline de análisis del
+proyecto.](img/diagrama_pipeline.png){#fig-pipeline}
+
+Las principales extensiones y modificaciones que pueden realizarse
+sobre el proyecto son las siguientes:
+
+**Incorporación de nuevos modelos predictivos:** para añadir un nuevo
+modelo al pipeline, es necesario implementar la función de
+entrenamiento y predicción siguiendo la interfaz de skforecast
+[@skforecast], definir la estrategia de búsqueda de hiperparámetros
+y añadir el modelo al bucle de backtesting. El resto del pipeline
+(preprocesamiento, evaluación y visualización de resultados) es
+reutilizable sin modificaciones.
+
+**Nuevos escenarios experimentales:** la generación de nuevos
+escenarios se realiza directamente desde el simulador py-mgipsim
+[@siket_py-mgipsim_2025], modificando los parámetros de variabilidad
+en la ingesta, ejercicio y error en la dosis. Los nuevos ficheros de
+salida deben colocarse en la carpeta de datos del repositorio
+siguiendo la convención de nomenclatura establecida.
+
+**Validación con datos reales:** la sustitución de los datos
+simulados por datos reales requiere adaptar el parser de lectura
+al formato del dataset utilizado (por ejemplo, OhioT1DM [@Ohio])
+y verificar que las variables exógenas disponibles son compatibles
+con las esperadas por las funciones de ingeniería de características.
+
+**Análisis de explicabilidad:** la integración de SHAP o de la
+extracción sistemática de importancia de características puede
+incorporarse al bucle de backtesting añadiendo una llamada a las
+funciones correspondientes tras cada paso de refit, almacenando
+los valores de importancia junto con las métricas de evaluación.
+
