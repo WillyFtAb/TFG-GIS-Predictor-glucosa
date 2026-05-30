@@ -133,6 +133,8 @@ el desarrollo. Se identifican tres casos de uso principales:
 Las siguientes capturas muestran las dos modalidades de interacción
 con el simulador py-mgipsim [@siket_py-mgipsim_2025] disponibles para el investigador.
 
+
+```{=latex}
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{img/sim_gui.png}
@@ -153,3 +155,4 @@ con el simulador py-mgipsim [@siket_py-mgipsim_2025] disponibles para el investi
     \caption{Visualización de serie glucémica}
     \label{fig:vis_serie}
 \end{figure}
+```
