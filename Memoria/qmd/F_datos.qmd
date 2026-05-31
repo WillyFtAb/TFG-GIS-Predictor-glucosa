@@ -3,16 +3,6 @@
 %%  APÉNDICE F – Descripción de datos
 %% ══════════════════════════════════════════════════════
 \apendice{Descripción de adquisición y tratamiento de datos}
-
-
-\section{Descripción formal de los datos}
-
-Se describirá el tipo de datos utilizados, su formato, origen, volumen y características principales.
-Tablas, imágenes, señales, secuencias de ADN…
-    
-\section{Descripción clínica de los datos.}
-
-Descripción y explicaciones clinicas del significado o interpretación de los datos.
 ```
 
 
@@ -42,19 +32,100 @@ mtcars |>
         col.names = c("Variable", "Media", "SD", "Mín", "Máx"))
 ```
 
-```{r datos-figura}
-#| label: fig-correlacion
-#| fig-cap: "Relación entre peso del vehículo y consumo (mpg) en mtcars"
+### Descripción formal de los datos
 
-library(ggplot2)
+Los datos utilizados en el trabajo son series temporales de variables
+fisiológicas y de control generadas mediante el simulador py-mgipsim
+[@siket_py-mgipsim_2025], que implementa el modelo metabólico
+UVA/Padova [@man2014] sobre una cohorte de 20 pacientes virtuales
+con DM1 en régimen MDI.
 
-ggplot(mtcars, aes(x = wt, y = mpg)) +
-  geom_point(aes(color = factor(cyl)), size = 2.5) +
-  geom_smooth(method = "lm", se = TRUE, color = "grey40") +
-  labs(
-    x     = "Peso (1000 lbs)",
-    y     = "Consumo (mpg)",
-    color = "Cilindros"
-  ) +
-  theme_minimal(base_size = 11)
-```
+Para cada paciente y escenario experimental (E1–E6), el simulador
+genera un fichero CSV con una resolución de muestreo de 1 minuto,
+que contiene 16 variables fisiológicas y de control
+(@tbl-variables-simulador). El conjunto de datos bruto comprende
+120 series temporales independientes (20 pacientes × 6 escenarios),
+cada una con una duración de varios días simulados.
+
+| Variable | Unidades | Descripción |
+|----------|----------|-------------|
+| `S1` | mU/min | Compartimento de absorción de insulina subcutánea (1) |
+| `S2` | S2 | Compartimento de absorción de insulina subcutánea (2) |
+| `I` | I | Concentración de insulina en plasma |
+| `x1` | x1 | Efecto de la insulina sobre la distribución de glucosa |
+| `x2` | x2 | Efecto de la insulina sobre la producción hepática de glucosa |
+| `x3` | x3 | Efecto de la insulina sobre la captación periférica de glucosa |
+| `Q1` | Q1 | Masa de glucosa en el compartimento central |
+| `Q2` | Q2 | Masa de glucosa en el compartimento periférico |
+| `IG` | mmol/L | Glucosa intersticial (variable de interés principal) |
+| `D1Slow` | mmol/min | Absorción intestinal lenta de glucosa (compartimento 1) |
+| `D2Slow` | mmol/min | Absorción intestinal lenta de glucosa (compartimento 2) |
+| `D1Fast` | mmol/min | Absorción intestinal rápida de glucosa (compartimento 1) |
+| `D2Fast` | mmol/min | Absorción intestinal rápida de glucosa (compartimento 2) |
+| `EEfast` | EEfast | Efecto del ejercicio de corta duración sobre la glucosa |
+| `EEhighintensity` | EEhighintensity | Efecto del ejercicio de alta intensidad |
+| `EElongeffect` | EElongeffect | Efecto prolongado del ejercicio sobre la sensibilidad a la insulina |
+
+: Variables fisiológicas de salida del simulador py-mgipsim. {#tbl-variables-simulador}
+
+La documentación oficial del simulador no describe de forma explícita
+el significado de cada variable de salida. Para su comprensión se
+recurrió al análisis del código fuente mediante la herramienta de
+inteligencia artificial de Antigravity [@google_antigravity], que permitió interpretar las
+variables en el contexto del modelo fisiológico subyacente. El
+detalle del uso de esta herramienta se recoge en el Anexo I.
+
+De entre las 16 variables disponibles en el CSV, se seleccionó para
+el análisis la glucosa intersticial (`IG`, convertida de mmol/L a
+mg/dL). Las variables de control —insulina en bolo, insulina basal,
+ingesta de comidas y tentempiés, y ejercicio físico— se obtienen del
+fichero JSON del escenario, que registra todos los eventos de entrada
+al simulador con su marca temporal [@siket_py-mgipsim_2025]. Ambas
+fuentes se integraron en un único dataframe por paciente y escenario
+antes de aplicar el preprocesamiento. Las series resultantes se
+remuestrearon a 5 minutos, resolución habitual de los dispositivos
+MCG comerciales [@rodbard2025], reduciendo el volumen de datos en un
+factor de 5 sin pérdida de información relevante para el horizonte
+de predicción analizado.
+
+### Descripción clínica de los datos
+
+Las variables seleccionadas para el análisis tienen el siguiente
+significado clínico en el contexto de la DM1 en régimen MDI:
+
+**Glucosa intersticial (IG):** es la variable objetivo del estudio.
+Representa la concentración de glucosa en el líquido intersticial,
+medida por los dispositivos MCG. Presenta un retardo fisiológico
+de aproximadamente 5–15 minutos respecto a la glucemia capilar
+[@rodbard2025]. Los valores de referencia clínica son: rango
+normoglucémico 70–180 mg/dL (TIR), hipoglucemia <70 mg/dL (TBR)
+e hiperglucemia >180 mg/dL (TAR).
+
+**Insulina en bolo:** dosis de insulina de acción rápida administrada
+antes de cada ingesta, calculada en función de los hidratos de
+carbono consumidos y la glucemia preprandial mediante la ratio
+insulina/ración (I:R) [@calvo2004diabetes; @gpc_dm1_2026]. Constituye
+la principal perturbación exógena controlable por el paciente y tiene
+un perfil de acción con inicio a los 15–30 minutos y pico a los
+60–90 minutos de su administración.
+
+**Insulina basal:** dosis de insulina de acción prolongada administrada
+generalmente una vez al día, cuyo objetivo es mantener la glucemia
+estable en ausencia de ingesta [@calvo2004diabetes; @gpc_dm1_2026].
+Su perfil de acción se extiende durante 20–24 horas, lo que justifica
+su acumulación sobre las últimas 24 horas en la ingeniería de
+características del modelo.
+
+**Hidratos de carbono (comidas y tentempiés):** cantidad de hidratos
+de carbono ingeridos en cada evento de ingesta, expresada en gramos.
+Constituyen el principal determinante de la excursión glucémica
+postprandial. Los tentempiés generados por el simulador no conllevan
+administración de insulina en bolo, a diferencia de las comidas
+principales [@siket_py-mgipsim_2025].
+
+**Ejercicio físico:** variable binaria o de intensidad que indica
+la presencia y características de la actividad física realizada.
+El ejercicio modifica la sensibilidad a la insulina de forma aguda
+y prolongada, pudiendo inducir tanto hipoglucemia durante o tras su
+práctica como hiperglucemia en ejercicio de alta intensidad
+[@helleputte_effects_2023].
