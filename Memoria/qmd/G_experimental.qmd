@@ -3,16 +3,577 @@
 %%  APÉNDICE G – Resultados experimentales
 %% ══════════════════════════════════════════════════════
 \apendice{Estudio experimental}
-
-
-\section{Cuaderno de trabajo.}
-
-Se enumerarán los experimentos realizados durante el proyecto, incluyendo tanto los resultados satisfactorios como aquellos que no hayan sido exitosos.
-
-\section{Configuración y parametrización de las técnicas.}
-Se detallarán los parámetros utilizados en los experimentos y la justificación de su elección.
-
-\section{Detalle de resultados.}
-Se presentarán los resultados obtenidos mediante tablas, figuras y métricas relevantes.
 ```
+
+
+### Cuaderno de trabajo
+
+#### Diseño experimental inicial y pruebas previas
+
+El diseño experimental inicial contemplaba la creación de distintos
+grupos de pacientes virtuales con perfiles de control glucémico
+diferenciados —buen control y mal control— mediante la modulación
+del error estocástico en las unidades de insulina administradas,
+con el objetivo de estudiar el efecto del perfil del paciente sobre
+el rendimiento predictivo de los modelos.
+
+Para implementar este diseño se modificaron las variables
+`basal_uncertainty` y `bolus_uncertainty` del archivo
+`pymgipsim/Controllers/StochasticOpenLoop/controller.py` del
+simulador:
+
+```python
+self.basal_uncertainty = 0
+self.bolus_uncertainty = 2.0/20.0
+```
+
+Durante las pruebas previas se realizaron múltiples ejecuciones con
+distintos valores de estas variables. Los resultados iniciales no
+reflejaban el comportamiento glucémico esperado en un paciente con
+DM1: las series presentaban periodos prolongados de hipoglucemia
+severa, con valores continuos e iguales que evidenciaban un estado
+fisiológico irreal.
+
+La identificación de las causas de este comportamiento no fue
+inmediata. La escasa documentación oficial del simulador —limitada
+a una descripción funcional de las interfaces de usuario y sin
+referencia al significado de las variables internas ni a los
+parámetros fisiológicos de los pacientes virtuales— dificultó
+significativamente la comprensión del sistema. Para interpretar el
+código fuente y entender el origen de los resultados anómalos fue
+necesario recurrir al análisis mediante herramientas de inteligencia
+artificial, como se detalla en el Anexo I.
+
+Una vez analizado el comportamiento del simulador, se identificaron
+dos limitaciones estructurales que hacían inviable el diseño
+experimental inicial:
+
+- La cohorte del simulador está fijada en 20 pacientes virtuales
+  cuyos parámetros fisiológicos no pueden modificarse directamente
+  sin crear nuevos perfiles desde cero. La creación de nuevos
+  pacientes requeriría definir manualmente todos los parámetros del
+  modelo metabólico subyacente, una tarea que constituye en sí misma
+  un trabajo de investigación independiente y que excede el alcance
+  del presente TFG.
+- El simulador no contempla la ingesta de hidratos de carbono de
+  rescate ante hipoglucemia ni la administración de bolos correctores
+  ante hiperglucemia. La incorporación de estos mecanismos habría
+  implicado modificaciones sustanciales en el código fuente del
+  simulador validado. Esto provoca que, al introducir error
+  estocástico en la insulina, algunos pacientes no sean capaces de
+  estabilizarse dentro del patrón de variables establecido para
+  ellos, generando episodios críticos sostenidos.
+
+Ambas vías fueron descartadas en favor de un diseño experimental
+que aprovechase las capacidades del simulador dentro de sus
+limitaciones documentadas, basado en la variabilidad de las
+condiciones de manejo —variabilidad en la ingesta de HC, presencia
+de ejercicio y error en el cálculo de la ratio insulina/ración—
+manteniendo los parámetros fisiológicos de los 20 pacientes virtuales
+sin modificar, tal como se describe en el Capítulo 4.
+
+[INSERTAR figura con ejemplo de serie glucémica del diseño
+experimental inicial mostrando episodios críticos]
+
+#### Desarrollo e implementación de los modelos
+
+El desarrollo de los modelos se abordó de forma secuencial. En primer
+lugar se implementó XGBoost, dado su carácter no paramétrico y la
+disponibilidad de herramientas de optimización bayesiana en
+skforecast [@skforecast]. A continuación se implementó ARIMAX, cuya
+búsqueda de hiperparámetros mediante `grid_search_stats` resultó
+computacionalmente más costosa que la optimización bayesiana de
+XGBoost. Se valoró la incorporación de Prophet [@taylor2018] como
+tercer modelo —representando una familia distinta de predictores—
+pero fue descartado por incompatibilidades entre las versiones de
+las dependencias del entorno de desarrollo.
+
+La optimización de hiperparámetros de ambos modelos se realizó de
+forma independiente sobre el paciente 1 del escenario E3. La
+elección de este paciente de referencia respondió a dos criterios:
+presentar un perfil glucémico con un tiempo en rango adecuado y una
+variabilidad glucémica ni excesivamente reducida ni elevada; e incluir
+la variable de ejercicio físico, garantizando que el modelo pudiera
+capturar la importancia de dicha variable durante el entrenamiento.
+Se descartó utilizar el mismo paciente en el escenario E6 —que
+incluye tanto ejercicio como error en la dosis— para evitar que el
+modelo se entrenase sobre condiciones perturbadas, prefiriendo
+entrenar sobre el caso ideal y evaluar posteriormente el efecto de
+las perturbaciones de forma controlada.
+
+[INSERTAR figura con serie glucémica del paciente de referencia
+(paciente 1, escenario E3)]
+
+#### Optimización del tiempo de cómputo
+
+Los tiempos iniciales del backtesting superaban la hora por
+ejecución, lo que hacía inviable completar las 240 evaluaciones por
+modelo en un tiempo razonable. Para reducir el tiempo de cómputo
+se adoptaron las siguientes medidas:
+
+- Configuración del parámetro `n_jobs = -1` en skforecast
+  [@skforecast], permitiendo la paralelización del backtesting
+  sobre todos los núcleos del procesador disponibles.
+- Configuración del sistema operativo en modo de alto rendimiento,
+  evitando la limitación de frecuencia del procesador.
+- Uso de un dispositivo de ventilación externa para reducir la
+  temperatura del procesador y evitar el throttling térmico.
+- Conexión continua a la corriente eléctrica y desactivación del
+  modo de suspensión, que en las primeras ejecuciones pausaba el
+  proceso de forma inesperada.
+
+Con estas medidas se consiguió una reducción aproximada del 30–40%
+del tiempo de cómputo. El uso del equipo para otras tareas de forma
+paralela durante las ejecuciones resultó prácticamente inviable.
+
+#### Resultados no exitosos
+
+La integración de SHAP para el análisis de explicabilidad y la
+extracción sistemática de importancia de características durante el
+backtesting no pudieron completarse por incompatibilidades de
+dependencias y restricciones de tiempo y capacidad de cómputo
+respectivamente. Ambas se identifican como líneas futuras en el
+Capítulo 8.
+
+### Configuración y parametrización de las técnicas
+
+#### Parámetros comunes a todos los escenarios
+
+Todos los escenarios comparten los siguientes parámetros de
+simulación:
+
+| Parámetro | Valor | Justificación |
+|-----------|---------|---------------|
+| Días de simulación | 30 | Máximo permitido por el simulador |
+| Semilla aleatoria | 402 | Valor por defecto; garantiza reproducibilidad |
+| Modelo metabólico | T1DM.ExtHovorka | Modelo de referencia del simulador |
+| Tiempo de muestreo | 1 min | Resolución máxima del simulador |
+| Función renal | 1 | Estado por defecto; sin deterioro renal |
+| Rango de peso corporal | 60–80 kg | Valor por defecto; no modificado para evitar efectos no controlados en los resultados |
+| Exportación a Excel | True | Necesario para extraer los datos de glucemia |
+
+: Parámetros comunes a todos los escenarios experimentales. {#tbl-params-comunes}
+
+#### Horarios de ingesta
+
+Los rangos horarios de inicio de cada ingesta, expresados en minutos
+desde el inicio de la simulación, son comunes a todos los escenarios:
+
+| Ingesta | Inicio mínimo (min) | Inicio máximo (min) | Equivalencia horaria |
+|---------|------------------:|------------------:|---------------------|
+| Desayuno | 495 | 525 | 08:15 – 08:45 |
+| Media mañana | 645 | 675 | 10:45 – 11:15 |
+| Comida | 855 | 885 | 14:15 – 14:45 |
+| Merienda | 1035 | 1065 | 17:15 – 17:45 |
+| Cena | 1245 | 1275 | 20:45 – 21:15 |
+
+: Rangos horarios de inicio de cada ingesta, comunes a todos los escenarios. {#tbl-horarios-ingesta}
+
+La duración de cada ingesta no fue modificada respecto a los valores
+por defecto del simulador.
+
+#### Cantidad de hidratos de carbono
+
+Las cantidades de hidratos de carbono se establecieron a partir de
+una dieta de referencia de 2.000 kcal diarias para población adulta,
+valor coherente con las referencias para mujeres adultas españolas
+[@consumer2011]. La Autoridad Europea de Seguridad Alimentaria (EFSA)
+establece que los hidratos de carbono deben aportar entre el 45 y el
+60% de la energía total consumida [@aesan_efsa2010]. Se adoptó el
+límite inferior del rango (45%), que corresponde a 900 kcal y equivale
+a 225 g de HC diarios (a razón de 4 kcal/g). La distribución
+porcentual por ingesta se basó en las recomendaciones del Ministerio
+de Sanidad [@sanidad_estilos_vida]:
+
+| Ingesta | Distribución (%) | HC objetivo (g) | Variabilidad E1,E3,E4,E6 | Variabilidad E2,E5 |
+|---------|----------------:|----------------:|-------------------------:|-------------------:|
+| Desayuno | 20 | 45,0 | ±5% | ±25% |
+| Media mañana | 10 | 22,5 | ±5% | ±25% |
+| Comida | 35 | 78,8 | ±5% | ±25% |
+| Merienda | 10 | 22,5 | ±5% | ±25% |
+| Cena | 25 | 56,2 | ±5% | ±25% |
+| **Total** | **100** | **225,0** | | |
+
+: Cantidades objetivo de hidratos de carbono por ingesta y variabilidad por escenario. {#tbl-hc-escenarios}
+
+Dado que los pacientes virtuales tienen pesos, sexos y niveles de
+actividad física distintos, y que la talla y la edad no están
+disponibles en el simulador, no fue posible calcular un requerimiento
+energético individualizado para cada paciente. La dieta de 2.000
+kcal se adoptó como valor de referencia común para toda la cohorte,
+priorizando la comparabilidad entre escenarios sobre la precisión
+individual.
+
+#### Ejercicio físico
+
+Para los escenarios con ejercicio (E3 y E6), la actividad física
+se configuró como carrera continua diaria de 30 minutos, con inicio
+entre las 16:00 y las 16:30, y una intensidad de 1,7 a 2,5 m/s
+(6,1 a 9,0 km/h).
+
+Según las recomendaciones del Ministerio de Sanidad, la actividad
+física vigorosa —categoría en la que se encuadra correr a esta
+velocidad en población adulta— produce beneficios adicionales para
+la salud cuando se superan los 150 minutos semanales, incluyendo
+fortalecimiento muscular y mayor mejora cardiovascular
+[@sanidad_actividad_fisica]. Con 30 minutos diarios se alcanzan
+210 minutos semanales de actividad vigorosa, dentro del rango
+de máximo beneficio recomendado. Se eligió esta configuración para
+representar el caso de mayor impacto fisiológico del ejercicio sobre
+la glucemia, garantizando que su efecto fuese detectable en el
+rendimiento de los modelos predictivos.
+
+Para los escenarios sin ejercicio (E1, E2, E4 y E5), la duración
+e intensidad de la actividad física se establecieron a 0.
+
+#### Ingeniería de características
+
+La construcción de las variables de entrada de los modelos se basó
+en los tiempos de acción de los distintos tipos de insulina
+disponibles[@mora2022insulinas, @cdcespanol_tipos_2024 ]. La
+figura \ref{fig-tabla-insulinas} recoge las principales insulinas comercializadas
+en España con sus tiempos de inicio, pico máximo y duración de
+acción.
+
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/tabla_insulinas.png}
+\caption{Principales insulinas comercializadas en España (noviembre 2022),
+con tiempos de inicio, pico máximo y duración de acción. Fuente:
+redGDPS \cite{mora2022insulinas}.}
+\label{fig-tabla-insulinas}
+\end{figure}
+```
+
+Para la insulina en bolo (de acción rápida o ultrarrápida), el pico
+de efecto se produce entre 1 y 2 horas tras la administración y la
+duración total es de 2 a 4 horas [@mora2022insulinas, @cdcespanol_tipos_2024 ]. 
+Para los hidratos de carbono, la
+absorción intestinal y el pico glucémico postprandial se producen
+en una ventana similar. Sobre esta base, se estableció la generación
+de variables acumuladas en intervalos de 20 minutos durante las
+últimas 4 horas (240 minutos) para la insulina en bolo, los hidratos
+de carbono y el ejercicio físico, capturando así el perfil temporal
+completo de acción de cada variable sobre la glucemia.
+
+La insulina basal es el único caso especial, se administra
+a las 00:00 de cada día, y tiene un duración entorano a un día completo. Por este motivo, su acumulación
+se estableció sobre las últimas 24 horas.
+
+
+
+#### Rangos de búsqueda de hiperparámetros, valores obtenidos y justificación
+
+**ARIMAX**
+
+La búsqueda de hiperparámetros para ARIMAX se realizó mediante
+`grid_search_stats` de skforecast [@skforecast] sobre un conjunto
+de 30 combinaciones de órdenes (p, d, q) basadas en los valores utilizados en [@prendin_assessment_2022], cubriendo los siguientes
+casos:
+
+- Modelos AR puros (q=0) con y sin diferenciación (d=0 y d=1),
+  para órdenes p=1, 2, 3.
+- Modelos MA puros (p=0) con y sin diferenciación, para órdenes
+  q=1, 2, 3.
+- Modelos ARMA/ARIMA combinados para p=1, 2, 3 y q=1, 2, 3, con
+  d=0 y d=1.
+
+Se descartó la búsqueda de componente estacional dado su alto coste computacional.
+
+El orden óptimo resultante fue (p=2, d=0, q=3), cuyo significado
+es el siguiente:
+
+- **p=2 (orden autorregresivo):** el modelo utiliza los dos valores
+  pasados más recientes de la glucemia para predecir el valor futuro. 
+  Un orden p=2 captura tanto el nivel actual como la velocidad de cambio 
+  de la glucemia, sin incorporar historia más lejana que podría introducir ruido.
+
+- **d=0 (grado de diferenciación):** la serie glucémica no requiere
+  diferenciación para ser estacionaria en el corto plazo. Esto
+  indica que la media y la varianza de la serie no presentan
+  tendencias sistemáticas en la ventana temporal analizada, lo que
+  es esperable en series glucémicas simuladas con patrones regulares
+  y sin derivas prolongadas.
+
+- **q=3 (orden de media móvil):** el modelo incorpora los errores
+  de predicción de los tres pasos anteriores (15 minutos) para
+  corregir la predicción actual. Un orden q=3 mayor que p=2 sugiere
+  que el modelo se apoya más en la corrección de errores pasados que
+  en los valores observados directamente, lo que es coherente con
+  la presencia de perturbaciones exógenas de corta duración
+  —especialmente los picos postprandiales— cuyo efecto residual
+  persiste durante varios pasos temporales y que el componente MA
+  es capaz de absorber.
+
+En conjunto, el orden (2,0,3) refleja un modelo que captura la
+tendencia glucémica reciente mediante la componente AR y suaviza
+las perturbaciones de corta duración mediante la componente MA,
+sin necesidad de diferenciación.
+
+
+**XGBoost**
+
+La búsqueda de hiperparámetros para XGBoost se realizó mediante
+optimización bayesiana con `OneStepAheadFold` [@skforecast]. La
+@tbl-search-space recoge los rangos de búsqueda y la justificación
+de cada hiperparámetro:
+
+| Hiperparámetro | Rango | Tipo | Justificación |
+|------------|------|------|---------------------|
+| `lags` | {3, 6, 12, 24, 36} | Categórico | Equivalen a 15, 30, 60, 120 y 180 min de historia glucémica. Se exploran desde el mínimo equivalente al horizonte de predicción hasta 3 horas de historia |
+| `n_estimators` | [50, 500] | Entero | Número de árboles del ensemble; valores bajos pueden producir underfitting y valores altos overfitting |
+| `max_depth` | [3, 10] | Entero | Profundidad máxima de cada árbol; controla la complejidad del modelo y el riesgo de overfitting |
+| `learning_rate` | [0,01, 0,3] | Real (log) | Tasa de aprendizaje; escala logarítmica para explorar mejor los valores bajos, que producen modelos más robustos |
+| `subsample` | [0,6, 1,0] | Real | Fracción de muestras usadas en cada árbol; valores menores a 1 introducen aleatoriedad y reducen el overfitting |
+| `colsample_bytree` | [0,6, 1,0] | Real | Fracción de características usadas en cada árbol; efecto similar a `subsample` sobre las variables |
+| `min_child_weight` | [1, 20] | Entero | Peso mínimo de las hojas del árbol; valores altos producen modelos más conservadores |
+| `reg_alpha` | [1e-4, 10] | Real (log) | Regularización L1; penaliza la magnitud de los pesos; escala logarítmica para explorar un rango amplio |
+| `reg_lambda` | [1e-4, 10] | Real (log) | Regularización L2; penaliza el cuadrado de los pesos; actúa conjuntamente con `reg_alpha` |
+
+: Espacio de búsqueda de hiperparámetros para XGBoost y justificación de los rangos. {#tbl-search-space}
+
+
+Los valores óptimos obtenidos (recogidos en la @tbl-hiperparametros-xgb)
+muestran un modelo con 301 árboles de profundidad 9, una tasa de
+aprendizaje moderada-baja (0,040) y valores de submuestreo próximos
+a 1 (0,981 y 0,962), lo que indica que el modelo aprovecha casi la
+totalidad de los datos disponibles en cada árbol. Los valores de
+regularización obtenidos son muy bajos (reg_alpha = 0,0043;
+reg_lambda = 0,0012), sugiriendo que las series simuladas no
+requieren una regularización agresiva. La selección de únicamente
+3 lags (equivalentes a 15 minutos de historia glucémica) es
+coherente con la alta regularidad de las series simuladas, en las
+que la glucemia reciente es suficiente para predecir el valor
+futuro con precisión.
+
+
+
+| Hiperparámetro | Valor |
+|----------------|------:|
+| `lags` | [1, 2, 3] |
+| `n_estimators` | 301 |
+| `max_depth` | 9 |
+| `learning_rate` | 0,0400 |
+| `subsample` | 0,9814 |
+| `colsample_bytree` | 0,9618 |
+| `min_child_weight` | 1 |
+| `reg_alpha` | 0,0043 |
+| `reg_lambda` | 0,0012 |
+
+: Hiperparámetros óptimos de XGBoost, comunes a los horizontes de
+15 y 30 minutos. {#tbl-hiperparametros-xgb}
+
+
+### Detalle de resultados
+
+Esta sección recoge las figuras y tablas complementarias a los
+resultados presentados en el Capítulo 5, organizadas por tipo de
+análisis.
+
+#### Distribución de TIR por paciente y escenario
+
+Las figuras \ref{fig-tir-e1} a \ref{fig-tir-e6} muestran la distribución del tiempo en rango (TIR) de
+los pacientes virtuales para cada uno de los seis escenarios
+experimentales. Cabe destacar la presencia de pacientes con TIR
+del 0%, cuyas series glucémicas se encuentran sistemáticamente por
+encima del rango normoglucémico (>180 mg/dL) con perfiles regulares
+pero desplazados hacia la hiperglucemia, lo que refleja una
+característica del simulador y no un perfil clínico real (véase
+apartado 6.4).
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/TIR/rangos_s1.png}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E1 (HC\textsuperscript{$-$} E\textsubscript{0} Er\textsubscript{0}).}
+\label{fig-tir-e1}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/TIR/rangos_s2.png}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E2 (HC\textsuperscript{$+$} E\textsubscript{0} Er\textsubscript{0}).}
+\label{fig-tir-e2}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/TIR/rangos_s3.png}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E3 (HC\textsuperscript{$-$} E\textsuperscript{$+$} Er\textsubscript{0}).}
+\label{fig-tir-e3}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/TIR/rangos_s4.png}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E4 (HC\textsuperscript{$-$} E\textsubscript{0} Er\textsuperscript{$+$}).}
+\label{fig-tir-e4}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/TIR/rangos_s5.png}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E5 (HC\textsuperscript{$+$} E\textsubscript{0} Er\textsuperscript{$+$}).}
+\label{fig-tir-e5}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/TIR/rangos_s6.png}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E6 (HC\textsuperscript{$-$} E\textsuperscript{$+$} Er\textsuperscript{$+$}).}
+\label{fig-tir-e6}
+\end{figure}
+```
+
+#### Distribución detallada del error por paciente
+
+Los boxplots de las figuras \ref{fig-boxplot-mae} y \ref{fig-boxplot-rmse}
+muestran la distribución completa del MAE y el RMSE sobre los 20
+pacientes virtuales para cada escenario y horizonte de predicción,
+incluyendo las observaciones individuales. Estas figuras complementan
+las gráficas de barras del Capítulo 5 al mostrar la dispersión
+interpaciente y la presencia de valores atípicos.
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/grafica3_boxplot_mae.png}
+\caption{Distribución del Error Absoluto Medio (MAE) por escenario.\protect\\ Izda: horizonte 15 minutos. Dcha: horizonte 30 minutos}
+\label{fig-boxplot-mae}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/grafica3_boxplot_rmse.png}
+\caption{Distribución del Error Cuadrático Medio (RMSE) por escenario.\protect\\ Izda: horizonte 15 minutos. Dcha: horizonte 30 minutos}
+\label{fig-boxplot-rmse}
+\end{figure}
+
+```
+
+
+#### Clarke Error Grid 
+
+La figura \ref{fig-clarke-30} muestra la distribución de predicciones en las
+zonas de la Clarke Error Grid para el horizonte de 30 minutos. El
+resultado es idéntico al presentado en el Capítulo 5 para el
+horizonte de 15 minutos: el 100% de las predicciones se clasifican
+en zona A en todos los escenarios y modelos.
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/grafica6_clarke_30min.png}
+\caption{Distribución de las predicciones según la Clarke Error Grid (CEG) por escenario.}
+\label{fig-clarke-30}
+\end{figure}
+```
+
+#### Correlación Spearman entre error predictivo y TIR por escenario
+
+Las figuras \ref{fig-scatter-mae-15}, \ref{fig-scatter-mae-30},
+\ref{fig-scatter-rmse-15} y \ref{fig-scatter-rmse-30} muestran la correlación
+de Spearman entre el error predictivo de cada paciente y su TIR,
+desglosada por escenario y modelo para cada horizonte de predicción.
+Estos resultados complementan los valores agregados presentados en
+el apartado 5.4 del Capítulo 5.
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica8_scatter_mae_tir_15min.png}
+\caption{Correlación de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR). Horizonte 15 minutos.}
+\label{fig-scatter-mae-15}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica8_scatter_mae_tir_30min.png}
+\caption{Correlación de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR). Horizonte 30 minutos.}
+\label{fig-scatter-mae-30}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica8_scatter_rmse_tir_15min.png}
+\caption{Correlación de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR). Horizonte 15 minutos.}
+\label{fig-scatter-rmse-15}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica8_scatter_rmse_tir_30min.png}
+\caption{Correlación de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR). Horizonte 30 minutos.}
+\label{fig-scatter-rmse-30}
+\end{figure}
+```
+
+
+Las tablas @tbl-spearman-mae y @tbl-spearman-rmse recogen los
+coeficientes de correlación de Spearman y sus p-valores para cada
+combinación de escenario, modelo y horizonte.
+
+[INSERTAR @tbl-spearman-mae — tabla correlaciones Spearman MAE vs TIR]
+
+[INSERTAR @tbl-spearman-rmse — tabla correlaciones Spearman RMSE
+vs TIR]
+
+#### Resultados del test de Wilcoxon
+
+Las tablas @tbl-wilcoxon-intersim-mae y @tbl-wilcoxon-intersim-rmse
+recogen los resultados del test de Wilcoxon inter-simulación,
+que evalúa el efecto de cada factor experimental sobre el rendimiento
+predictivo dentro de cada modelo. Las tablas
+@tbl-wilcoxon-intermodelo-mae y @tbl-wilcoxon-intermodelo-rmse
+recogen los resultados del test inter-modelo, que compara el
+rendimiento de ARIMAX y XGBoost en cada escenario.
+
+[INSERTAR @tbl-wilcoxon-intersim-mae — Wilcoxon inter-simulación MAE]
+
+[INSERTAR @tbl-wilcoxon-intersim-rmse — Wilcoxon inter-simulación
+RMSE]
+
+[INSERTAR @tbl-wilcoxon-intermodelo-mae — Wilcoxon inter-modelo MAE]
+
+[INSERTAR @tbl-wilcoxon-intermodelo-rmse — Wilcoxon inter-modelo RMSE]
+
+#### Importancia de características — paciente de referencia
+
+Las tablas @tbl-feat-arimax y @tbl-feat-xgb muestran la importancia
+de las características de entrada para cada modelo, calculada sobre
+el paciente de referencia (paciente 1, escenario E3). Dado que el
+análisis de importancia no se integró en el pipeline de backtesting
+completo (véase apartado 6.6), estos resultados son únicamente
+ilustrativos y no representan el comportamiento promedio sobre toda
+la cohorte.
+
+[INSERTAR \ref{fig-feat-arimax} — importancia de características ARIMAX,
+paciente de referencia]
+
+[INSERTAR \ref{fig-feat-xgb} — importancia de características XGBoost,
+paciente de referencia]
+
+
+
+
 
