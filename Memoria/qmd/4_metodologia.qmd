@@ -3,7 +3,7 @@
 \capitulo{4}{Metodología}
 ```
 
-### 4.1. Descripción de los datos
+### 4.1. Descripción de los datos y escenarios
 
 Los datos utilizados en el trabajo han sido generados mediante el
 simulador *py-mgipsim* [@siket_py-mgipsim_2025] sobre una cohorte de 20
@@ -27,14 +27,14 @@ escenarios <- data.frame(
                 "HC$^{-}$ E$_{0}$ Er$^{+}$",
                 "HC$^{+}$ E$_{0}$ Er$^{+}$",
                 "HC$^{-}$ E$^{+}$ Er$^{+}$"),
-  HC        = c("Baja", "Alta", "Baja", "Baja", "Alta", "Baja"),
+  HC        = c("Baja (5%)", "Alta (25%)", "Baja (5%)", "Baja (5%)", "Alta (25%)", "Baja (5%)"),
   Ejercicio = c("No", "No", "S\u00ed", "No", "No", "S\u00ed"),
   Error_IR  = c("0\\%", "0\\%", "0\\%", "10\\%", "10\\%", "10\\%")
 )
 
 knitr::kable(
   escenarios,
-  col.names = c("Escenario", "Código", "HC", "Ejercicio", "Error I:R"),
+  col.names = c("Escenario", "Código", "Variabilidad HC", "Ejercicio", "Error I:R"),
   align     = c("c", "c", "c", "c", "c"),
   booktabs  = TRUE,
   escape    = FALSE

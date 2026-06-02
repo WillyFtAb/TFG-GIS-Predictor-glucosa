@@ -37,8 +37,8 @@ La sensibilidad de XGBoost al error en la dosis de insulina y a la
 variabilidad en la ingesta de HC, frente a la insensibilidad de ARIMAX
 a todos los factores experimentales, refleja una diferencia estructural
 entre ambos modelos. XGBoost aprende patrones complejos a partir de
-los datos de entrenamiento y, al optimizarse sobre un escenario sin
-error en la dosis (E3), carece de ejemplos representativos de esta
+los datos de entrenamiento y, al haberse optimizado sobre un escenario
+sin error en la dosis (E3), carece de ejemplos representativos de esta
 perturbación, lo que limita su capacidad de generalización cuando dicho
 error está presente.
 
@@ -49,10 +49,10 @@ variabilidad e imprevisibilidad propias del ejercicio real. En este
 contexto, ambos modelos incorporan su efecto dentro de la dinámica
 general de la serie sin que suponga una perturbación diferencial
 respecto al escenario base. Esta interpretación es coherente con lo
-señalado por @arxiv2025review , que identifica la actividad física como una
-característica especialmente impactante cuando su intensidad y momento
-son variables, condiciones que no se reproducen en los escenarios
-simulados de este trabajo.
+señalado por @arxiv2025review, que identifica la actividad física como
+una característica especialmente impactante cuando su intensidad y
+momento son variables, condiciones que no se reproducen en los
+escenarios simulados de este trabajo.
 
 La insensibilidad de ARIMAX a todos los factores experimentales es
 coherente con su formulación: en datos con una estructura temporal tan
@@ -65,35 +65,51 @@ independientemente de las perturbaciones exógenas introducidas.
 El 100% de predicciones en zona A de la CEG en todos los escenarios,
 modelos y horizontes es un resultado que debe interpretarse con cautela.
 Los valores de error obtenidos son dos órdenes de magnitud inferiores
-a los reportados en la literatura con datos reales [@butt2023;
-@liu2023], lo que hace que la comparación directa no sea válida. Esta
-discrepancia se atribuye a la naturaleza periódica de
-los datos generados por py-mgipsim [@siket_py-mgipsim_2025]: las series simuladas presentan
+a los reportados en la literatura con datos reales: @butt2023 obtiene
+un RMSE de 14,76 mg/dL a 30 minutos sobre el dataset OhioT1DM [@Ohio] con un
+modelo Bi-LSTM, y la revisión sistemática de @liu2023 cifra el RMSE
+medio para ese mismo horizonte en 21,40 mg/dL sobre 46 estudios, lo
+que hace que la comparación directa no sea válida. Esta discrepancia
+se atribuye a la naturaleza periódica de los datos generados por
+py-mgipsim [@siket_py-mgipsim_2025]: las series simuladas presentan
 patrones de ingesta y actividad altamente regulares que facilitan el
 aprendizaje de la tendencia glucémica y eliminan el ruido e
 imprevisibilidad propios de los datos reales. La ausencia total de
 predicciones en zonas B, C, D o E confirma que el problema de
 predicción planteado sobre datos simulados es intrínsecamente más
 sencillo que sobre datos reales, y que los resultados de la CEG no son
-extrapolables a un contexto clínico sin validación previa.
+extrapolables a un contexto clínico sin validación previa. A modo de
+referencia, @cano2025 reporta que el 98% de las predicciones caen en
+zonas clínicamente aceptables (A+B) a 30 minutos sobre datos reales de
+pacientes, lo que ilustra la brecha existente entre el contexto
+simulado y el real.
+
+Desde el punto de vista del diseño experimental, este trabajo se
+distingue de los precedentes en el análisis sistemático del efecto
+de variables clínicamente relevantes —variabilidad en la ingesta,
+ejercicio y error en la dosis— sobre el rendimiento predictivo bajo
+condiciones controladas, algo difícil de aislar con datos reales.
 
 ### 6.4. Relación entre perfil glucémico y rendimiento predictivo
 
 El TIR se empleó como indicador del control glucémico de cada paciente
 por ser una métrica de uso clínico habitual que permite categorizar de
 forma rápida el perfil glucémico individual como primera aproximación
-[@rizos_continuous_2025; @gpc_dm1_2026]. La correlación negativa fuerte y significativa entre
-el TIR y el error predictivo de XGBoost, consistente en todos los
-escenarios y horizontes, indica que el modelo comete errores mayores
-en pacientes con peor control glucémico. Esta dependencia del perfil
-del paciente sugiere que la estrategia de hiperparámetros globales,
-optimizados sobre un único paciente de referencia, no generaliza de
-forma uniforme a toda la cohorte: los pacientes con perfiles glucémicos
-más complejos o atípicos representan casos en los que dicha estrategia
-resulta insuficiente.
+[@rizos_continuous_2025; @gpc_dm1_2026]. La correlación negativa fuerte
+y significativa entre el TIR y el error predictivo de XGBoost,
+consistente en todos los escenarios y horizontes, indica que el modelo
+comete errores mayores en pacientes con peor control glucémico. Esta
+dependencia del perfil del paciente sugiere que la estrategia de
+hiperparámetros globales, optimizados sobre un único paciente de
+referencia, no generaliza de forma uniforme a toda la cohorte: los
+pacientes con perfiles glucémicos más complejos o atípicos representan
+casos en los que dicha estrategia resulta insuficiente. La revisión
+de @arxiv2025review señala que la personalización de los modelos puede
+mejorar el rendimiento predictivo en subgrupos de pacientes con
+características diferenciadas, lo que refuerza esta interpretación.
 
 Cabe señalar que algunos pacientes virtuales de la cohorte presentan
-un TIR del 0%, no como consecuencia de hipoglucemia mantenida sino
+un TIR cercano al 0%, no como consecuencia de hipoglucemia mantenida sino
 porque sus valores de glucemia se encuentran sistemáticamente por
 encima del rango normoglucémico, con perfiles regulares pero
 desplazados hacia la hiperglucemia. Este fenómeno refleja una
@@ -103,33 +119,10 @@ TIR-error (véase Anexo G para la distribución de TIR por paciente y
 escenario).
 
 La ausencia de correlación significativa entre TIR y error en ARIMAX
-refleja una ventaja en términos de equidad predictiva: ningún subgrupo de
-pacientes es sistemáticamente peor predicho que otro.
+refleja una ventaja en términos de equidad predictiva: ningún subgrupo
+de pacientes es sistemáticamente peor predicho que otro.
 
-### 6.5. Comparación con trabajos previos
-
-La comparación con la literatura debe realizarse con las reservas
-metodológicas señaladas en el apartado 6.3. El estudio más directamente
-comparable en términos de diseño es el de @butt2023, que aplica un
-modelo Bi-LSTM con transformación de características de insulina y
-carbohidratos sobre el dataset OhioT1DM. La revisión sistemática de
-@liu2023 ofrece un marco de referencia más amplio sobre el rendimiento
-esperado en datos reales. En ambos casos, los errores reportados son
-sustancialmente superiores a los obtenidos en este trabajo, lo que
-confirma que la regularidad de los datos simulados produce un escenario
-de predicción artificialmente favorable.
-
-Desde el punto de vista del diseño experimental, la contribución de
-este trabajo respecto al estado del arte reside en dos aspectos. En
-primer lugar, la delimitación explícita al régimen MDI, modalidad
-terapéutica mayoritaria pero infrarepresentada en la literatura, donde
-predominan los estudios sobre sistemas de asa cerrada o ISCI. En
-segundo lugar, el análisis sistemático del efecto de variables
-clínicamente relevantes —variabilidad en la ingesta, ejercicio y error
-en la dosis— sobre el rendimiento predictivo bajo condiciones
-controladas, algo difícil de aislar con datos reales.
-
-### 6.6. Limitaciones
+### 6.5. Limitaciones
 
 La principal limitación del trabajo es el uso exclusivo de datos
 simulados. Aunque py-mgipsim está basado en el modelo UVA/Padova
@@ -141,17 +134,16 @@ La disponibilidad de datasets públicos adecuados para este problema
 específico es estructuralmente escasa: los conjuntos de datos con
 registros simultáneos de glucemia, insulina, ingesta de hidratos de
 carbono y ejercicio en pacientes con DM1 en régimen MDI son escasos
-[@prioleau2025glucoseml]. El estándar de referencia
-en la literatura es el dataset OhioT1DM [@Ohio], cuyo
-acceso requería una solicitud formal,
-lo que habría supeditado el desarrollo del trabajo a una respuesta
-afirmativa en un plazo incierto. Se identificó además un dataset con
-datos de pacientes de Shanghai [@zhao_chinese_2023], descartado por seguir un modelo de
-control glucémico significativamente distinto al protocolo clínico
-occidental, criterio corroborado por la cotutora especialista en
-diabetes. Ante estas circunstancias, el uso del simulador validado
-constituyó la alternativa más viable para garantizar la reproducibilidad
-y el control experimental del estudio.
+[@prioleau2025glucoseml]. El estándar de referencia en la literatura
+es el dataset OhioT1DM [@Ohio], cuyo acceso requería una solicitud
+formal, lo que habría supeditado el desarrollo del trabajo a una
+respuesta afirmativa en un plazo incierto. Se identificó además un
+dataset con datos de pacientes de Shanghai [@zhao_chinese_2023],
+descartado por seguir un modelo de control glucémico significativamente
+distinto al protocolo clínico occidental, criterio corroborado por la
+cotutora especialista en diabetes. Ante estas circunstancias, el uso
+del simulador validado constituyó la alternativa más viable para
+garantizar la reproducibilidad y el control experimental del estudio.
 
 Una segunda limitación es la estrategia de hiperparámetros globales:
 la optimización sobre un único paciente de referencia y su aplicación
@@ -163,23 +155,24 @@ Una tercera limitación fue la capacidad de cómputo disponible. El
 backtesting sobre 120 series temporales con refit en cada paso supuso
 un coste computacional elevado, lo que restringió el número de
 escenarios y configuraciones que pudieron evaluarse. Se exploró el uso
-de computación en la nube mediante Google Colab [@googlecolab], pero la ausencia de
-un plan de pago limitó tanto la velocidad de procesamiento como la
-disponibilidad continua de los recursos de cálculo. Esta restricción
-condicionó decisiones como la optimización de hiperparámetros sobre un
-único paciente de referencia en lugar de realizar una búsqueda
-individualizada, y descartó la exploración de un mayor número de
-escenarios o la inclusión de modelos adicionales como Prophet [@taylor2018].
+de computación en la nube mediante Google Colab [@googlecolab], pero la
+ausencia de un plan de pago limitó tanto la velocidad de procesamiento
+como la disponibilidad continua de los recursos de cálculo. Esta
+restricción condicionó decisiones como la optimización de
+hiperparámetros sobre un único paciente de referencia en lugar de
+realizar una búsqueda individualizada, y descartó la exploración de
+un mayor número de escenarios o la inclusión de modelos adicionales
+como Prophet [@taylor2018].
 
-Finalmente, dos análisis de explicabilidad previstos inicialmente no
+Finalmente, los dos análisis de explicabilidad previstos inicialmente no
 pudieron completarse. El análisis mediante SHAP no pudo implementarse
 por incompatibilidades entre las versiones de las dependencias del
 entorno de desarrollo. Por su parte, la extracción sistemática de la
 importancia de características de ambos modelos sobre toda la cohorte
 no se integró en el pipeline de backtesting, lo que habría requerido
-reprocesar los 120 escenarios con un coste computacional inasumible en
-el tiempo disponible. Ambos análisis habrían permitido cuantificar la
-contribución de cada variable exógena al rendimiento predictivo de
+reprocesar los 120 escenarios con un coste computacional inasumible
+en el tiempo disponible. Ambos análisis habrían permitido cuantificar
+la contribución de cada variable exógena al rendimiento predictivo de
 cada modelo, complementando los resultados del análisis de variabilidad
 experimental. A modo ilustrativo, se incluye en el Anexo G la
 importancia de características obtenida para el paciente de referencia

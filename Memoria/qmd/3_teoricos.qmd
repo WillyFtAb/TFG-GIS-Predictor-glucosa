@@ -137,8 +137,8 @@ seguridad clínica más actualizada.
 ### 3.4. Simulación de pacientes virtuales con DM1
 
 La obtención de datos reales de pacientes con DM1 para el desarrollo
-y evaluación de algoritmos presenta barreras éticas, burocráticas y
-logísticas que dificultan su disponibilidad en el contexto académico.
+y evaluación de algoritmos presenta barreras éticas, legislativas (véase Anexo A.5) y
+burocráticas que dificultan su disponibilidad en el contexto académico.
 Los simuladores de pacientes virtuales constituyen una alternativa
 consolidada en la investigación en tecnologías para la diabetes,
 permitiendo generar datos controlados y reproducibles bajo condiciones
