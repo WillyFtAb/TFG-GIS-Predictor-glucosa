@@ -3,12 +3,93 @@
 %%  APÉNDICE H – Sostenibilidad curricular
 %% ══════════════════════════════════════════════════════
 \apendice{Anexo de sostenibilización curricular}
-
-\section{Introducción}
-Este anexo incluirá una reflexión personal del alumnado sobre los aspectos de la sostenibilidad que se abordan en el trabajo.
-Se pueden incluir tantas subsecciones como sean necesarias con la intención de explicar las competencias de sostenibilidad adquiridas durante el alumnado y aplicadas al Trabajo de Fin de Grado.
-
-Más información en el documento de la CRUE \url{https://www.crue.org/wp-content/uploads/2020/02/Directrices_Sosteniblidad_Crue2012.pdf}.
-
-Este anexo tendrá una extensión comprendida entre 600 y 800 palabras.
 ```
+
+
+### Introducción
+
+La diabetes mellitus tipo 1 afecta a millones de personas en todo el
+mundo y su gestión supone una carga continua para el paciente, el
+sistema sanitario y la sociedad. En este trabajo se aborda el
+desarrollo de herramientas predictivas que podrían contribuir a
+mejorar la calidad de vida de las personas con DM1 en régimen MDI,
+reduciendo el impacto de las excursiones glucémicas y facilitando
+la toma de decisiones terapéuticas. Esta orientación hacia un
+problema de salud pública con dimensión social directa constituye
+el hilo conductor de las reflexiones que se recogen a continuación,
+organizadas en torno a las competencias transversales para la
+sostenibilidad definidas por la CRUE [@crue2012].
+
+### Contextualización crítica del conocimiento (SOS1)
+
+El trabajo ha requerido integrar conocimientos de ingeniería de la
+salud, estadística, aprendizaje automático y fisiopatología de la
+DM1, lo que ha exigido un esfuerzo constante de contextualización
+crítica: comprender no solo cómo funcionan los modelos predictivos,
+sino qué significado clínico tienen sus resultados y qué limitaciones
+impone el contexto real de aplicación. La decisión de trabajar con
+datos simulados ante la imposibilidad de acceder a datos reales no
+fue tomada de forma automática, sino tras evaluar las barreras éticas,
+burocráticas y legislativas existentes y sus implicaciones sobre la
+validez externa del estudio. Esta experiencia ha reforzado la
+comprensión de que la investigación en salud no puede desvincularse
+del contexto social, regulatorio y clínico en el que se desarrolla.
+
+A escala más amplia, el trabajo se enmarca en la tendencia global
+hacia la digitalización de la medicina y el uso de la inteligencia
+artificial en el ámbito clínico, un proceso que plantea desafíos
+relevantes en términos de equidad en el acceso a la tecnología,
+privacidad de los datos de salud y responsabilidad en la toma de
+decisiones automatizadas.
+
+### Utilización sostenible de recursos (SOS2)
+
+El trabajo ha sido desarrollado íntegramente con herramientas de
+software libre y de código abierto —Python, skforecast,
+py-mgipsim— sin incurrir en costes de licencias. Esta elección no
+fue únicamente pragmática: el uso de software abierto garantiza la
+reproducibilidad del estudio, facilita su verificación por parte de
+la comunidad científica y elimina barreras económicas para futuros
+investigadores que quieran extender el trabajo.
+
+Desde el punto de vista del consumo de recursos computacionales, el
+coste energético del backtesting —estimado en un mínimo de 300 horas
+de uso intensivo de hardware personal— pone de manifiesto que incluso
+trabajos de escala académica tienen una huella energética no
+despreciable. Esta toma de conciencia refuerza la importancia de
+diseñar los experimentos computacionales de forma eficiente desde
+el inicio, evitando reprocesados innecesarios por una planificación
+deficiente del pipeline. También es necesario mencionar que el backtesting
+comprende el entrenamiento y las predicciones del modelo sobre los 30 días, 
+por lo que supone un carga computacional puntual elevada. En un escenario de despliegue clínico, el modelo
+operaría de forma incremental: el entrenamiento y las predicciones
+se realizarían de manera secuencial a medida que el paciente fuese
+generando nuevas lecturas con su dispositivo MCG, distribuyendo la
+carga computacional a lo largo del tiempo y reduciendo
+significativamente el coste energético por predicción.
+
+### Participación en procesos comunitarios (SOS3)
+
+El trabajo contribuye a un objetivo de interés
+colectivo: mejorar las herramientas de soporte a la decisión clínica
+disponibles para pacientes con DM1 en régimen MDI, modalidad
+terapéutica mayoritaria.
+
+### Aplicación de principios éticos (SOS4)
+
+La investigación con datos de salud plantea dilemas éticos que han
+estado presentes a lo largo de todo el desarrollo del trabajo. La
+decisión de no acceder a datos reales de pacientes sin las garantías
+éticas y el consentimiento informado adecuados —a pesar de las
+implicaciones sobre el alcance del estudio— refleja un compromiso
+con los principios de protección de datos y respeto a la autonomía
+del paciente, recogidos en el RGPD [@rgpd2016] y la LOPDGDD
+[@lopdgdd2018].
+
+El uso de herramientas de inteligencia artificial para la comprensión
+del código fuente del simulador se ha documentado de forma
+transparente en el Anexo I. La reproducibilidad del estudio —garantizada
+mediante el uso de semillas aleatorias fijas, la publicación del código en un repositorio público
+y la descripción detallada de todos los parámetros experimentales—
+constituye también una práctica ética fundamental en la investigación
+computacional.
