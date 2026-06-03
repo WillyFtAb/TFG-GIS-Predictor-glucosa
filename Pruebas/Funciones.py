@@ -1,6 +1,174 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
+import pandas as pd
+import json
+from pathlib import Path
+from matplotlib import pyplot as plt
+
+# =============================================
+# FUNCIONES PARA NOTEBOOK VISUALIZACIÓN 
+# DE DATOS GENERADOS POR EL SIMULADOR
+# =============================================
+def visualizacion_paciente(dias = None):  
+    esc = int(input('Número de escenario (1-6)'))
+    pac = int(input('Número de paciente (0-19)'))
+
+    r_json = f'../py-mgipsim-main/SimulationResults/Simulacion_{esc}/simulation_settings.json'
+    r_xlsx = f'../py-mgipsim-main/SimulationResults/Simulacion_{esc}/model_state_results.xlsx'
+    
+    with open(r_json, 'r') as f:
+        data = json.load(f)
+
+    pac_n = pd.read_excel(r_xlsx, header=0, sheet_name=pac)
+
+    if dias is not None:
+        min = dias*24*60
+        comidas_time = list(filter(lambda x: int(x < min), data['inputs']['meal_carb']['start_time'][pac]))
+        limite = len(comidas_time)
+        comidas_mag = data['inputs']['meal_carb']['magnitude'][pac][:limite]
+        
+        gluc = pac_n.iloc[:min,[0,9]].copy()
+        gluc.columns = ['t_min','glu_mmol']
+        gluc['gluc_mg'] = round(gluc.glu_mmol*18,0).copy()
+
+    else:
+        comidas_mag = data['inputs']['meal_carb']['magnitude'][pac]
+        comidas_time = np.round(data['inputs']['meal_carb']['start_time'][pac]).astype(int)  
+
+        gluc = pac_n.iloc[:,[0,9]].copy()
+        gluc.columns = ['t_min','glu_mmol']
+        gluc['gluc_mg'] = round(gluc.glu_mmol*18,0).copy()
+        
+    fig, ax1 = plt.subplots(figsize=(12, 5))
+
+    # Gráfica de Glucosa (Eje inferior e izquierdo)
+    linea_gluc = ax1.plot(gluc.t_min, gluc.gluc_mg, label='Glucosa', color='blue', linewidth=0.5)
+    ax1.set_xlabel('Tiempo (minutos)', fontsize=12)
+    ax1.set_ylabel('Glucosa (mg/dL)', fontsize=12)
+
+    # Franjas de rango objetivo en el eje de la glucosa
+    ax1.axhspan(70, 180, color='green', alpha=0.2, label='Rango Objetivo')
+    ax1.axhline(70, color='red', linestyle='--', linewidth=1, label='Hipoglucemia')
+    ax1.axhline(180, color='orange', linestyle='--', linewidth=1, label='Hiperglucemia')
+
+    # Crear el segundo sistema de ejes independientes (Comidas)
+    # twinx() comparte el eje X (tiempo) y crea un eje Y independiente a la derecha
+    ax2 = ax1.twinx()
+
+    # Gráfica de Comidas (Eje derecho)
+    linea_comidas = ax2.plot(comidas_time, comidas_mag, marker='o', linewidth=0.5, 
+                            alpha=0.8, color='purple', label='Comidas principales')
+    ax2.set_ylabel('Carbohidratos comida (g)', fontsize=12, color='purple')
+    
+    # Buscamos el valor máximo de carbohidratos (comidas)
+    max_carb = max(comidas_mag) if len(comidas_mag) > 0 else 100
+    # Al hacer que el límite superior del eje Y sea el DOBLE, la serie se queda en la mitad inferior
+    ax2.set_ylim(0, max_carb * 2) 
+
+
+    # 4. Configurar diseño general y leyendas combinadas
+    plt.title(f'Escenario {esc} - Paciente {pac}', fontsize=14, pad=20)
+    ax1.grid(True, linestyle=':', alpha=0.7)
+
+    # Combinar las etiquetas de ambos ejes en una sola leyenda limpia
+    lineas, etiquetas = ax1.get_legend_handles_labels()
+    lineas2, etiquetas2 = ax2.get_legend_handles_labels()
+    ax1.legend(lineas + lineas2, etiquetas + etiquetas2, loc='lower right', fontsize='small')
+
+    plt.tight_layout()
+    plt.show()
+
+
+def analisis(r_json,r_xlsx, esc = '_', n =20, guardar = True, carpeta = None):
+
+    if carpeta is None:
+        carpeta = Path('Series_glucosa/')
+        carpeta.mkdir(exist_ok=True)
+
+    with open(r_json, 'r') as f:
+            data = json.load(f)
+
+    for i in range(n):      
+
+        # Elegimos el Paciente
+        paciente_idx = i
+
+        # Extraer magnitud y tiempo de las comidas principales
+        comidas_mag = data['inputs']['meal_carb']['magnitude'][paciente_idx]
+        comidas_time = np.round(data['inputs']['meal_carb']['start_time'][paciente_idx]).astype(int)
+        
+        # ===== COMENTEADO PARA GRÁFICA MÁS SENCILLA =================
+        # Extraer magnitud y tiempo de las comidas principales 
+        # snacks_mag = data['inputs']['snack_carb']['magnitude'][paciente_idx]
+        # snacks_time = np.round(data['inputs']['snack_carb']['start_time'][paciente_idx]).astype(int)
+
+        # # Extraer magnitud y tiempo de los bolos de insulina
+        # bolos_mag = data['inputs']['bolus_insulin']['magnitude'][paciente_idx]
+        # bolos_time = np.round(data['inputs']['bolus_insulin']['start_time'][paciente_idx]).astype(int)
+
+        # # Extraer magnitud y tiempo de la basal 
+        # basal_mag = data['inputs']['basal_insulin']['magnitude'][paciente_idx]
+
+
+        # Cargar datos del excel (medidas glucosa)
+        pac_n = pd.read_excel(r_xlsx, header=0, sheet_name=i)
+        
+        # Selección de datos (t y gluc)
+        gluc = pac_n.iloc[:,[0,9]].copy()
+        gluc.columns = ['t_min','glu_mmol']
+        gluc['gluc_mg'] = round(gluc.glu_mmol*18,0).copy()
+        
+        fig, ax1 = plt.subplots(figsize=(12, 5))
+
+        # Gráfica de Glucosa (Eje inferior e izquierdo)
+        linea_gluc = ax1.plot(gluc.t_min, gluc.gluc_mg, label='Glucosa', color='blue', linewidth=0.5)
+        ax1.set_xlabel('Tiempo (minutos)', fontsize=12)
+        ax1.set_ylabel('Glucosa (mg/dL)', fontsize=12)
+
+        # Franjas de rango objetivo en el eje de la glucosa
+        ax1.axhspan(70, 180, color='green', alpha=0.2, label='Rango Objetivo')
+        ax1.axhline(70, color='red', linestyle='--', linewidth=1, label='Hipoglucemia')
+        ax1.axhline(180, color='orange', linestyle='--', linewidth=1, label='Hiperglucemia')
+
+        # Crear el segundo sistema de ejes independientes (Comidas)
+        # twinx() comparte el eje X (tiempo) y crea un eje Y independiente a la derecha
+        ax2 = ax1.twinx()
+
+        # Gráfica de Comidas (Eje derecho)
+        linea_comidas = ax2.plot(comidas_time, comidas_mag, marker='o', linewidth=0.5, 
+                                alpha=0.8, color='purple', label='Comidas principales')
+        ax2.set_ylabel('Carbohidratos comida (g)', fontsize=12, color='purple')
+        
+        # Buscamos el valor máximo de carbohidratos (comidas)
+        max_carb = max(comidas_mag) if len(comidas_mag) > 0 else 100
+        # Al hacer que el límite superior del eje Y sea el DOBLE, la serie se queda en la mitad inferior
+        ax2.set_ylim(0, max_carb * 2) 
+
+
+        # 4. Configurar diseño general y leyendas combinadas
+        plt.title(f'Escenario {esc} - Paciente {i}', fontsize=14, pad=20)
+        ax1.grid(True, linestyle=':', alpha=0.7)
+
+        # Combinar las etiquetas de ambos ejes en una sola leyenda limpia
+        lineas, etiquetas = ax1.get_legend_handles_labels()
+        lineas2, etiquetas2 = ax2.get_legend_handles_labels()
+        ax1.legend(lineas + lineas2, etiquetas + etiquetas2, loc='lower right', fontsize='small')
+
+        plt.tight_layout()
+        if guardar:
+            nombre_archivo = f'Escenario{esc}_Paciente_{i}.png' 
+            plt.savefig(carpeta / nombre_archivo, dpi=300)
+        plt.show()
+
+
+
+# =============================
+# FUNCIONES NOTEBOOK PIPELINE
+# =============================
+
+
+
 
 def remuestrear(df, columnas, t_muestreo: int):
     """
