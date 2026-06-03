@@ -1,0 +1,2 @@
+py-mgipsim-main/SimulationResults/Simulacion_*/*.xlsx filter=lfs diff=lfs merge=lfs -text
+py-mgipsim-main/SimulationResults/Simulacion_*/*.json filter=lfs diff=lfs merge=lfs -text
