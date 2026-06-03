@@ -24,8 +24,25 @@ venv/
 #ignorar 
 .DS_Store
 
-# ignorar carpeta del simulador (tamaño excesivo)
-py-mgipsim-main/
+# ignorar carpeta del simulador (tamaño excesivo), a excepcion de los archivos de las simulaciones utilizada.
+# 1. Ignorar todo el contenido de la carpeta principal
+py-mgipsim-main/*
+
+# 2. Excepción: Permitir que Git entre a la carpeta SimulationResults
+!py-mgipsim-main/SimulationResults/
+
+# 3. Ignorar todo el contenido de SimulationResults
+py-mgipsim-main/SimulationResults/*
+
+# 4. Excepción: Permitir que Git entre a las subcarpetas de Simulacion
+!py-mgipsim-main/SimulationResults/Simulacion_*/
+
+# 5. Ignorar todos los archivos dentro de Simulacion_* (por defecto)
+py-mgipsim-main/SimulationResults/Simulacion_*/*
+
+# 6. EXCEPCIONES FINALES: Rastrear solo los Excel y los JSON
+!py-mgipsim-main/SimulationResults/Simulacion_*/*.xlsx
+!py-mgipsim-main/SimulationResults/Simulacion_*/*.json
 
 # Ignorar historia R
 .Rhistory
