@@ -50,7 +50,7 @@ software desplegable, no se aplicó ninguna metodología ágil formal.
 
 Las fases previstas inicialmente que no pudieron completarse fueron:
 la validación con un segundo simulador o con datos reales, el análisis de significación
-de variables exógenas y la implementación de Prophet [@prophet] como modelo
+de variables exógenas y la implementación de Prophet [@taylor2018] como modelo
 adicional. Estas quedan identificadas como líneas futuras en el
 Capítulo 8 de la memoria.
 
@@ -67,7 +67,7 @@ La planificación formal del proyecto se inició en marzo de 2026,
 una vez definida y aprobada la línea de trabajo. Se organizó en cinco
 milestones principales más un milestone de seguimiento para reuniones
 y tareas transversales. La @tbl-milestones resume los hitos y la
-@fig-gantt muestra su distribución temporal. A continuación se
+Figura \ref{fig-gantt} muestra su distribución temporal. A continuación se
 detallan las tareas asociadas a cada milestone.
 
 **Fase previa (oct. 2025 – ene. 2026):** contacto con el servicio de
@@ -108,7 +108,7 @@ propuesta de TFG.
 ```{r}
 #| label: tbl-milestones
 #| echo: false
-#| tbl-cap: "Milestones del proyecto y fechas de entrega."
+#| tbl-cap: "Milestones del proyecto y fechas de finalización previstas."
 
 milestones <- data.frame(
   Milestone = c(
@@ -131,95 +131,68 @@ milestones <- data.frame(
 
 knitr::kable(
   milestones,
-  col.names = c("Hito", "Inicio", "Fin previsto"),
+  col.names = c("Hito", "Inicio previsto", "Fin previsto"),
   align = c("l", "c", "c"),
   booktabs = TRUE
 )
 ```
 
-```{r}
-#| label: fig-gantt
-#| echo: false
-#| fig-cap: "Diagrama de Gantt del proyecto."
-#| fig-width: 10
-#| fig-height: 5
-
-library(ggplot2)
-
-tareas <- data.frame(
-  tarea = factor(c(
-    "M5: Memoria",
-    "M4: Validación clínica",
-    "M3: Modelos",
-    "M2: Preprocesamiento",
-    "M1: Datos",
-    "Fase previa"
-  ), levels = c(
-    "Fase previa",
-    "M1: Datos",
-    "M2: Preprocesamiento",
-    "M3: Modelos",
-    "M4: Validación clínica",
-    "M5: Memoria"
-  )),
-  inicio = as.Date(c(
-    "2026-05-01", "2026-04-01", "2026-03-01",
-    "2026-02-01", "2026-01-01", "2025-10-01"
-  )),
-  fin = as.Date(c(
-    "2026-06-07", "2026-05-28", "2026-03-31",
-    "2026-03-26", "2026-03-26", "2026-01-31"
-  ))
-)
-
-ggplot(tareas, aes(x = inicio, xend = fin,
-                   y = tarea, yend = tarea)) +
-  geom_segment(linewidth = 8, color = "#2c7bb6") +
-  geom_vline(xintercept = as.numeric(as.Date("2026-01-01")),
-             linetype = "dashed", color = "gray50",
-             linewidth = 0.5) +
-  scale_x_date(date_breaks = "1 month",
-               date_labels = "%b %Y",
-               limits = c(as.Date("2025-09-15"),
-                          as.Date("2026-06-30"))) +
-  labs(x = NULL, y = NULL) +
-  theme_minimal(base_size = 11) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.major.y = element_line(color = "gray90"),
-    panel.grid.minor = element_blank()
-  )
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/cronograma.png}
+\caption{Distribución temporal inicial (amarillo) y final (azul) de los milestones del trabajo.}
+\label{fig-gantt}
+\end{figure}
 ```
-
 
 ### Planificación económica
 
 La estimación económica del proyecto contempla los costes directos
 asociados al trabajo del alumno, la supervisión tutorial y el uso de
 equipamiento hardware. No se han incurrido costes de licencias de
-software, dado que todas las herramientas utilizadas —Python [@python2025], R [@r2025],
-Quarto [@quarto_software], GitHub[@github_platform] y Google Colab [@googlecolab] 
+software, dado que todas las herramientas utilizadas —Python [@python2025], GitHub[@github_platform] y Google Colab [@googlecolab] 
 en su modalidad gratuita— son de acceso libre.
 
 #### Costes de personal
 
 El coste del trabajo del alumno se estima a partir de las 360 horas
-previstas, aplicando el Salario Mínimo Interprofesional (SMI) vigente
-en 2026, fijado en 17.094 € brutos anuales por el Real Decreto
-126/2026, lo que equivale a 7,10 €/hora para una jornada de 1.694
-horas anuales [@rd126_2026]. El coste de supervisión de los tutores
-se estima a partir de 20 horas totales de tutoría, aplicando una
-tarifa orientativa de técnico senior:
+previstas, aplicando el salario bruto  promedio de un ingeniero biomédico junior según @sueldo. 
 
-| Concepto | Horas | Coste/hora (€) | Total (€) |
-|----------|------:|---------------:|----------:|
-| Trabajo del alumno | 360 | 7,10 | 2.556,00 |
-| Supervisión tutores | 20 | 50,00 | 1000,00 |
-| **Total personal** | | | **3.556,00** |
+```{=latex}
+\begin{table}[H]
+\centering
+\caption{Desglose económico de los costes personales}
+\label{tab:presupuesto_particular}
+% \textwidth obliga a la tabla a ocupar exactamente el ancho del texto de tu página
+\begin{tabularx}{\textwidth}{X r r}
+\toprule
+\textbf{Concepto económico} & \textbf{Porcentaje} & \textbf{Coste Total} \\
+\midrule
+\textbf{1. Salario bruto} (23€/h x 360h) & Sueldo Base & \textbf{8.280,00 €} \\
+\midrule
+\textbf{2. Seguros sociales} & & \\
+    Contingencias comunes & 18,88\% & 1.563,26 € \\
+    Desempleo (Contrato temporal bonificado) & 1,34\% & 110,95 € \\
+    MEI (Mecanismo de Equidad Intergeneracional) & 0,75\% & 62,10 € \\
+    FOGASA (Fondo de Garantía Salarial Bonificado) & 0,04\% & 3,31 € \\
+    Contingencias Profesionales  & 1,50\% & 124,20 € \\
+\textbf{Total cuota Seguridad Social} & \textbf{22,51\%} & \textbf{1.863,82 €} \\
+\midrule
+\textbf{3. Obligaciones al finalizar el contrato} & & \\
+    Indemnización fin de contrato (12 días/año) & 3,29\% & \textbf{272,21 €} \\
+\midrule
+\textbf{COSTE TOTAL} & & \textbf{10.416,03 €} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+```
+
 
 #### Costes de hardware
 
-El desarrollo se realizó sobre hardware personal del alumno. 
+El desarrollo se realizó sobre hardware personal del alumno. Fue necesario el uso de dos dispositivos, 
+pues la necesidad de cómputo era elevada.
 La amortización de cada equipo durante el periodo de uso del proyecto
 se calcula según la expresión recogida en la figura
 \ref{fig-amortizacion}.
@@ -237,12 +210,12 @@ se calcula según la expresión recogida en la figura
 ```
 
 | Concepto | Coste (€) | Vida útil (años) | Meses de uso | Amortización (€) |
-|----------|----------:|-----------------:|-------------:|-----------------:|
-| Ordenador personal principal | [COMPLETAR] | 5 | 6 | [COMPLETAR] |
-| Ordenador personal secundario | [COMPLETAR] | 6 | 2 | [COMPLETAR] |
-| **Total hardware** | | | | **[COMPLETAR]** |
+|---------------------|---------:|---------:|---------:|---------:|
+| Ordenador personal principal | 889 | 5 | 3 | 44,5 |
+| Ordenador personal secundario | 930 | 6 | 2 | 25,83 |
+| **Total hardware** | | | | **70,33** |
 
-
+:Desglose económico de los costes de hardware {costes_hardware}
 
 #### Consideraciones sobre el uso de hardware personal
 
@@ -260,23 +233,37 @@ de alto rendimiento.
 Aunque no se ha incurrido en coste alguno por uso de Google Colab [@googlecolab],
 se incluye como referencia el coste que habría supuesto el uso de
 la modalidad Colab Pro+ durante el periodo de desarrollo intensivo
-de modelos (aproximadamente 3 meses), a un precio de 49,99 $/mes
-[@googlecolab]:
+de modelos (aproximadamente 3 meses), a un precio de 51,12 €/mes
+[@googlecolab].
 
-| Concepto | Coste mensual | Meses | Total |
+| Concepto | Coste mensual (€) | Meses | Total (€) |
 |----------|-------------:|------:|------:|
-| Google Colab Pro+ | 49,99 $ | 3 | 149,97 $ |
+| Google Colab Pro+ | 51,12  | 2 | 102,24  |
+
+:Desglose económico de los costes de computación en la nube {tbl-costes_cloud}.
 
 #### Resumen económico
+A continuación, se muestran las 2 opciones de contratación. La primera, (@tbl-tatal_personal) 
+conlleva el uso del hardaware personal, mientras que la segunda (@tbl-total_nube) 
+utiliza la opción de GoogleColab [@googlecolab].
+
+| Concepto | Total (€) |
+|----------------|----------:|
+| Personal | 10416,03 |
+| Hardware | 70,33 |
+| Software y licencias | 0,00 |
+| **Total del proyecto** | **10486,36** |
+
+:Coste total del proyecto con hardware personal. {tbl-total_personal}
 
 | Concepto | Total (€) |
 |----------|----------:|
-| Personal | 3.156,00 |
-| Hardware (amortización) | [COMPLETAR] |
-| Software y licencias | 0,00 |
-| Cloud (referencia, no incurrido) | ~138,00 |
-| **Total del proyecto** | **[COMPLETAR]** |
+| Personal | 10416,03 |
+| Hardware | 10,00 |
+| Cloud | 102,24 |
+| **Total del proyecto** | **10528,27** |
 
+:Coste total del proyecto con computación en la nube. {tbl-total_nube}
 
 ### Viabilidad legal
 
