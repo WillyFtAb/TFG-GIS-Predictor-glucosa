@@ -9,8 +9,8 @@
 ### Diagrama de casos de uso
 
 El trabajo no desarrolla un sistema software con interfaz de usuario
-final, por lo que el diagrama de casos de uso (\ref{fig:diag_cu}) se limita a las
-interacciones del investigador/alumno con las herramientas utilizadas durante
+final, por lo que el diagrama de casos de uso (Figura \ref{fig:diag_cu}) se limita a las
+interacciones del investigador con las herramientas utilizadas durante
 el desarrollo. Se identifican tres casos de uso principales:
 
 - **CU-1:** Ejecutar simulación de pacientes virtuales.
@@ -40,7 +40,7 @@ el desarrollo. Se identifican tres casos de uso principales:
 		\textbf{CU-1}    & \textbf{Ejecutar simulación de pacientes virtuales}\\
 		\toprule
 		\textbf{Versión}              & 1.0    \\
-		\textbf{Autor}                & Alumno \\
+		\textbf{Autor}                & Investigador \\
 		\textbf{Descripción}          & El investigador ejecuta el simulador py-mgipsim para generar series temporales de glucemia bajo un escenario experimental definido. \\
 		\textbf{Precondición}         & Python 3.12 instalado y dependencias del simulador instaladas mediante \textit{pip install -r requirements.txt} \\
 		\textbf{Acciones}             & El investigador selecciona la modalidad de ejecución (GUI o CLI). 
@@ -70,10 +70,10 @@ el desarrollo. Se identifican tres casos de uso principales:
 	\centering
 	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
 		\toprule
-		\textbf{CU-1}    & \textbf{Ejecutar simulación de pacientes virtuales}\\
+		\textbf{CU-2}    & \textbf{Ejecutar función de visualizado de la series temporales}\\
 		\toprule
 		\textbf{Versión}              & 1.0    \\
-		\textbf{Autor}                & Alumno \\
+		\textbf{Autor}                & Investigador \\
 		\textbf{Descripción}          & El investigador ejecuta una función de visualización sobre los datos generados por el simulador para inspeccionar la serie glucémica de los paciente en un escenario determinado. \\
 		\textbf{Precondición}         & Datos del simulador disponibles; entorno Python con matplotlib activo. \\
 		\textbf{Acciones}             & 
@@ -81,12 +81,12 @@ el desarrollo. Se identifican tres casos de uso principales:
 			\def\labelenumi{\arabic{enumi}.}
 			\tightlist
 			\item El investigador abre el notebook de visualización. 
-			\item Especifica el número de escenario y el identificador de paciente.
+			\item Especifica la ruta de los archivos con los datos generados por el simulador.
 			\item Ejecuta la función de visualización.
-			\item Se generan las gráfica con la serie temporal de glucemia de los paciente.
+			\item Se generan las gráficas con las series temporales de glucemia de los pacientes.
 		\end{enumerate}\\
-		\textbf{Postcondición}        & La gráfica se muestra en pantalla y puede exportarse como imagen  \\
-		\textbf{Excepciones}          & Fichero de datos no encontrado \\
+		\textbf{Postcondición}        & La/s gráfica/s se muestra en pantalla y puede/n exportarse como imagen  \\
+		\textbf{Excepciones}          & Ficheros de datos no encontrados \\
 		\textbf{Importancia}          & Media \\
 		\bottomrule
 	\end{tabularx}
@@ -102,11 +102,11 @@ el desarrollo. Se identifican tres casos de uso principales:
 	\centering
 	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
 		\toprule
-		\textbf{CU-1}    & \textbf{Exploración interactiva de datos por selección de paciente y escenario}\\
+		\textbf{CU-3}    & \textbf{Exploración interactiva de datos por selección de paciente y escenario}\\
 		\toprule
 		\textbf{Versión}              & 1.0    \\
-		\textbf{Autor}                & Alumno \\
-		\textbf{Descripción}          & El alumno selecciona por teclado el escenario y el paciente de interés para obtener una visualización directa de la serie glucémica, sin necesidad de modificar el notebook. \\
+		\textbf{Autor}                & Investigador \\
+		\textbf{Descripción}          & El investigador selecciona por teclado el escenario y el paciente de interés para obtener una visualización directa de la serie glucémica, sin necesidad de modificar el notebook. \\
 		\textbf{Precondición}         & Datos del simulador disponibles; entorno Python con matplotlib activo. \\
 		\textbf{Acciones}             & 
 		\begin{enumerate}
@@ -119,7 +119,7 @@ el desarrollo. Se identifican tres casos de uso principales:
 		\end{enumerate}\\
 		\textbf{Postcondición}        & La gráfica se muestra en pantalla.  \\
 		\textbf{Excepciones}          & Entrada no válida; datos del escenario no disponibles. \\
-		\textbf{Importancia}          & Baja \\
+		\textbf{Importancia}          & Media \\
 		\bottomrule
 	\end{tabularx}
 	\caption{CU-3 Exploración interactiva de datos por selección de paciente y escenario}
@@ -131,27 +131,29 @@ el desarrollo. Se identifican tres casos de uso principales:
 ### Prototipos de interfaz
 
 Las siguientes capturas muestran las dos modalidades de interacción
-con el simulador py-mgipsim [@siket_py-mgipsim_2025] disponibles para el investigador.
+con el simulador py-mgipsim [@siket_py-mgipsim_2025] disponibles para el 
+investigador y la salida de la ejecución de la función de visaulizado
+de las serires temporales de glucosa.
 
 
 ```{=latex}
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{img/sim_gui.png}
+    \includegraphics[width=\textwidth]{img/sim_gui.png}
     \caption{Interfaz gráfica del simulador py-mgipsim}
     \label{fig:sim_gui}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{img/sim_cmd.png}
+    \includegraphics[width=\textwidth]{img/sim_cmd.png}
     \caption{Línea de comandos del simulador py-mgipsim}
     \label{fig:sim_gui}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{img/serie_vis.png}
+    \includegraphics[width=\textwidth]{img/serie_vis.png}
     \caption{Visualización de serie glucémica}
     \label{fig:vis_serie}
 \end{figure}
