@@ -2,43 +2,75 @@
 %% ══════════════════════════════════════════════════════
 %%  APÉNDICE E – Manual del Desarrollador
 %% ══════════════════════════════════════════════════════
-\apendice{Manual del desarrollador / programador / investigador.} % usar el término que mejor se corresponda.
+\apendice{Manual del investigador.} % usar el término que mejor se corresponda.
 
-\section{Estructura de directorios}
-
-Descripción de la estructura de carpetas y archivos entregados junto con el proyecto.
-
-\section{Compilación, instalación y ejecución del proyecto}
-
-En caso necesario, se detallarán los pasos técnicos para compilar, instalar y ejecutar el proyecto.
-
-\section{Pruebas del sistema}
-Esta sección puede ser opcional.
-
-Se describirán las pruebas realizadas para validar el correcto funcionamiento del sistema, tales como pruebas unitarias, funcionales o validaciones con usuarios.
-
-
-\section{Instrucciones para la modificación o mejora del proyecto.}
-
-Se proporcionarán indicaciones y recomendaciones para facilitar futuras ampliaciones o mejoras del trabajo realizado.
 ```
 
 
 ### Estructura de directorios
 
-[COMPLETAR cuando la estructura del repositorio esté definida]
+La estructura de carpetas y archivos del repositorio es la siguiente:
+
+```{=latex}
+\begin{verbatim}
+TFG-GIS-Predictor-glucosa/
+|-- py-mgipsim-main/
+|   `-- SimulationResults/
+|       |-- Simulacion_1/
+|       |   |-- [nombre_simulacion].json
+|       |   `-- [nombre_simulacion].xlsx
+|       |-- Simulacion_2/
+|       |-- Simulacion_3/
+|       |-- Simulacion_4/
+|       |-- Simulacion_5/
+|       `-- Simulacion_6/
+|-- Simulaciones/
+|   |-- Perfiles.ods
+|   |-- sim_1_data.pkl
+|   |-- ...
+|   |-- sim_6_data.pkl
+|   |-- Simulacion_1.txt
+|   |-- ...
+|   `-- Simulacion_6.txt
+|-- Memoria/
+`-- Analisis_y_resultados/
+    |-- Comprobar_simulaciones.ipynb
+    |-- guardar_df.py
+    |-- Pipeline.ipynb
+    |-- Funciones.py
+    |-- Series_glucosa/
+    `-- Resultados/
+        |-- ARIMA_resultados/
+        |-- Boost_resultados/
+        |-- figs/
+        |   `-- TIR/
+        |-- resultados_modelos.csv
+        `-- TIR.csv
+\end{verbatim}
+```
+
+La carpeta `py-mgipsim-main/SimulationResults/` contiene únicamente
+los archivos de salida del simulador necesarios para ejecutar el
+notebook de visualización, dado que el resto de archivos del
+simulador no se incluyen en el repositorio por restricciones de
+tamaño. La carpeta `Simulaciones/` contiene los dataframes
+serializados listos para el pipeline, junto con los documentos de
+referencia del diseño experimental. La carpeta `Memoria/` contiene
+todos los archivos necesarios para la redacción del documento. La
+carpeta `Analisis_y_resultados/` agrupa el código, los notebooks y
+los resultados del análisis.
 
 ### Compilación, instalación y ejecución del proyecto
 
 El proceso de instalación y ejecución del entorno se describe en
 detalle en el Anexo D (apartado D.2). Desde el punto de vista del
-desarrollador, se señalan los siguientes aspectos técnicos
+investigador, se señalan los siguientes aspectos técnicos
 adicionales:
 
-El entorno de desarrollo se gestiona mediante conda. El fichero
-`environment.yml` del repositorio recoge todas las dependencias con
-sus versiones exactas, garantizando la reproducibilidad del entorno.
-Para activar el entorno:
+El entorno de desarrollo se gestiona mediante conda [@anaconda2023].
+El fichero `environment.yml` del repositorio recoge todas las
+dependencias con sus versiones exactas, garantizando la
+reproducibilidad del entorno. Para activar el entorno:
 
 ```bash
 conda env create -f environment.yml
@@ -46,7 +78,7 @@ conda activate tfg-glucosa
 ```
 
 Las funciones de preprocesamiento, ingeniería de características y
-evaluación están implementadas en el módulo `[COMPLETAR].py`,
+evaluación están implementadas en el módulo `Funciones.py`,
 importado por los notebooks principales. Cualquier modificación
 sobre estas funciones se propagará automáticamente a todos los
 notebooks que las utilicen, sin necesidad de duplicar código.
@@ -59,51 +91,63 @@ preprocesamiento, ingeniería de características y backtesting se
 realizó de forma manual durante el desarrollo, mediante la
 visualización de las series temporales de glucemia, la inspección
 de los dataframes intermedios y la comprobación de coherencia con
-los ficheros de origen (CSV y JSON) generados por el simulador.
+los ficheros de origen (XLSX y JSON) generados por el simulador.
 
-El notebook de visualización (véase Anexo D, apartado D.3) constituye
-la herramienta principal para verificar visualmente que los datos
-preprocesados son correctos antes de ejecutar el pipeline de análisis.
-Las celdas de prueba con datos sintéticos utilizadas durante el
-desarrollo han sido eliminadas del pipeline final, que contiene
-únicamente el flujo de trabajo definitivo.
+El notebook `Comprobar_simulaciones.ipynb` constituye la herramienta
+principal para verificar visualmente que los datos preprocesados son
+correctos antes de ejecutar el pipeline de análisis. Las celdas
+marcadas como opcionales en `Pipeline.ipynb` incluyen comprobaciones
+básicas de funcionamiento que pueden ejecutarse para validar pasos
+intermedios del flujo de trabajo.
 
 ### Instrucciones para la modificación o mejora del proyecto
 
-El diagrama de la @fig-pipeline ilustra el flujo completo del
-pipeline de análisis, desde la generación de datos hasta la
+El diagrama de la figura \ref{fig-pipeline} ilustra el flujo completo
+del pipeline de análisis, desde la generación de datos hasta la
 evaluación de resultados.
 
-![Diagrama del pipeline de análisis del
-proyecto.](img/diagrama_pipeline.png){#fig-pipeline}
+```{=latex}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{img/diagrama_pipeline.png}
+\caption{Diagrama del pipeline de análisis del proyecto.}
+\label{fig-pipeline}
+\end{figure}
+```
 
 Las principales extensiones y modificaciones que pueden realizarse
 sobre el proyecto son las siguientes:
 
 **Incorporación de nuevos modelos predictivos:** para añadir un nuevo
 modelo al pipeline, es necesario implementar la función de
-entrenamiento y predicción siguiendo la interfaz de skforecast
-[@skforecast], definir la estrategia de búsqueda de hiperparámetros
-y añadir el modelo al bucle de backtesting. El resto del pipeline
-(preprocesamiento, evaluación y visualización de resultados) es
-reutilizable sin modificaciones.
+entrenamiento y predicción, definir la estrategia de búsqueda de
+hiperparámetros y añadir el modelo al bucle de backtesting en
+`Pipeline.ipynb` y en las funciones correspondientes de `Funciones.py`.
+Si el modelo no es compatible con la interfaz de skforecast
+[@skforecast], será necesario adaptar el código de backtesting y
+evaluación. El resto del pipeline (preprocesamiento, métricas y
+visualización de resultados) es reutilizable sin modificaciones.
 
 **Nuevos escenarios experimentales:** la generación de nuevos
 escenarios se realiza directamente desde el simulador py-mgipsim
 [@siket_py-mgipsim_2025], modificando los parámetros de variabilidad
 en la ingesta, ejercicio y error en la dosis. Los nuevos ficheros de
-salida deben colocarse en la carpeta de datos del repositorio
-siguiendo la convención de nomenclatura establecida.
+salida deben colocarse en las subcarpetas correspondientes de
+`py-mgipsim-main/SimulationResults/` y procesarse con `guardar_df.py`
+para generar los archivos serializados. Las funciones del pipeline
+deberán ajustarse para que los bucles incluyan la búsqueda de los
+nuevos ficheros.
 
 **Validación con datos reales:** la sustitución de los datos
 simulados por datos reales requiere adaptar el parser de lectura
 al formato del dataset utilizado (por ejemplo, OhioT1DM [@Ohio])
 y verificar que las variables exógenas disponibles son compatibles
-con las esperadas por las funciones de ingeniería de características.
+con las esperadas por las funciones de ingeniería de características
+en `Funciones.py`.
 
 **Análisis de explicabilidad:** la integración de SHAP o de la
 extracción sistemática de importancia de características puede
 incorporarse al bucle de backtesting añadiendo una llamada a las
 funciones correspondientes tras cada paso de refit, almacenando
-los valores de importancia junto con las métricas de evaluación.
-
+los valores de importancia junto con las métricas de evaluación en
+las carpetas `ARIMA_resultados/` y `Boost_resultados/`.
