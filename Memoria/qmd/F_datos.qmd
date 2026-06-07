@@ -6,32 +6,6 @@
 ```
 
 
-A continuación se muestra un **ejemplo de análisis exploratorio con R**
-que produce tanto código visible como tabla y figura en el PDF:
-
-```{r datos-summary}
-#| label: tbl-resumen-datos
-#| tbl-cap: "Resumen estadístico del conjunto de datos mtcars"
-
-library(knitr)
-library(dplyr)
-
-mtcars |>
-  select(mpg, cyl, hp, wt) |>
-  summarise(across(everything(),
-    list(media = mean, sd = sd, min = min, max = max),
-    .names = "{.col}_{.fn}"
-  )) |>
-  tidyr::pivot_longer(everything(),
-    names_to  = c("variable", "estadístico"),
-    names_sep = "_"
-  ) |>
-  tidyr::pivot_wider(names_from = estadístico, values_from = value) |>
-  mutate(across(where(is.numeric), \(x) round(x, 2))) |>
-  kable(booktabs = TRUE, format = "latex",
-        col.names = c("Variable", "Media", "SD", "Mín", "Máx"))
-```
-
 ### Descripción formal de los datos
 
 Los datos utilizados en el trabajo son series temporales de variables
@@ -41,13 +15,14 @@ UVA/Padova [@man2014] sobre una cohorte de 20 pacientes virtuales
 con DM1 en régimen MDI.
 
 Para cada paciente y escenario experimental (E1–E6), el simulador
-genera un fichero CSV con una resolución de muestreo de 1 minuto,
+genera un fichero XLSX con una resolución de muestreo de 1 minuto,
 que contiene 16 variables fisiológicas y de control
-(@tbl-variables-simulador) y un archivo JSON que registra todos los eventos de entrada
-al simulador con su marca temporal [@siket_py-mgipsim_2025]. El flujo de trabajo interno del simulador
+(@tbl-variables-simulador), y un archivo JSON que registra todos los
+eventos de entrada al simulador con su marca temporal
+[@siket_py-mgipsim_2025]. El flujo de trabajo interno del simulador
 se ilustra en la @fig-workflow. El conjunto de datos bruto comprende
 120 series temporales independientes (20 pacientes × 6 escenarios),
-cada una con una duración de varios días simulados.
+cada una con una duración de 30 días simulados.
 
 | Variable | Unidades | Descripción |
 |----------|----------|-------------|
@@ -70,27 +45,28 @@ cada una con una duración de varios días simulados.
 
 : Variables fisiológicas de salida del simulador py-mgipsim. {#tbl-variables-simulador}
 
-![Flujo de trabajo del simulador py-mgipsim. Fuente: @siket_py-mgipsim_2025.](img/workflow_simulador.png){#fig-workflow}
-
+![Flujo de trabajo del simulador py-mgipsim. Fuente:
+@siket_py-mgipsim_2025.](img/workflow_simulador.png){#fig-workflow}
 
 La documentación oficial del simulador no describe de forma explícita
 el significado de cada variable de salida. Para su comprensión se
 recurrió al análisis del código fuente mediante la herramienta de
-inteligencia artificial de Antigravity [@google_antigravity], que permitió interpretar las
-variables en el contexto del modelo fisiológico subyacente. El
-detalle del uso de esta herramienta se recoge en el Anexo I.
+inteligencia artificial Antigravity [@google_antigravity], que
+permitió interpretar las variables en el contexto del modelo
+fisiológico subyacente. El detalle del uso de esta herramienta se
+recoge en el Anexo I.
 
-De entre las 16 variables disponibles en el CSV, se seleccionó para
+De entre las 16 variables disponibles en el XLSX, se seleccionó para
 el análisis la glucosa intersticial (`IG`, convertida de mmol/L a
 mg/dL). Las variables de control —insulina en bolo, insulina basal,
 ingesta de comidas y tentempiés, y ejercicio físico— se obtienen del
-fichero JSON del escenario. Ambas
-fuentes se integraron en un único dataframe por paciente y escenario
-antes de aplicar el preprocesamiento. Las series resultantes se
-remuestrearon a 5 minutos, resolución habitual de los dispositivos
-MCG comerciales [@rodbard2025], reduciendo el volumen de datos en un
-factor de 5 sin pérdida de información relevante para el horizonte
-de predicción analizado.
+fichero JSON del escenario. Ambas fuentes se integraron en un único
+dataframe por paciente y escenario antes de aplicar el
+preprocesamiento. Las series resultantes se remuestrearon a 5 minutos,
+resolución habitual de los dispositivos MCG comerciales
+[@rodbard2025], reduciendo el volumen de datos en un factor de 5 sin
+pérdida de información relevante para el horizonte de predicción
+analizado.
 
 Para garantizar la coherencia de los datos generados en los escenarios
 con error en la dosis de insulina (E4, E5 y E6), fue necesario
@@ -137,16 +113,28 @@ postprandial. Los tentempiés generados por el simulador no conllevan
 administración de insulina en bolo, a diferencia de las comidas
 principales [@siket_py-mgipsim_2025].
 
-**Ejercicio físico:** variable de intensidad que indica
-la presencia y características de la actividad física realizada.
-El ejercicio modifica la sensibilidad a la insulina de forma aguda
-y prolongada, pudiendo inducir tanto hipoglucemia durante o tras su
-práctica como hiperglucemia en ejercicio de alta intensidad
+**Ejercicio físico:** variable de intensidad que indica la presencia
+y características de la actividad física realizada. El ejercicio
+modifica la sensibilidad a la insulina de forma aguda y prolongada,
+pudiendo inducir tanto hipoglucemia durante o tras su práctica como
+hiperglucemia en ejercicio de alta intensidad
 [@helleputte_effects_2023].
 
 ### Descripción estadística de los datos
 
-| Paciente | mean | std | min | max |
+Las tablas @tbl-est_e1 a @tbl-est_e6 recogen las estadísticas
+descriptivas de la glucemia (en mg/dL) de los 20 pacientes virtuales
+para cada escenario experimental, calculadas sobre las series
+completas de 30 días a resolución de 5 minutos. El valor mínimo
+común de 108 mg/dL en la mayoría de pacientes refleja el valor basal
+de glucemia en ayunas del simulador. Los pacientes con media superior
+a 200 mg/dL presentan un TIR cercano al 0%, lo que corresponde a perfiles
+glucémicos sistemáticamente desplazados hacia la hiperglucemia, tal
+como se discute en el apartado 6.4 de la memoria.
+
+
+
+| Paciente | Media | Desv. típica | Mín. | Máx. |
 | :--- | :----- | :----- | :----- | :----- |
 | 0 | 167.55 | 14.66 | 108.0 | 199.0 |
 | 1 | 152.14 | 15.20 | 108.0 | 185.0 |
@@ -169,9 +157,10 @@ práctica como hiperglucemia en ejercicio de alta intensidad
 | 18 | 158.00 | 18.03 | 108.0 | 196.0 |
 | 19 | 195.86 | 20.34 | 108.0 | 227.0 |
 
-:Estadísticas glucosa pacientes Escenario 1 {tbl-est_e1}
+:Estadísticas glucosa pacientes Escenario 1 ($\text{HC}^-$  $\text{E}_0$  $\text{Er}_0$
+) {#tbl-est_e1}
 
-| Paciente | mean | std | min | max |
+| Paciente | Media | Desv. típica | Mín. | Máx. |
 | :--- | :----- | :----- | :----- | :----- |
 | 0 | 167.17 | 15.41 | 108.0 | 208.0 |
 | 1 | 151.70 | 16.06 | 108.0 | 189.0 |
@@ -194,10 +183,11 @@ práctica como hiperglucemia en ejercicio de alta intensidad
 | 18 | 158.11 | 18.52 | 108.0 | 202.0 |
 | 19 | 196.61 | 21.53 | 108.0 | 232.0 |
 
-:Estadísticas glucosa pacientes Escenario 2 {tbl-est_e2}
+:Estadísticas glucosa pacientes Escenario 2 ($\text{HC}^+$  $\text{E}_0$  $\text{Er}_0$
+) {#tbl-est_e2}
 
 
-| Paciente | mean | std | min | max |
+| Paciente | Media | Desv. típica | Mín. | Máx. |
 | :--- | :----- | :----- | :----- | :----- |
 | 0 | 161.92 | 13.71 | 108.0 | 197.0 |
 | 1 | 149.33 | 14.56 | 108.0 | 185.0 |
@@ -219,10 +209,11 @@ práctica como hiperglucemia en ejercicio de alta intensidad
 | 17 | 167.69 | 16.83 | 108.0 | 207.0 |
 | 18 | 158.53 | 17.79 | 108.0 | 196.0 |
 | 19 | 186.31 | 21.59 | 106.0 | 220.0 |
-:Estadísticas glucosa pacientes Escenario 3 {tbl-est_e3}
+:Estadísticas glucosa pacientes Escenario 3 ($\text{HC}^-$  $\text{E}^+$  $\text{Er}_0$
+) {#tbl-est_e3}
 
 
-| Paciente | mean | std | min | max |
+| Paciente | Media | Desv. típica | Mín. | Máx. |
 | :--- | :----- | :----- | :----- | :----- |
 | 0 | 165.96 | 19.01 | 108.0 | 219.0 |
 | 1 | 152.83 | 19.02 | 108.0 | 206.0 |
@@ -244,9 +235,10 @@ práctica como hiperglucemia en ejercicio de alta intensidad
 | 17 | 170.56 | 19.70 | 108.0 | 230.0 |
 | 18 | 157.65 | 18.86 | 108.0 | 202.0 |
 | 19 | 194.61 | 23.28 | 108.0 | 244.0 |
-:Estadísticas glucosa pacientes Escenario 4 {tbl-est_e4}
+:Estadísticas glucosa pacientes Escenario 4 ($\text{HC}^-$  $\text{E}_0$  $\text{Er}^+$
+) {#tbl-est_e4}
 
-| Paciente | mean | std | min | max |
+| Paciente | Media | Desv. típica | Mín. | Máx. |
 | :--- | :----- | :----- | :----- | :----- |
 | 0 | 162.52 | 18.34 | 108.0 | 216.0 |
 | 1 | 150.50 | 17.41 | 108.0 | 198.0 |
@@ -268,10 +260,11 @@ práctica como hiperglucemia en ejercicio de alta intensidad
 | 17 | 169.21 | 19.57 | 108.0 | 231.0 |
 | 18 | 158.11 | 19.82 | 108.0 | 202.0 |
 | 19 | 198.09 | 24.23 | 108.0 | 246.0 |
-:Estadísticas glucosa pacientes Escenario 5 {tbl-est_e5}
+:Estadísticas glucosa pacientes Escenario 5 ($\text{HC}^+$  $\text{E}_0$  $\text{Er}^+$
+) {#tbl-est_e5}
 
 
-| Paciente | mean | std | min | max |
+| Paciente | Media | Desv. típica | Mín. | Máx. |
 | :--- | :----- | :----- | :----- | :----- |
 | 0 | 161.17 | 17.96 | 108.0 | 216.0 |
 | 1 | 148.13 | 16.74 | 108.0 | 193.0 |
@@ -293,4 +286,5 @@ práctica como hiperglucemia en ejercicio de alta intensidad
 | 17 | 166.83 | 19.78 | 108.0 | 217.0 |
 | 18 | 159.17 | 18.69 | 108.0 | 204.0 |
 | 19 | 188.70 | 23.92 | 105.0 | 235.0 |
-:Estadísticas glucosa pacientes Escenario 6 {tbl-est_e6}
+:Estadísticas glucosa pacientes Escenario 6 ($\text{HC}^-$  $\text{E}^+$  $\text{Er}^+$
+) {#tbl-est_e6}
