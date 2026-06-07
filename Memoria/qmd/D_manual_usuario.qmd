@@ -4,15 +4,6 @@
 %% ══════════════════════════════════════════════════════
 \apendice{Documentación de usuario}
 
-
-\section{Requisitos software y hardware para ejecutar el proyecto.}
-Se detallarán los requisitos mínimos de software y hardware necesarios para ejecutar correctamente el proyecto.
-
-\section{Instalación / Puesta en marcha}
-Se describirá el proceso de instalación y ejecución del sistema de forma clara y ordenada, indicando los pasos necesarios para su correcta puesta en funcionamiento.
-
-\section{Manuales y/o Demostraciones prácticas}
-Se incluirán instrucciones de uso del sistema y ejemplos prácticos que faciliten su comprensión por parte del usuario final.
 ```
 
 
@@ -21,16 +12,13 @@ Se incluirán instrucciones de uso del sistema y ejemplos prácticos que facilit
 #### Requisitos software
 
 | Software | Versión | Descripción |
-|----------|---------|-------------|
+|----------|------------|-----------------|
 | Python | 3.12.0 | Lenguaje de programación principal |
-| R | 4.x | Entorno para la compilación del documento |
-| Quarto | 1.x | Sistema de publicación del documento |
 | conda | 23.x o superior | Gestor de entornos y dependencias |
-| Git | Reciente | Control de versiones |
-| py-mgipsim | Última versión (descargada en 2026) | Simulador de pacientes virtuales |
+| Git | Reciente | Control de versiones y clonado del repositorio |
+| py-mgipsim | Última versión (descargada en 2026) | Simulador de pacientes virtuales (opcional) |
 
 : Requisitos software del proyecto. {#tbl-requisitos-software}
-
 
 Las dependencias de Python del proyecto se recogen en el fichero
 `environment.yml` del repositorio, que permite reproducir el entorno
@@ -55,18 +43,20 @@ orientativa en la @tbl-requisitos-hardware:
 |------------|---------------|
 | Procesador | AMD Ryzen 7 5700U (1,80 GHz, 8 núcleos) |
 | RAM | 16,0 GB (15,4 GB usable) |
-| Tarjeta gráfica | AMD Radeon Graphics (496 MB) |
+| Tarjeta gráfica | AMD Radeon Graphics (496 MB / 7,7 GB) |
 | Sistema operativo | Windows 11 |
 
 : Especificaciones hardware del equipo de desarrollo utilizado como
 referencia. {#tbl-requisitos-hardware}
 
-### D.2. Instalación y puesta en marcha
+### Instalación y puesta en marcha
 
 Los pasos siguientes describen el proceso completo para reproducir
-el entorno y ejecutar el pipeline de análisis. Los pasos 3 y 4
-(instalación y uso del simulador) son opcionales si se desea trabajar
-directamente con los datos ya generados incluidos en el repositorio.
+el entorno y ejecutar el pipeline de análisis. Con la estructura del
+repositorio tal como se entrega, es posible replicar el estudio
+completo a partir de los datos serializados incluidos. Los pasos 3
+y 4 son opcionales y solo necesarios si se desean generar nuevos
+datos con el simulador.
 
 **Paso 1 — Clonar el repositorio**
 
@@ -84,6 +74,9 @@ conda activate tfg-glucosa
 
 **Paso 3 — Instalar el simulador py-mgipsim (opcional)**
 
+Si se desea generar nuevos datos con el simulador, es necesario
+instalarlo de forma independiente:
+
 ```bash
 git clone https://github.com/illinoistech-itm/py-mgipsim.git
 cd py-mgipsim
@@ -94,43 +87,44 @@ pip install -r requirements.txt
 
 Una vez instalado el simulador, los datos pueden generarse mediante
 la interfaz gráfica o la interfaz de línea de comandos, tal como
-se describe en el Anexo C (CU-1). Los ficheros de resultados deben
-colocarse en la carpeta `data/` del repositorio para que el pipeline
-los localice correctamente.
+se describe en el Anexo C (CU-1). Los ficheros de resultados
+(XLSX y JSON) deben colocarse en las subcarpetas correspondientes
+de `py-mgipsim-main/SimulationResults/`. A continuación, debe
+ejecutarse el script `guardar_df.py` desde la carpeta
+`Analisis_y_resultados/` para generar los archivos serializados
+en `Simulaciones/`. Si se utilizan datos distintos a los originales,
+será necesario ajustar las rutas definidas en dicho script.
 
 **Paso 5 — Visualizar los datos generados**
 
-Abrir y ejecutar el notebook de visualización:
+Abrir y ejecutar el notebook de visualización desde la carpeta
+`Analisis_y_resultados/`:
 
 ```bash
-jupyter notebook notebooks/visualizacion_datos.ipynb
+jupyter notebook Analisis_y_resultados/Comprobar_simulaciones.ipynb
 ```
+
+El notebook permite inspeccionar las series temporales de glucemia
+generadas por el simulador. El usuario debe especificar el número
+de escenario (1–6) y el identificador de paciente (0–19) para
+obtener la gráfica correspondiente. Las gráficas pueden exportarse
+como imagen en la carpeta `Series_glucosa/`.
 
 **Paso 6 — Ejecutar el pipeline de análisis**
 
 Abrir y ejecutar el notebook principal con las celdas en orden:
 
 ```bash
-jupyter notebook notebooks/pipeline_prediccion.ipynb
+jupyter notebook Analisis_y_resultados/Pipeline.ipynb
 ```
 
-#### Uso del notebook de visualización
-
-El notebook de visualización permite inspeccionar las series
-temporales de glucemia generadas por el simulador. El usuario debe
-especificar en la celda de parámetros el número de escenario (1–6)
-y el identificador de paciente (0–19) para obtener la gráfica
-correspondiente. Las gráficas pueden exportarse como imagen desde
-la propia interfaz de Jupyter.
-
-#### Uso del notebook de pipeline
-
-El notebook de pipeline está organizado en secciones secuenciales
-que corresponden a las fases del análisis: preprocesamiento,
-ingeniería de características, optimización de hiperparámetros,
-backtesting y evaluación. Las celdas deben ejecutarse en orden.
-Los resultados se almacenan automáticamente en la carpeta
-`resultados/` del repositorio.
+El notebook está organizado en secciones secuenciales que
+corresponden a las fases del análisis: preprocesamiento, ingeniería
+de características, optimización de hiperparámetros, backtesting y
+evaluación. Las celdas deben ejecutarse en orden. Algunas celdas
+están marcadas como opcionales e incluyen comprobaciones básicas de
+funcionamiento que pueden omitirse. Los resultados se almacenan
+automáticamente en `Analisis_y_resultados/Resultados/`.
 
 Los parámetros configurables por el usuario se encuentran en la
 celda de configuración al inicio del notebook, e incluyen la
