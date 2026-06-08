@@ -12,7 +12,25 @@ from matplotlib import pyplot as plt
 # FUNCIONES PARA NOTEBOOK VISUALIZACIÓN 
 # DE DATOS GENERADOS POR EL SIMULADOR
 # =============================================
-def visualizacion_paciente(dias = None):  
+def visualizacion_paciente(dias = None):
+    """Carga y grafica los datos de simulación de un paciente específico.
+
+    Solicita de forma interactiva el escenario y el número de paciente para
+    extraer los datos de glucosa (desde un archivo Excel) y los eventos de
+    comidas (desde un JSON). Permite filtrar los datos por una cantidad de
+    días específica. Genera una gráfica de doble eje Y que muestra la evolución
+    de la glucosa frente a la ingesta de carbohidratos.
+
+    Parámetros:
+    -----------
+    dias: int, opcional
+         Número de días a visualizar desde el inicio de la 
+         simulación. Si es None, se muestra la simulación completa. Defaults to None.
+
+    Devuelve:
+    ---------
+        None: La función muestra la gráfica directamente en pantalla (`plt.show()`).
+    """
     esc = int(input('Número de escenario (1-6)'))
     pac = int(input('Número de paciente (0-19)'))
 
@@ -55,7 +73,6 @@ def visualizacion_paciente(dias = None):
     ax1.axhline(180, color='orange', linestyle='--', linewidth=1, label='Hiperglucemia')
 
     # Crear el segundo sistema de ejes independientes (Comidas)
-    # twinx() comparte el eje X (tiempo) y crea un eje Y independiente a la derecha
     ax2 = ax1.twinx()
 
     # Gráfica de Comidas (Eje derecho)
@@ -83,7 +100,30 @@ def visualizacion_paciente(dias = None):
 
 
 def analisis(r_json,r_xlsx, esc = '_', n =20, guardar = True, carpeta = None, pos_ley = 'lower right'):
+    """Genera y guarda de forma iterativa las gráficas de glucosa y comidas para un grupo de pacientes.
 
+    Parámetros
+    ----------
+    r_json : str o Path
+        Ruta al archivo JSON con la configuración y eventos de entrada de la simulación.
+    r_xlsx : str o Path
+        Ruta al archivo Excel con los resultados del estado del modelo de los pacientes.
+    esc : str, opcional
+        Identificador o número de escenario a incluir en el título y nombre del archivo. Por defecto '_'.
+    n : int, opcional
+        Número total de pacientes a procesar de forma iterativa. Por defecto 20.
+    guardar : bool, opcional
+        Indica si se deben guardar las gráficas generadas en el disco. Por defecto True.
+    carpeta : Path o str, opcional
+        Directorio donde se almacenarán las imágenes. Si es None, se creará la carpeta 'Series_glucosa/'. Por defecto None.
+    pos_ley : str, opcional
+        Posición de la leyenda unificada dentro del recuadro de la gráfica. Por defecto 'lower right'.
+
+    Devuelve
+    -------
+    Ninguno
+        La función no retorna ningún objeto, visualiza las gráficas en pantalla y/o las exporta como imágenes PNG.
+    """
     if carpeta is None:
         carpeta = Path('Series_glucosa/')
         carpeta.mkdir(exist_ok=True)
@@ -172,9 +212,21 @@ def analisis(r_json,r_xlsx, esc = '_', n =20, guardar = True, carpeta = None, po
 # =============================
 
 def remuestrear(df, columnas, t_muestreo: int):
-    """
-    Desplaza valores de múltiples columnas hacia sus múltiplos de t_muestreo
-    más cercanos y elimina las posiciones originales.
+    """Desplaza valores de múltiples columnas hacia sus múltiplos de t_muestreo más cercanos y elimina las posiciones originales.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame que se quiere remuestrear.
+    columnas: list o str
+        Lista de nombres de columnas (o una sola columna) cuyos valores diferentes de cero se acumularán en el nuevo índice alineado.
+    t_muestreo: int
+        Intervalo de tiempo objetivo en minutos (por ejemplo, 5) al cual se desean alinear los datos.
+
+    Devuelve
+    -------
+    df_limpio: pd.DataFrame
+        DataFrame filtrado que contiene únicamente las filas correspondientes a los múltiplos de t_muestreo con las características exógenas ya reubicadas.
     """
     df_copy = df.copy()
     
@@ -207,18 +259,80 @@ def remuestrear(df, columnas, t_muestreo: int):
     return df_limpio
 
 def escalar(df, columnas = ['gluc_mg', 'glu_mmol', 'meal_carb', 'snack_carb', 'bolus_insulin', 'basal_insulin','running_speed' ]):
+    """Aplica un escalado Min-Max a las columnas seleccionadas del DataFrame.
+
+    Transforma las características especificadas escalando cada una de ellas a un
+    rango determinado (por defecto entre 0 y 1) utilizando la herramienta MinMaxScaler.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        
+    columnas: list, opcional
+        Lista con los nombres de las columnas que se van a transformar de forma
+        numérica. Por defecto incluye variables de glucosa, ingestas, insulina y ejercicio.
+
+    Devuelve
+    -------
+    df_resultado: pd.DataFrame
+        DataFrame clonado con las características exógenas e indicadoras ya normalizadas.
+    """
     df_resultado = df.copy()
     scaler = MinMaxScaler()
     df_resultado[columnas] = scaler.fit_transform(df_resultado[columnas])
     return df_resultado
 
 def estandarizar(df, columnas = ['gluc_mg', 'glu_mmol', 'meal_carb', 'snack_carb', 'bolus_insulin', 'basal_insulin','running_speed' ]):
+    """
+    Transforma las características especificadas centrándolas en una media de 0 y 
+    escalándolas para que tengan una desviación estándar de 1 utilizando StandardScaler.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        
+    columnas: list, opcional
+        Lista con los nombres de las columnas que se van a normalizar numéricamente. 
+        Por defecto incluye variables de glucosa, ingestas, insulina y ejercicio.
+
+    Devuelve
+    -------
+    df_resultado: pd.DataFrame
+        DataFrame clonado con las características exógenas e indicadoras ya estandarizadas.
+    """
     df_resultado = df.copy()
     scaler = StandardScaler()
     df_resultado[columnas] = scaler.fit_transform(df_resultado[columnas])
     return df_resultado
 
 def estadisticas_rango(df, nombre_col = 'gluc_mg', lim = [0, 70, 181, 700], n_rang = ['TBR','TIR','TAR']):
+    """Calcula el porcentaje de tiempo que los valores de glucosa pasan en diferentes rangos clínicos.
+
+    Clasifica las lecturas temporales de una columna específica en tres categorías
+    estándar utilizando intervalos definidos (bins): por debajo del rango (TBR - Time
+    Below Range), en rango objetivo (TIR - Time In Range) y por encima del rango
+    (TAR - Time Above Range).
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+
+    nombre_col: str, opcional
+        Nombre de la columna del DataFrame que contiene las lecturas de glucosa a analizar.
+        Por defecto es 'gluc_mg'.
+    lim: list de int o float, opcional
+        Límites numéricos para construir los intervalos de corte (bins) en pd.cut.
+        Por defecto es [0, 70, 181, 700].
+    n_rang: list de str, opcional
+        Etiquetas asociadas a cada rango clínico definido por los límites.
+        Por defecto es ['TBR', 'TIR', 'TAR'].
+
+    Devuelve
+    -------
+    porcentajes_dic: dict
+        Diccionario con las claves 'TIR', 'TAR' y 'TBR', donde cada una contiene una lista
+        con el valor porcentual redondeado a dos decimales correspondiente a ese rango.
+    """
     est =pd.DataFrame()
     columna = nombre_col
 
@@ -343,9 +457,364 @@ def normalidad(s, datos, nombre):
 
 
 
+
+# ==========================================================================
+# ZONAS CLARKE ERROR GRID
+# ==========================================================================
+def clasificar_zona_clarke(ref: float, pred: float) -> str:
+    """
+    Clasifica un par (valor_real, predicción) en una de las cinco
+    zonas del Clarke Error Grid (A, B, C, D, E).
+ 
+    La clasificación sigue las ecuaciones originales de Clarke et al.
+    (Diabetes Care, 1987) con las correcciones de Kovatchev et al.
+ 
+    Las zonas se definen por regiones en el espacio 2D donde el eje X
+    es el valor real de glucosa y el eje Y es la predicción:
+ 
+    Zona A: Error clínicamente aceptable.
+      - Ambos valores < 70 mg/dL (zona de hipoglucemia concordante), O
+      - La predicción está dentro del ±20% del valor real.
+      El tratamiento basado en esta predicción sería correcto.
+ 
+    Zona E: Error clínicamente peligroso (opuesto al correcto).
+      - Real < 70 y predicción > 180: predice hiperglucemia cuando
+        hay hipoglucemia → se administraría insulina cuando no procede.
+      - Real > 180 y predicción < 70: predice hipoglucemia cuando
+        hay hiperglucemia → se darían carbohidratos cuando no procede.
+ 
+    Zona D: Error grave por omisión (fallo en detectar extremos).
+      - Real < 70 y predicción entre 70-180: no detecta hipoglucemia.
+      - Real > 240 y predicción entre 70-180: no detecta hiperglucemia.
+ 
+    Zona C: Corrección innecesaria.
+      - Real entre 130-180 y predicción > 180+((pred-180)*0.8): predice
+        hiperglucemia leve cuando el valor es aceptable.
+      - Real entre 70-130 y predicción < 70-((70-pred)*0.8): predice
+        hipoglucemia cuando el valor es aceptable.
+ 
+    Zona B: Todo lo demás — error no peligroso clínicamente.
+ 
+    Parámetros
+    ----------
+    ref : float
+        Valor real de glucosa en sangre (mg/dL).
+    pred : float
+        Valor predicho de glucosa en sangre (mg/dL).
+ 
+    Retorna
+    -------
+    str : 'A', 'B', 'C', 'D' o 'E'
+    """
+    # ── Zona A ───────────────────────────────────────────────────
+    if (ref < 70 and pred < 70) or (abs(pred - ref) / max(ref, 1e-6) <= 0.20):
+        return "A"
+ 
+    # ── Zona E ───────────────────────────────────────────────────
+    if (ref < 70 and pred > 180) or (ref > 180 and pred < 70):
+        return "E"
+ 
+    # ── Zona D ───────────────────────────────────────────────────
+    if (ref < 70 and 70 <= pred <= 180) or (ref > 240 and 70 <= pred <= 180):
+        return "D"
+ 
+    # ── Zona C ───────────────────────────────────────────────────
+    # Subzona C superior: predice hiperglucemia excesiva
+    if (ref >= 70 and pred >= ref + 110):
+        return "C"
+    # Subzona C inferior: predice hipoglucemia en estado normal/hiper
+    if (ref >= 130 and pred <= (7.0 / 5.0) * ref - 182):
+        return "C"
+ 
+    # ── Zona B ───────────────────────────────────────────────────
+    return "B"
+
+def clarke_error_grid(
+    y_real: np.ndarray,
+    y_pred: np.ndarray,
+) -> pd.DataFrame:
+    """
+    Clasifica todos los pares (real, predicción) en zonas Clarke y
+    devuelve un DataFrame con la clasificación y estadísticas.
+ 
+    Parámetros
+    ----------
+    y_real : np.ndarray
+        Array de valores reales de glucosa (mg/dL).
+    y_pred : np.ndarray
+        Array de predicciones de glucosa (mg/dL).
+ 
+    Retorna
+    -------
+    pd.DataFrame con columnas: real, pred, zona.
+    """
+    y_real = np.asarray(y_real).flatten()
+    y_pred = np.asarray(y_pred).flatten()
+ 
+    zonas = [clasificar_zona_clarke(r, p) for r, p in zip(y_real, y_pred)]
+ 
+    return pd.DataFrame({
+        "real": y_real,
+        "pred": y_pred,
+        "zona": zonas,
+    })
+
+
+def resumen_clarke(df_clarke: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calcula el porcentaje de predicciones en cada zona Clarke.
+ 
+    Desde el punto de vista clínico:
+      - Zona A + B: predicciones clínicamente aceptables 
+      - Zona C:     correcciones innecesarias 
+      - Zona D:     fallos en detectar extremos 
+      - Zona E:     predicciones peligrosas 
+ 
+    Parámetros
+    ----------
+    df_clarke : pd.DataFrame
+        Resultado de clarke_error_grid().
+ 
+    Retorna
+    -------
+    pd.DataFrame con zonas, conteos y porcentajes.
+    """
+    total   = len(df_clarke)
+    conteos = df_clarke["zona"].value_counts().reindex(["A", "B", "C", "D", "E"], fill_value=0)
+    pcts    = (conteos / total * 100).round(2)
+ 
+    resumen = pd.DataFrame({
+        "zona":       conteos.index,
+        "n":          conteos.values,
+        "porcentaje": pcts.values,
+    })
+ 
+    return resumen
+
+# ----------vISUALIZACIÓN--------------------
+ 
+# Colores clínicamente intuitivos para cada zona
+COLORES_ZONA = {
+    "A": "#2ecc71",   # Verde — seguro
+    "B": "#f39c12",   # Naranja — aceptable
+    "C": "#e67e22",   # Naranja oscuro — precaución
+    "D": "#e74c3c",   # Rojo — peligroso
+    "E": "#8e44ad",   # Púrpura — muy peligroso
+}
+ 
+ 
+def _dibujar_regiones_clarke(ax: plt.Axes, max_val: float = 650) -> None:
+    """
+    Dibuja las líneas de frontera del Clarke Error Grid sobre un eje.
+ 
+    Las fronteras siguen la especificación original de Clarke et al.:
+      - Línea de identidad (predicción = real)
+      - Bandas del ±20% (fronteras de la zona A)
+      - Fronteras de las zonas C, D y E definidas por segmentos lineales
+ 
+    Este es un método auxiliar — no se llama directamente.
+ 
+    Parámetros
+    ----------
+    ax : plt.Axes
+        Eje de matplotlib sobre el que dibujar.
+    max_val : float
+        Valor máximo del eje (mg/dL). Default 400.
+    """
+    lw = 0.8   # grosor de líneas de frontera
+ 
+    # Línea de identidad
+    ax.plot([0, max_val], [0, max_val], "k--", lw=lw, alpha=0.5, zorder=1)
+ 
+    # Fronteras zona A: ±20%
+    ax.plot([70/1.2, max_val], [70, max_val * 1.20], 'k-', lw=lw)
+    ax.plot([70+1, max_val], [56, max_val * 0.80], 'k-', lw=lw)
+    ax.plot([70/1.2 -1, 0], [70, 70], 'k-', lw=lw)
+    ax.plot([70, 70], [0, 56], 'k-', lw=lw) 
+    
+    # ── Fronteras zona E (superior izquierda y inferior derecha) ──
+    # E superior: real < 70, pred > 180
+    ax.plot([0, 70],  [180, 180], "k-", lw=lw)
+    ax.plot([70, 70], [180, max_val], "k-", lw=lw)
+    # E inferior: real > 180, pred < 70
+    ax.plot([180, 180], [0, 70], "k-", lw=lw)
+    ax.plot([180, max_val], [70, 70], "k-", lw=lw)
+ 
+    # ── Fronteras zona D ──
+    # D superior: real < 70, pred 70-180
+    ax.plot([70, 70], [85, 180], "k-", lw=lw)
+    # D inferior: real > 240, pred 70-180
+    ax.plot([240, 240], [70, 180], "k-", lw=lw)
+    ax.plot([240, max_val], [180, 180], "k-", lw=lw)
+ 
+    # ── Fronteras zona C ──
+    # C superior: Nace en (70,180) y sube con y = x + 110
+    # Calculamos el límite de Y para no salirnos del max_val
+    y_lim_C_sup = min(max_val, max_val + 110)
+    x_lim_C_sup = y_lim_C_sup - 110
+    ax.plot([70, x_lim_C_sup], [180, y_lim_C_sup], "k-", lw=lw)
+    
+    # C inferior: Nace en el eje X (130, 0) hasta la esquina de E (180, 70)
+    ax.plot([130, 180], [0, 70], "k-", lw=lw)
+ 
+    # Etiquetas de zona en posiciones representativas
+    etiquetas = {
+        "A": (200, 200), "B": (350, 220), "B ": (120, 180),
+        "C": (160, 380), "C ": (160, 20), # C inferior suele estar visible en el eje X si max_val es grande
+        "D": (40, 150),  "D ": (300, 130),
+        "E": (40, 350),  "E ": (350, 40),
+    }
+    
+    for label, (x, y) in etiquetas.items():
+        if x <= max_val and y <= max_val:
+            ax.text(x, y, label.strip(), fontsize=11, fontweight="bold",
+                    color="gray", alpha=0.6, ha="center", va="center")
+
+def plot_clarke_error_grid(
+    df_clarke: pd.DataFrame,
+    titulo: str = "Clarke Error Grid",
+    max_val: float = 650,
+    ax: plt.Axes = None,
+) -> plt.Axes:
+    """
+    Genera el gráfico del Clarke Error Grid con los puntos coloreados
+    por zona clínica y las fronteras de cada región.
+ 
+    Cada punto representa un par (glucosa real, glucosa predicha).
+    El color indica la zona clínica: verde=A, naranja=B, etc.
+ 
+    Parámetros
+    ----------
+    df_clarke : pd.DataFrame
+        Resultado de clarke_error_grid() con columnas real, pred, zona.
+    titulo : str
+        Título del gráfico.
+    max_val : float
+        Límite de los ejes en mg/dL. Default 400.
+    ax : plt.Axes, opcional
+        Eje existente. Si None, se crea una figura nueva.
+ 
+    Retorna
+    -------
+    plt.Axes con el gráfico generado.
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(7, 7))
+ 
+    # Dibujar regiones primero (fondo)
+    _dibujar_regiones_clarke(ax, max_val)
+ 
+    # Scatter por zona
+    for zona, grupo in df_clarke.groupby("zona"):
+        ax.scatter(
+            grupo["real"], grupo["pred"],
+            c=COLORES_ZONA[zona],
+            label=f"Zona {zona} ({len(grupo)})",
+            alpha=0.5,
+            s=8,
+            zorder=2,
+        )
+ 
+    ax.set_xlim(0, max_val)
+    ax.set_ylim(0, max_val)
+    ax.set_xlabel("Glucosa real (mg/dL)", fontsize=12)
+    ax.set_ylabel("Glucosa predicha (mg/dL)", fontsize=12)
+    ax.set_title(titulo, fontsize=13, fontweight="bold")
+    ax.legend(loc="upper left", fontsize=9, markerscale=2)
+    ax.set_aspect("equal")
+    ax.grid(True, alpha=0.2)
+ 
+    return ax
+
+def evaluar_clarke_backtesting(
+    y: pd.Series,
+    predictions: pd.DataFrame,
+    horizonte: str,
+    patient_id: int,
+    sim_id: int,
+    mostrar_graficos: bool = True,
+    guardar_graficos: bool = False,
+) -> dict:
+    """
+    Calcula y visualiza el Clarke Error Grid para las predicciones
+    de un único caso (paciente × simulación × horizonte).
+ 
+    Alinea temporalmente las predicciones con los valores reales,
+    calcula las zonas Clarke para cada par y genera gráfico:
+      1. Clarke Error Grid (scatter en espacio 2D)
+
+ 
+    Parámetros
+    ----------
+    y : pd.Series
+        Serie completa de glucosa (train + test).
+    predictions : pd.DataFrame
+        Predicciones del backtesting (columna 'pred', índice temporal).
+    horizonte : str
+        Nombre del horizonte ('15min' o '30min') — usado en títulos.
+    patient_id : int
+        ID del paciente — usado en títulos y nombres de archivo.
+    sim_id : int
+        ID de la simulación — usado en títulos y nombres de archivo.
+    mostrar_graficos : bool
+        Si True, muestra los gráficos en pantalla (plt.show()).
+    guardar_graficos : bool
+        Si True, guarda los gráficos como PNG.
+ 
+    Retorna
+    -------
+    dict con:
+        'df_clarke'   : DataFrame con clasificación zona por punto
+        'resumen'     : DataFrame con porcentajes por zona
+        'pct_A'       : % zona A
+        'pct_AB'      : % zonas A+B (métrica clínica principal)
+        'pct_DE'      : % zonas D+E (predicciones peligrosas)
+    """
+    # Alinear predicciones con valores reales
+    y_test    = y.loc[predictions.index]
+    y_real    = y_test.values
+    y_pred    = predictions["pred"].values
+ 
+    # Clasificar en zonas Clarke
+    df_clarke = clarke_error_grid(y_real, y_pred)
+    resumen   = resumen_clarke(df_clarke)
+ 
+    pct_A  = resumen.loc[resumen["zona"] == "A", "porcentaje"].values[0]
+    pct_AB = resumen.loc[resumen["zona"].isin(["A", "B"]), "porcentaje"].sum()
+    pct_DE = resumen.loc[resumen["zona"].isin(["D", "E"]), "porcentaje"].sum()
+ 
+    titulo_base = f"Paciente {patient_id:02d} | Sim {sim_id} | {horizonte}"
+ 
+    if mostrar_graficos or guardar_graficos:
+        # ── Figura 1: Clarke Error Grid + barras de zonas ────────
+        fig1, ax_grid= plt.subplots(1, 1, figsize=(7, 7))
+        plot_clarke_error_grid(df_clarke, titulo=f"CEG — {titulo_base}", ax=ax_grid)
+        plt.tight_layout()
+ 
+        if guardar_graficos:
+            fig1.savefig(
+                f"clarke_grid_p{patient_id:02d}_s{sim_id}_{horizonte}.png",
+                dpi=150, bbox_inches="tight",
+            )
+        if mostrar_graficos:
+            plt.show()
+        plt.close(fig1)
+ 
+        
+ 
+    return {
+        "df_clarke": df_clarke,
+        "resumen":   resumen,
+        "pct_A":     pct_A,
+        "pct_AB":    pct_AB,
+        "pct_DE":    pct_DE,
+    }
+
+
 # ======================================================================
 # GRÁFICAS
 # =======================================================================
+
 COLORES = {
     "XGBoost": "#378ADD",
     "ARIMAX":  "#EF9F27",
@@ -389,6 +858,24 @@ COLOR_HEAD   = '#f0f0f0'  # gris claro: primera columna
 # ── Preparación de datos ──────────────────────────────────────────────────────
 
 def preparar_datos(df_res, df_tir):
+    """Procesa, limpia y fusiona los resultados de las predicciones con las métricas clínicas de tiempo en rango.
+
+    Transforma la columna del horizonte de predicción a formato numérico, calcula
+    un nuevo porcentaje neto basado en los umbrales de error y unifica la información
+    de simulación y paciente con sus respectivos valores de TIR (Time In Range).
+
+    Parámetros
+    ----------
+    df_res: pd.DataFrame
+        DataFrame con los resultados de predicción
+    df_tir: pd.DataFrame
+        DataFrame que contiene las métricas de control glucémico (TIR, TAR, TBR) por paciente y simulación.
+
+    Devuelve
+    -------
+    df: pd.DataFrame
+        Todas las características exógenas.
+    """
     df = df_res.copy()
     df['horizonte_num'] = df['horizonte'].str.replace('min', '').astype(int)
     df['pct_B'] = df['pct_AB'] - df['pct_A']
@@ -399,6 +886,21 @@ def preparar_datos(df_res, df_tir):
 
 
 def agregar(df):
+    """Agrupa las métricas de rendimiento del modelo calculando su media y desviación estándar por simulación y horizonte.
+
+    Realiza una operación de agregación estadística sobre los errores de predicción
+    (MAE, RMSE) y los porcentajes de las zonas de error, consolidando los resultados
+    según el tipo de modelo, el tiempo del horizonte de predicción y el escenario simulado.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+
+    Devuelve
+    -------
+    df_agrupado: pd.DataFrame
+        Todas las características exógenas, incluidas las columnas rezagadas.
+    """
     return (
         df.groupby(["modelo", "horizonte_num", "simulacion"])
         [["MAE", "RMSE", "pct_A", "pct_B", "pct_DE"]]
@@ -413,6 +915,25 @@ def agregar(df):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def grafica_barras_mae(df, guardar=False, ruta='Resultados/figs/grafica_barras_mae.png'):
+    """Genera diagramas de barras comparativos del Error Absoluto Medio (MAE) entre modelos para horizontes de 15 y 30 minutos.
+
+    La función procesa las métricas agregadas por escenario de simulación, calcula
+    las desviaciones estándar para representarlas como barras de error  y
+    añade etiquetas numéricas con el valor de las medias sobre cada barra.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame con los datos.
+    guardar: bool, opcional
+        Determina si la figura generada se exportará y almacenará localmente en el disco. Por defecto es False.
+    ruta: str, opcional
+        Dirección de destino y nombre del archivo con el que se guardará la gráfica en formato PNG. Por defecto es 'Resultados/figs/grafica_barras_mae.png'.
+
+    Devuelve
+    -------
+    fig: matplotlib.figure.Figure
+    """
     agg = agregar(df)
     sims = sorted(df['simulacion'].unique())
     modelos = ['XGBoost', 'ARIMAX']
@@ -449,12 +970,30 @@ def grafica_barras_mae(df, guardar=False, ruta='Resultados/figs/grafica_barras_m
         fig.savefig(ruta, bbox_inches='tight')
     return fig
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # GRÁFICA — Barras agrupadas RMSE por simulación
 # ══════════════════════════════════════════════════════════════════════════════
 
 def grafica_barras_rmse(df, guardar=False, ruta='Resultados/figs/grafica_barras_rmse.png'):
+    """Genera diagramas de barras comparativos del Raíz Error Cuadrático Medio (RMSE) entre modelos para horizontes de 15 y 30 minutos.
+
+    La función procesa las métricas agregadas por escenario de simulación, calcula
+    las desviaciones estándar para representarlas como barras de error  y
+    añade etiquetas numéricas con el valor de las medias sobre cada barra.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame con los datos.
+    guardar: bool, opcional
+        Determina si la figura generada se exportará y almacenará localmente en el disco. Por defecto es False.
+    ruta: str, opcional
+        Dirección de destino y nombre del archivo con el que se guardará la gráfica en formato PNG. Por defecto es 'Resultados/figs/grafica_barras_rmse.png'.
+
+    Devuelve
+    -------
+    fig: matplotlib.figure.Figure
+    """
     agg = agregar(df)
     sims = sorted(df['simulacion'].unique())
     modelos = ['XGBoost', 'ARIMAX']
@@ -491,13 +1030,35 @@ def grafica_barras_rmse(df, guardar=False, ruta='Resultados/figs/grafica_barras_
         fig.savefig(ruta, bbox_inches='tight')
     return fig
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # GRÁFICA — Boxplot con puntos individuales y media
 # Objetivo: distribución de errores entre pacientes por simulación
 # ══════════════════════════════════════════════════════════════════════════════
 
 def grafica_boxplot(df, metrica='MAE', guardar=False, ruta=None):
+    """Genera diagramas de caja (boxplots) comparativos con dispersión de puntos (jitter) para analizar métricas de error.
+
+    Crea una figura con dos subgráficas correspondientes a los horizontes de
+    predicción de 15 y 30 minutos. Para cada simulación, superpone las cajas de
+    distribución de los modelos evaluados, añadiendo los puntos individuales de los
+    pacientes mediante ruido uniforme en el eje X y resaltando el valor medio con
+    un marcador de diamante.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame con los datos.
+    metrica: str, opcional
+        Nombre de la columna del DataFrame que contiene la métrica de rendimiento que se va a evaluar (por ejemplo, 'MAE', 'RMSE'). Por defecto es 'MAE'.
+    guardar: bool, opcional
+        Determina si la figura generada se exportará y almacenará localmente en el disco. Por defecto es False.
+    ruta: str, opcional
+        Dirección de destino y nombre del archivo con el que se guardará la gráfica en formato PNG. Si es None, se genera automáticamente usando el nombre de la métrica. Por defecto es None.
+
+    Devuelve
+    -------
+    fig: matplotlib.figure.Figure
+    """
     if ruta is None:
         ruta = f'Resultados/figs/grafica_boxplot_{metrica.lower()}.png'
     sims = sorted(df['simulacion'].unique())
@@ -562,14 +1123,34 @@ def grafica_boxplot(df, metrica='MAE', guardar=False, ruta=None):
         fig.savefig(ruta, bbox_inches='tight')
     return fig
 
-
-
 # ══════════════════════════════════════════════════════════════════════════════
 # GRÁFICA — Degradación del error al aumentar el horizonte
 # Objetivo: qué modelo mantiene mejor su precisión al ampliar el horizonte
 # ══════════════════════════════════════════════════════════════════════════════
 
 def grafica_degradacion(df, metrica='MAE', guardar=False, ruta=None):
+    """Genera una gráfica comparativa para analizar la pérdida de rendimiento de los modelos al aumentar el horizonte de predicción.
+
+    La función crea un panel de dos subgráficas: el izquierdo muestra la evolución
+    absoluta del error (líneas de tendencia entre 15 y 30 minutos por simulación),
+    mientras que el derecho calcula el ratio multiplicativo de degradación de cada 
+    modelo mediante diagramas de barras, reflejando el impacto del tiempo en los errores.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame preparado a una frecuencia de 5 minutos.
+    metrica: str, opcional
+        Nombre de la columna del DataFrame que contiene la métrica de rendimiento que se va a evaluar (por ejemplo, 'MAE', 'RMSE'). Por defecto es 'MAE'.
+    guardar: bool, opcional
+        Determina si la figura generada se exportará y almacenará localmente en el disco. Por defecto es False.
+    ruta: str, opcional
+        Dirección de destino y nombre del archivo con el que se guardará la gráfica en formato PNG. Si es None, se genera automáticamente usando el nombre de la métrica. Por defecto es None.
+
+    Devuelve
+    -------
+    fig: matplotlib.figure.Figure
+    """
     if ruta is None:
         ruta = f'Resultados/figs/grafica_degradacion_{metrica.lower()}.png'
     agg = agregar(df)
@@ -625,13 +1206,34 @@ def grafica_degradacion(df, metrica='MAE', guardar=False, ruta=None):
         fig.savefig(ruta, bbox_inches='tight')
     return fig
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # GRÁFICA — Zonas Clarke: barras apiladas por simulación y modelo
 # Objetivo: validez clínica de las predicciones
 # ══════════════════════════════════════════════════════════════════════════════
 
 def grafica_clarke(df, horizonte=15, guardar=False, ruta=None):
+    """Genera diagramas de barras apiladas que representan la distribución de los errores en las zonas de la Cuadrícula de Error de Clarke.
+
+    La función filtra los datos para un horizonte de predicción determinado y 
+    calcula la media de los porcentajes de tiempo caídos en la Zona A (clínicamente
+    correcta), la Zona B (errores benignos) y las Zonas D/E (errores clínicamente
+    peligrosos). Compara visualmente los modelos mediante dos paneles contiguos.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame con los datos.
+    horizonte: int, opcional
+        Intervalo temporal en minutos (por ejemplo, 15 o 30) a evaluar. Por defecto es 15.
+    guardar: bool, opcional
+        Determina si la figura generada se exportará y almacenará localmente en el disco. Por defecto es False.
+    ruta: str, opcional
+        Dirección de destino y nombre del archivo con el que se guardará la gráfica en formato PNG. Si es None, se genera automáticamente usando el horizonte. Por defecto es None.
+
+    Devuelve
+    -------
+    fig: matplotlib.figure.Figure
+    """
     if ruta is None:
         ruta = f'Resultados/figs/grafica_clarke_{horizonte}min.png'
     sims = sorted(df['simulacion'].unique())
@@ -675,13 +1277,36 @@ def grafica_clarke(df, horizonte=15, guardar=False, ruta=None):
         fig.savefig(ruta, bbox_inches='tight')
     return fig
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # GRÁFICA — Scatter métrica vs TIR por simulación (6 filas × 2 modelos)
 # Objetivo: correlación entre estabilidad glucémica y error del predictor
 # ══════════════════════════════════════════════════════════════════════════════
 
 def grafica_scatter_tir(df, metrica='MAE', horizonte=15, guardar=False, ruta=None):
+    """Genera una matriz de gráficos de dispersión con líneas de regresión lineal para correlacionar el TIR con las métricas de error.
+
+    Construye una cuadrícula (Grid de subgráficas) organizada por simulación (filas)
+    y modelo (columnas). Para cada combinación, calcula el coeficiente de correlación 
+    de Spearman junto con su p-valor, añade una caja de texto flotante con los resultados 
+    estadísticos de significancia e implementa marcas de significancia clínica.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame con los datos.
+    metrica: str, opcional
+        Nombre de la columna del DataFrame que contiene la métrica de rendimiento que se va a evaluar (por ejemplo, 'MAE', 'RMSE'). Por defecto es 'MAE'.
+    horizonte: int, opcional
+        Intervalo temporal en minutos (por ejemplo, 15 o 30) a evaluar para el filtrado de los datos. Por defecto es 15.
+    guardar: bool, opcional
+        Determina si la figura generada se exportará y almacenará localmente en el disco. Por defecto es False.
+    ruta: str, opcional
+        Dirección de destino y nombre del archivo con el que se guardará la gráfica en formato PNG. Si es None, se genera automáticamente usando la métrica y el horizonte. Por defecto es None.
+
+    Devuelve
+    -------
+    fig: matplotlib.figure.Figure
+    """
     if ruta is None:
         ruta = f'Resultados/figs/grafica_scatter_{metrica.lower()}_tir_{horizonte}min.png'
     sims = sorted(df['simulacion'].unique())
@@ -728,13 +1353,34 @@ def grafica_scatter_tir(df, metrica='MAE', horizonte=15, guardar=False, ruta=Non
         fig.savefig(ruta, bbox_inches='tight')
     return fig
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # GRÁFICA — Scatter agregado (media sobre simulaciones) métrica vs TIR
 # Objetivo: visión global de la correlación TIR-error por modelo
 # ══════════════════════════════════════════════════════════════════════════════
 
 def grafica_scatter_tir_agregado(df, metrica='MAE', guardar=False, ruta=None):
+    """Genera gráficos de dispersión globales correlacionando el TIR promedio por paciente con las métricas de error.
+
+    Agrupa y promedia los datos a nivel de paciente (combinando todas las simulaciones) 
+    para evaluar la tendencia general de los modelos XGBoost y ARIMAX en horizontes de 
+    15 y 30 minutos. Para cada caso, calcula la regresión lineal y el coeficiente de 
+    correlación de Spearman, plasmando los estadísticos en bloques de texto independientes.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame con los datos.
+    metrica: str, opcional
+        Nombre de la columna del DataFrame que contiene la métrica de rendimiento que se va a evaluar (por ejemplo, 'MAE', 'RMSE'). Por defecto es 'MAE'.
+    guardar: bool, opcional
+        Determina si la figura generada se exportará y almacenará localmente en el disco. Por defecto es False.
+    ruta: str, opcional
+        Dirección de destino y nombre del archivo con el que se guardará la gráfica en formato PNG. Si es None, se genera automáticamente usando la métrica. Por defecto es None.
+
+    Devuelve
+    -------
+    fig: matplotlib.figure.Figure
+    """
     if ruta is None:
         ruta = f'Resultados/figs/grafica_scatter_{metrica.lower()}_tir_agregado.png'
     modelos = ['XGBoost', 'ARIMAX']
@@ -783,13 +1429,35 @@ def grafica_scatter_tir_agregado(df, metrica='MAE', guardar=False, ruta=None):
         fig.savefig(ruta, bbox_inches='tight')
     return fig
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # GRÁFICA — Tabla de correlaciones Spearman (métrica vs TIR)
 # Objetivo: resumen estadístico de todas las correlaciones
 # ══════════════════════════════════════════════════════════════════════════════
 
 def grafica_tabla_spearman(df, metrica='MAE', guardar=False, ruta=None):
+    """Genera una tabla visual coloreada que resume las correlaciones de Spearman entre el TIR y las métricas de error.
+
+    La función calcula de forma iterativa el coeficiente de correlación (r) y la 
+    significancia estadística (p-valor) para cada simulación, modelo y horizonte.
+    Renderiza los resultados en un objeto de tipo tabla de Matplotlib aplicando un 
+    código de colores condicional: verde para correlaciones negativas estadísticamente 
+    significativas, rojo para positivas y blanco para las que carecen de significancia.
+
+    Parámetros
+    ----------
+    df: pd.DataFrame
+        DataFrame con los datos.
+    metrica: str, opcional
+        Nombre de la columna del DataFrame que contiene la métrica de rendimiento que se va a evaluar (por ejemplo, 'MAE', 'RMSE'). Por defecto es 'MAE'.
+    guardar: bool, opcional
+        Determina si la figura generada se exportará y almacenará localmente en el disco. Por defecto es False.
+    ruta: str, opcional
+        Dirección de destino y nombre del archivo con el que se guardará la gráfica en formato PNG. Si es None, se genera automáticamente usando la métrica. Por defecto es None.
+
+    Devuelve
+    -------
+    fig: matplotlib.figure.Figure
+    """
     if ruta is None:
         ruta = f'Resultados/figs/grafica_spearman_{metrica.lower()}.png'
     sims    = sorted(df['simulacion'].unique())
@@ -873,7 +1541,6 @@ def _estilizar_cabecera(tabla, n_cols):
     for j in range(n_cols):
         tabla[0, j].set_facecolor('#2c3e50')
         tabla[0, j].set_text_props(color='white', fontweight='bold')
- 
  
 # ══════════════════════════════════════════════════════════════════════════════
 # Comparación inter-modelo: XGBoost vs ARIMAX
