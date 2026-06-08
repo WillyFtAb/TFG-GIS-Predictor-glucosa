@@ -371,6 +371,21 @@ ETIQUETAS_SIM_LARGA = {
     6: "E6  HC poco variable  Con ejercicio  10% error",
 }
 
+PARES_INTERSIM = [
+    (1, 2, "Variabilidad HC",         "E1 vs E2"),
+    (1, 3, "Ejercicio",               "E1 vs E3"),
+    (1, 4, "Error insulina",          "E1 vs E4"),
+    (2, 5, "Error insulina \n(HC var)", "E2 vs E5"),
+    (3, 6, "Error insulina (ej.)",    "E3 vs E6"),
+]
+
+COLOR_SIG    = '#d4edda'  # verde: p < 0.05
+COLOR_NO_SIG = '#ffffff'  # blanco: p >= 0.05
+COLOR_XGB    = '#EBF4FF'  # azul claro: columnas XGBoost
+COLOR_ARX    = '#FEF5E7'  # naranja claro: columnas ARIMAX
+COLOR_HEAD   = '#f0f0f0'  # gris claro: primera columna
+
+
 # ── Preparación de datos ──────────────────────────────────────────────────────
 
 def preparar_datos(df_res, df_tir):
@@ -405,8 +420,7 @@ def grafica_barras_mae(df, guardar=False, ruta='Resultados/figs/grafica_barras_m
     ancho = 0.35
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    fig.suptitle("MAE por simulación — XGBoost vs ARIMAX", fontsize=13, fontweight='bold')
-
+    
     for ax, h in zip(axes, [15, 30]):
         for i, modelo in enumerate(modelos):
             datos = agg[(agg['modelo'] == modelo) & (agg['horizonte_num'] == h)]
@@ -424,7 +438,7 @@ def grafica_barras_mae(df, guardar=False, ruta='Resultados/figs/grafica_barras_m
                         f"{val:.3f}", ha='center', va='bottom',
                         fontsize=7.5, color='0.3')
 
-        ax.set_title(f"Horizonte {h} min", fontsize=11)
+        ax.set_title(f"Horizonte {h} min", fontsize=11, fontweight='bold')
         ax.set_xticks(x)
         ax.set_xticklabels([ETIQUETAS_SIM[s] for s in sims], fontsize=7.5)
         ax.set_ylabel("MAE (mg/dL)")
@@ -448,7 +462,6 @@ def grafica_barras_rmse(df, guardar=False, ruta='Resultados/figs/grafica_barras_
     ancho = 0.35
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    fig.suptitle("RMSE por simulación — XGBoost vs ARIMAX", fontsize=13, fontweight='bold')
 
     for ax, h in zip(axes, [15, 30]):
         for i, modelo in enumerate(modelos):
@@ -467,7 +480,7 @@ def grafica_barras_rmse(df, guardar=False, ruta='Resultados/figs/grafica_barras_
                         f"{val:.3f}", ha='center', va='bottom',
                         fontsize=7.5, color='0.3')
 
-        ax.set_title(f"Horizonte {h} min", fontsize=11)
+        ax.set_title(f"Horizonte {h} min", fontsize=11, fontweight='bold')
         ax.set_xticks(x)
         ax.set_xticklabels([ETIQUETAS_SIM[s] for s in sims], fontsize=7.5)
         ax.set_ylabel("RMSE (mg/dL)")
@@ -493,11 +506,6 @@ def grafica_boxplot(df, metrica='MAE', guardar=False, ruta=None):
     ancho = 0.35
 
     fig, axes = plt.subplots(1, 2, figsize=(16, 7), sharey=False)
-    fig.suptitle(
-        f'Distribución de {metrica} por simulación y horizonte\n'
-        f'Boxplot con observaciones individuales (n=20 pacientes)',
-        fontsize=13, fontweight='bold'
-    )
 
     for ax, h in zip(axes, [15, 30]):
         df_h = df[df['horizonte_num'] == h]
@@ -531,7 +539,7 @@ def grafica_boxplot(df, metrica='MAE', guardar=False, ruta=None):
                            edgecolors=COLORES[modelo],
                            s=60, zorder=5, linewidths=1.5)
 
-        ax.set_title(f'Horizonte {h} min', fontsize=11)
+        ax.set_title(f'Horizonte {h} min', fontsize=11, fontweight='bold')
         ax.set_xticks(x)
         ax.set_xticklabels([ETIQUETAS_SIM[s] for s in sims], fontsize=7.5)
         ax.set_xlabel('Simulación', fontsize=11)
@@ -572,11 +580,7 @@ def grafica_degradacion(df, metrica='MAE', guardar=False, ruta=None):
     estilos = {'XGBoost': '-o', 'ARIMAX': '--s'}
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
-    fig.suptitle(
-        f'Degradación del {metrica} al ampliar el horizonte de predicción',
-        fontsize=13, fontweight='bold'
-    )
-
+    
     # Panel izquierdo: valores absolutos por horizonte
     ax = axes[0]
     for modelo in modelos:
@@ -587,10 +591,9 @@ def grafica_degradacion(df, metrica='MAE', guardar=False, ruta=None):
                     estilos[modelo], color=COLORES[modelo],
                     alpha=0.5, linewidth=1.2, markersize=5,
                     label=modelo if sim == sims[0] else '_')
-    ax.set_title(f'{metrica} absoluto por horizonte', fontsize=11)
     ax.set_xticks([15, 30])
     ax.set_xlabel('Horizonte (min)')
-    ax.set_ylabel(f'{metrica} (mg/dL)')
+    ax.set_ylabel(f'Promedio {metrica} (mg/dL)')
     ax.legend(framealpha=0.5, fontsize=9)
 
     # Panel derecho: ratio de degradación (valor_30 / valor_15)
@@ -612,10 +615,9 @@ def grafica_degradacion(df, metrica='MAE', guardar=False, ruta=None):
 
     ax2.axhline(1.0, color='0.4', linestyle='--', linewidth=1,
                 label='Sin degradación (×1.0)')
-    ax2.set_title(f'Ratio {metrica}₃₀ / {metrica}₁₅', fontsize=11)
     ax2.set_xticks(x)
     ax2.set_xticklabels([ETIQUETAS_SIM[s] for s in sims], fontsize=7.5)
-    ax2.set_ylabel('Ratio (adimensional)')
+    ax2.set_ylabel(f'Ratio promedios {metrica}₃₀ / {metrica}₁₅')
     ax2.legend(framealpha=0.5, fontsize=9)
 
     fig.tight_layout()
@@ -625,7 +627,7 @@ def grafica_degradacion(df, metrica='MAE', guardar=False, ruta=None):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# GRÁFICA 5 — Zonas Clarke: barras apiladas por simulación y modelo
+# GRÁFICA — Zonas Clarke: barras apiladas por simulación y modelo
 # Objetivo: validez clínica de las predicciones
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -642,11 +644,7 @@ def grafica_clarke(df, horizonte=15, guardar=False, ruta=None):
             .mean().reset_index())
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5), sharey=True)
-    fig.suptitle(
-        f'Distribución zonas Clarke error grid — horizonte {horizonte} min',
-        fontsize=13, fontweight='bold'
-    )
-
+    
     for ax, modelo in zip(axes, modelos):
         datos = agg2[agg2['modelo'] == modelo].set_index('simulacion').reindex(sims)
         za  = datos['pct_A'].values
@@ -665,10 +663,10 @@ def grafica_clarke(df, horizonte=15, guardar=False, ruta=None):
                 ax.text(j, va + vb / 2, f'{vb:.1f}%',
                         ha='center', va='center', fontsize=8, color='#0C447C')
 
-        ax.set_title(modelo, fontsize=11)
+        ax.set_title(modelo, fontsize=11, fontweight='bold')
         ax.set_xticks(x)
         ax.set_xticklabels([ETIQUETAS_SIM[s] for s in sims], fontsize=7.5)
-        ax.set_ylabel('% predicciones')
+        ax.set_ylabel('Tiempo (%)')
         ax.set_ylim(0, 105)
         ax.legend(framealpha=0.5, fontsize=9)
 
@@ -691,11 +689,6 @@ def grafica_scatter_tir(df, metrica='MAE', horizonte=15, guardar=False, ruta=Non
     df_h = df[df['horizonte_num'] == horizonte]
 
     fig, axes = plt.subplots(6, 2, figsize=(12, 22))
-    fig.suptitle(
-        f'{metrica} vs TIR por paciente — horizonte {horizonte} min\n'
-        'Cada punto = 1 paciente · línea = regresión lineal · r = Spearman',
-        fontsize=13, fontweight='bold', y=1.01
-    )
 
     for row, sim in enumerate(sims):
         for col, modelo in enumerate(modelos):
@@ -747,12 +740,7 @@ def grafica_scatter_tir_agregado(df, metrica='MAE', guardar=False, ruta=None):
     modelos = ['XGBoost', 'ARIMAX']
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5), sharey=False)
-    fig.suptitle(
-        f'{metrica} vs TIR — media sobre las 6 simulaciones\n'
-        'Cada punto = 1 paciente',
-        fontsize=13, fontweight='bold'
-    )
-
+    
     for ax, h in zip(axes, [15, 30]):
         df_h = df[df['horizonte_num'] == h]
         agg_pac = (df_h.groupby(['modelo', 'paciente'])[[metrica, 'TIR']]
@@ -785,7 +773,7 @@ def grafica_scatter_tir_agregado(df, metrica='MAE', guardar=False, ruta=None):
                               facecolor='white',
                               edgecolor=COLORES[modelo], alpha=0.7))
 
-        ax.set_title(f'Horizonte {h} min', fontsize=11)
+        ax.set_title(f'Horizonte {h} min', fontsize=11, fontweight='bold')
         ax.set_xlabel('TIR (%)', fontsize=11)
         ax.set_ylabel(f'{metrica} (mg/dL)', fontsize=11)
         ax.legend(framealpha=0.5, fontsize=9)
@@ -858,13 +846,250 @@ def grafica_tabla_spearman(df, metrica='MAE', guardar=False, ruta=None):
         tabla[0, j].set_facecolor('#2c3e50')
         tabla[0, j].set_text_props(color='white', fontweight='bold')
 
-    ax.set_title(
-        f'Correlaciones Spearman — {metrica} vs TIR\n'
-        'Verde: correlación negativa significativa (mayor TIR → menor error)  '
-        'Rojo: positiva significativa  * p<0.05',
-        fontsize=10, pad=20
-    )
+    
     fig.tight_layout()
     if guardar:
         fig.savefig(ruta, bbox_inches='tight')
     return fig
+
+# ============================================================
+#  WILCOXON
+# ============================================================ 
+ 
+def _sig(p):
+    """Devuelve True si p < 0.05."""
+    return p < 0.05
+ 
+ 
+def _pval_color(p):
+    """Color de fondo para la celda del p-valor."""
+    return COLOR_SIG if _sig(p) else COLOR_NO_SIG
+ 
+ 
+def _estilizar_cabecera(tabla, n_cols):
+    tabla.auto_set_font_size(False)
+    tabla.set_fontsize(8.5)
+    tabla.scale(1, 2.3)
+    for j in range(n_cols):
+        tabla[0, j].set_facecolor('#2c3e50')
+        tabla[0, j].set_text_props(color='white', fontweight='bold')
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+# Comparación inter-modelo: XGBoost vs ARIMAX
+# ══════════════════════════════════════════════════════════════════════════════
+ 
+def calcular_wilcoxon_intermodelo(df, metricas=('MAE', 'RMSE')):
+    """
+    Calcula el test de Wilcoxon pareado entre XGBoost y ARIMAX
+    para cada combinación simulación × horizonte.
+ 
+    Parámetros
+    ----------
+    df       : DataFrame con columnas modelo, horizonte_num, simulacion,
+               paciente, MAE, RMSE
+    metricas : tupla de métricas a calcular
+ 
+    Devuelve
+    --------
+    DataFrame con columnas:
+        Métrica, horizonte_num, sim_num, W, p, significativo,
+        XGB_media, ARX_media
+    """
+    sims = sorted(df['simulacion'].unique())
+    resultados = []
+    for metrica in metricas:
+        for h in [15, 30]:
+            for sim in sims:
+                xgb = df[(df['modelo'] == 'XGBoost') &
+                          (df['horizonte_num'] == h) &
+                          (df['simulacion'] == sim)][metrica].values
+                arx = df[(df['modelo'] == 'ARIMAX') &
+                          (df['horizonte_num'] == h) &
+                          (df['simulacion'] == sim)][metrica].values
+                stat, p = stats.wilcoxon(xgb, arx, alternative='two-sided')
+                resultados.append({
+                    'Métrica':       metrica,
+                    'horizonte_num': h,
+                    'sim_num':       sim,
+                    'W':             round(stat, 3),
+                    'p':             round(p, 4),
+                    'significativo': _sig(p),
+                    'XGB_media':     round(xgb.mean(), 4),
+                    'ARX_media':     round(arx.mean(), 4),
+                })
+    return pd.DataFrame(resultados)
+ 
+ 
+def tabla_wilcoxon_intermodelo(df_w, metrica, guardar=False, ruta=None):
+    """
+    Tabla estadística del test de Wilcoxon inter-modelo.
+ 
+    Filas    : simulaciones
+    Columnas : Media XGB, Media ARX, W, p-valor — para 15 min y 30 min
+    Color    : verde en la celda del p-valor si p < 0.05
+ 
+    Parámetros
+    ----------
+    df_w    : DataFrame devuelto por calcular_wilcoxon_intermodelo
+    metrica : 'MAE' o 'RMSE'
+    guardar : si True, guarda la figura en ruta
+    ruta    : path de salida (opcional)
+    """
+    if ruta is None:
+        ruta = f'Resultados/figs/wilcoxon_intermodelo_tabla_{metrica.lower()}.png'
+ 
+    sub  = df_w[df_w['Métrica'] == metrica]
+    sims = sorted(sub['sim_num'].unique())
+ 
+    col_labels = [
+        'Simulación',
+        'Media XGB\n15 min', 'Media ARX\n15 min',
+        'W\n15 min',         'p-valor\n15 min',
+        'Media XGB\n30 min', 'Media ARX\n30 min',
+        'W\n30 min',         'p-valor\n30 min',
+    ]
+ 
+    filas       = []
+    cell_colors = []
+ 
+    for sim in sims:
+        fila = [ETIQUETAS_SIM[sim]]
+        cols = [COLOR_HEAD]
+        for h in [15, 30]:
+            row = sub[(sub['sim_num'] == sim) &
+                      (sub['horizonte_num'] == h)].iloc[0]
+            fila += [f"{row['XGB_media']:.4f}",
+                     f"{row['ARX_media']:.4f}",
+                     f"{row['W']:.0f}",
+                     f"{row['p']:.4f}"]
+            cols += [COLOR_XGB, COLOR_ARX,
+                     COLOR_NO_SIG, _pval_color(row['p'])]
+        filas.append(fila)
+        cell_colors.append(cols)
+ 
+    fig, ax = plt.subplots(figsize=(15, 5))
+    ax.axis('off')
+    tabla = ax.table(cellText=filas, colLabels=col_labels,
+                     cellLoc='center', loc='center',
+                     cellColours=cell_colors)
+    _estilizar_cabecera(tabla, len(col_labels))
+ 
+   
+    fig.tight_layout()
+    if guardar:
+        fig.savefig(ruta, bbox_inches='tight')
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Comparación inter-simulación: efecto de cada variable experimental
+# ══════════════════════════════════════════════════════════════════════════════
+ 
+def calcular_wilcoxon_intersimulacion(df, metricas=('MAE', 'RMSE')):
+    """
+    Calcula el test de Wilcoxon pareado entre pares de simulaciones
+    para aislar el efecto de cada variable experimental,
+    por separado para cada modelo.
+ 
+    Pares analizados:
+        S1 vs S2 → efecto variabilidad HC
+        S1 vs S3 → efecto ejercicio
+        S1 vs S4 → efecto error insulina (base)
+        S2 vs S5 → efecto error insulina (HC variable)
+        S3 vs S6 → efecto error insulina (con ejercicio)
+ 
+    Parámetros
+    ----------
+    df       : DataFrame con columnas modelo, horizonte_num, simulacion,
+               paciente, MAE, RMSE
+    metricas : tupla de métricas a calcular
+ 
+    Devuelve
+    --------
+    DataFrame con columnas:
+        Métrica, horizonte_num, Par, Factor, Modelo,
+        W, p, significativo, media_s1, media_s2, delta
+    """
+    resultados = []
+    for metrica in metricas:
+        for h in [15, 30]:
+            for s1, s2, factor, label in PARES_INTERSIM:
+                for modelo in ['XGBoost', 'ARIMAX']:
+                    v1 = df[(df['modelo'] == modelo) &
+                             (df['horizonte_num'] == h) &
+                             (df['simulacion'] == s1)][metrica].values
+                    v2 = df[(df['modelo'] == modelo) &
+                             (df['horizonte_num'] == h) &
+                             (df['simulacion'] == s2)][metrica].values
+                    stat, p = stats.wilcoxon(v1, v2, alternative='two-sided')
+                    resultados.append({
+                        'Métrica':       metrica,
+                        'horizonte_num': h,
+                        'Par':           label,
+                        'Factor':        factor,
+                        'Modelo':        modelo,
+                        'W':             round(stat, 3),
+                        'p':             round(p, 4),
+                        'significativo': _sig(p),
+                        'media_s1':      round(v1.mean(), 4),
+                        'media_s2':      round(v2.mean(), 4),
+                        'delta':         round(v2.mean() - v1.mean(), 4),
+                    })
+    return pd.DataFrame(resultados)
+ 
+ 
+def tabla_wilcoxon_intersimulacion(df_w, metrica, guardar=False, ruta=None):
+    """
+    Tabla estadística del test de Wilcoxon inter-simulación.
+ 
+    Filas    : pares de simulaciones
+    Columnas : W y p-valor para cada modelo × horizonte
+    Color    : verde en la celda del p-valor si p < 0.05
+ 
+    Parámetros
+    ----------
+    df_w    : DataFrame devuelto por calcular_wilcoxon_intersimulacion
+    metrica : 'MAE' o 'RMSE'
+    guardar : si True, guarda la figura en ruta
+    ruta    : path de salida (opcional)
+    """
+    if ruta is None:
+        ruta = f'Resultados/figs/wilcoxon_intersim_tabla_{metrica.lower()}.png'
+ 
+    sub = df_w[df_w['Métrica'] == metrica]
+ 
+    col_labels = [
+        'Par', 'Factor',
+        'W\nXGB 15min', 'p-valor\nXGB 15min',
+        'W\nARX 15min', 'p-valor\nARX 15min',
+        'W\nXGB 30min', 'p-valor\nXGB 30min',
+        'W\nARX 30min', 'p-valor\nARX 30min',
+    ]
+ 
+    filas       = []
+    cell_colors = []
+ 
+    for _, _, factor, label in PARES_INTERSIM:
+        fila = [label, factor]
+        cols = [COLOR_HEAD, COLOR_HEAD]
+        for h in [15, 30]:
+            for modelo in ['XGBoost', 'ARIMAX']:
+                row = sub[(sub['Par'] == label) &
+                           (sub['horizonte_num'] == h) &
+                           (sub['Modelo'] == modelo)].iloc[0]
+                fila += [f"{row['W']:.0f}", f"{row['p']:.4f}"]
+                mc    = COLOR_XGB if modelo == 'XGBoost' else COLOR_ARX
+                cols += [mc, _pval_color(row['p'])]
+        filas.append(fila)
+        cell_colors.append(cols)
+ 
+    fig, ax = plt.subplots(figsize=(15, 4))
+    ax.axis('off')
+    tabla = ax.table(cellText=filas, colLabels=col_labels,
+                     cellLoc='center', loc='center',
+                     cellColours=cell_colors)
+    _estilizar_cabecera(tabla, len(col_labels))
+ 
+    fig.tight_layout()
+    if guardar:
+        fig.savefig(ruta, bbox_inches='tight')
