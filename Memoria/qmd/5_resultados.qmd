@@ -17,7 +17,7 @@ paciente y escenario se recogen en el Anexo G.
 ### 5.1. Rendimiento global
 
 ![Error Abosluto Medio (MAE) promedio por escenario y horizonte de predicción para ARIMAX y
-XGBoost.](img/Resultados/grafica1_barras_mae.png){#fig-barras-mae}
+XGBoost.](img/Resultados/grafica_barras_mae.png){#fig-barras-mae}
 
 En términos de MAE, XGBoost superó a ARIMAX en todos los escenarios
 y horizontes (@fig-barras-mae). En el escenario de referencia E1, los
@@ -34,8 +34,8 @@ en E5 y E6 el MAE medio alcanzó 0,195 y 0,194 mg/dL a 15 minutos y
 un MAE prácticamente constante en todos los escenarios
 (0,249–0,251 mg/dL) con desviación típica notablemente inferior.
 
-![Error Cuadrático Medio (RMSE) promedio por escenario y horizonte de predicción para ARIMAX y
-XGBoost.](img/Resultados/grafica2_barras_rmse.png){#fig-barras-rmse}
+![Raíz Error Cuadrático Medio (RMSE) promedio por escenario y horizonte de predicción para ARIMAX y
+XGBoost.](img/Resultados/grafica_barras_rmse.png){#fig-barras-rmse}
 
 En términos de RMSE, el patrón fue distinto (@fig-barras-rmse). XGBoost obtuvo
 un RMSE comparable a ARIMAX en los escenarios sin error en la dosis (E1, E2,
@@ -76,7 +76,7 @@ La interpretación de este hallazgo se discute en el siguiente capítulo.
 
 ![Distribución de predicciones en zonas de la Clarke Error Grid (CEG) para
 XGBoost y ARIMAX en el horizonte de 15 minutos, por
-escenario.](img/Resultados/grafica6_clarke_15min.png){#fig-clarke}
+escenario.](img/Resultados/grafica_clarke_15min.png){#fig-clarke}
 
 
 ### 5.3. Degradación del rendimiento con el horizonte
@@ -94,12 +94,12 @@ efecto del horizonte sobre el rendimiento de XGBoost.
 ![Degradación del Error Absoluto Medio (MAE) al aumentar el horizonte de predicción.
 Izquierda: valores absolutos por escenario. Derecha: ratio
 MAE~30~/MAE~15~ por escenario y
-modelo.](img/Resultados/grafica5_degradacion_mae.png){#fig-degradacion-mae}
+modelo.](img/Resultados/grafica_degradacion_mae.png){#fig-degradacion-mae}
 
-![Degradación delError Cuadrático Medio (RMSE) al aumentar el horizonte de predicción.
+![Degradación de la Raíz Error Cuadrático Medio (RMSE) al aumentar el horizonte de predicción.
 Izquierda: valores absolutos por escenario. Derecha: ratio
 RMSE~30~/RMSE~15~ por escenario y
-modelo.](img/Resultados/grafica5_degradacion_rmse.png){#fig-degradacion-rmse}
+modelo.](img/Resultados/grafica_degradacion_rmse.png){#fig-degradacion-rmse}
 
 ### 5.4. Relación entre perfil glucémico y rendimiento predictivo
 
@@ -120,9 +120,9 @@ Anexo G.
 
 ![Correlación de Spearman entre Error Absoluto Medio (MAE) por paciente (promediado
 sobre los seis escenarios) y Tiempo en rango (TIR), para ambos modelos y horizontes de
-predicción.](img/Resultados/grafica9_scatter_mae_tir_agregado.png){#fig-scatter-mae}
+predicción.](img/Resultados/grafica_scatter_mae_tir_agregado.png){#fig-scatter-mae}
 
-![Correlación de Spearman entre Error Cuadrático Medio (RMSE) por paciente (promediado
+![Correlación de Spearman entre Raíz Error Cuadrático Medio (RMSE) por paciente (promediado
 sobre los seis escenarios) y Tiempo en rango (TIR), para ambos modelos y horizontes de
-predicción.](img/Resultados/grafica9_scatter_rmse_tir_agregado.png){#fig-scatter-rmse}
+predicción.](img/Resultados/grafica_scatter_rmse_tir_agregado.png){#fig-scatter-rmse}
 
