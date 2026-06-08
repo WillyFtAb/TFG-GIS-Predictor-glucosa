@@ -22,3 +22,6 @@ La memoria se organiza en ocho capítulos cuya progresión refleja el ciclo meto
 - **Capítulo 6 - Discusión:** interpreta los resultados en relación con la literatura existente, analiza las limitaciones del estudio y discute las implicaciones clínicas de los hallazgos.
 - **Capítulo 7 - Conclusiones:** sintetiza las aportaciones del trabajo.
 - **Capítulo 8 - Líneas futuras:** identifica las direcciones de investigación y desarrollo que se derivan de los resultados obtenidos y de las limitaciones identificadas.
+
+### Repositorio GitHub
+El trabajo está alojado en el repositorio de GitHUb [@github_platform] con enlace [https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git](https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git).
