@@ -7,49 +7,183 @@
 
 \section{Registro de interacciones con sistemas de IA}
 
-Este anexo tiene como objetivo garantizar la transparencia en el uso de
-herramientas de inteligencia artificial generativa durante la realización
-del Trabajo de Fin de Grado. En él se deberá incluir un registro
-ordenado de los \textit{prompts}, solicitudes, o peticiones formuladas por el estudiante en las interacciones con sistemas de IA que hayan sido más significativas en relación al desarrollo del TFG. Asimismo se incluirán bien las respuestas generadas directamente por los sistemas de IA, o bien se reflejará la importancia que ha tenido esa interacción en el desarrollo del trabajo ( código, texto, enfoque...) de esas interacciones significativas.
-
-El propósito de este anexo no es penalizar el uso de inteligencia artificial,
-sino documentarlo de forma clara, permitiendo al tribunal evaluar el alcance,
-la finalidad y el impacto real de dichas herramientas en el proceso de
-aprendizaje y en los resultados obtenidos. El uso de IA debe entenderse como
-una herramienta de apoyo, nunca como un sustituto del razonamiento,
-la toma de decisiones técnicas o la autoría del trabajo.
-
-Para cada interacción relevante con sistemas de IA, se deberá indicar, al
-menos, la siguiente información:
-\begin{itemize}
-    \item Herramienta o modelo de IA utilizado.
-    \item Fecha aproximada de uso.
-    \item Prompt/petición/solicitud/forma de uso realizada por el estudiante.
-    \item Respuesta completa generada por la IA (opcional)
-    \item Uso posterior de dicha respuesta en el TFG (orientación conceptual,
-    mejora de redacción, generación de ideas, apoyo técnico, generación de código, etc.).
-\end{itemize}
-
-Este anexo podrá estructurarse en forma de tablas o listados numerados, y
-solo deberá incluir aquellas interacciones que hayan tenido una influencia
-significativa en el desarrollo del trabajo.
-
-\begin{itemize}
-  \item perplexity
-  \item 10/04
-  \item @académico busca casos de utilización del algoritmo xgboost para la predicción de series temporales con multiples variables de entrada
-  \item Descubrimiento de la librería \textit{Skforecast.}
-\end{itemize}
-
-\begin{itemize}
-  \item perplexity
-  \item 10/04
-  \item @académico find scientific papers about the effect of past blood glucose levels, insulin bolus and exercice on future glucose value
-  \begin{itemize}
-    \item[] Effects of postprandial exercise on blood glucose levels in adults with type 1 diabetes: a review of the literature (2023). Resume cómo el ejercicio después de comer cambia la glucosa futura y cómo las reducciones de insulina prandial antes del ejercicio modifican el riesgo de hipoglucemia.
-    \item[] The impact of brief high-intensity exercise on blood glucose levels (2013). Revisa estudios sobre ejercicio intenso breve y muestra efectos agudos y también a 1–3 días sobre sensibilidad a la insulina y glucosa.
-    \item[] Ejercicio y niveles de glucosa en la diabetes (ADA, 2024). Explica que el ejercicio suele bajar la glucosa, pero algunos tipos pueden subirla por adrenalina, y que el efecto puede durar horas o incluso hasta 48 horas.
-  \end{itemize}
-  \item Utilización para el diseño y creación de \textit{lags} en el dataframe de entrada para los algoritmos y base científica.
-\end{itemize}
 ```
+
+
+```{=latex}
+
+\subsection*{Interacción 1}
+\begin{itemize}
+  \item \textbf{Herramienta:} Perplexity AI (modo académico)
+  \item \textbf{Fecha aproximada:} Marzo 2026
+  \item \textbf{Solicitud:} \texttt{@académico busca casos de utilización
+  del algoritmo XGBoost para la predicción de series temporales con
+  múltiples variables de entrada}
+  \item \textbf{Resultado:} Descubrimiento de la librería
+  \textit{skforecast} \cite{skforecast} como herramienta específica para la
+  predicción de series temporales con modelos de machine learning en
+  Python.
+  \item \textbf{Uso en el TFG:} Adopción de skforecast como librería
+  principal del pipeline de análisis para la implementación del
+  backtesting y la optimización de hiperparámetros de ambos modelos.
+\end{itemize}
+
+\subsection*{Interacción 2}
+\begin{itemize}
+  \item \textbf{Herramienta:} Perplexity AI (modo académico)
+  \item \textbf{Fecha aproximada:} Abril 2026
+  \item \textbf{Solicitud:} \texttt{@académico find scientific papers
+  about the effect of past blood glucose levels, insulin bolus and
+  exercise on future glucose value}
+  \item \textbf{Resultado:} Identificación de referencias científicas
+  relevantes, entre ellas:
+  \begin{itemize}
+    \item \textit{Effects of postprandial exercise on blood glucose levels
+    in adults with type 1 diabetes: a review} \cite{helleputte_effects_2023}: resume cómo el ejercicio postprandial
+    modifica la glucemia futura y cómo las reducciones de insulina
+    prandial antes del ejercicio afectan al riesgo de hipoglucemia.
+    \item \textit{The impact of brief high-intensity exercise on blood
+    glucose levels} (2013): revisa los efectos agudos del ejercicio
+    intenso breve sobre la sensibilidad a la insulina y la glucosa,
+    con efectos que pueden extenderse de 1 a 3 días.
+    \item \textit{Ejercicio y niveles de glucosa en la diabetes} (ADA,
+    2024): explica que el ejercicio generalmente reduce la glucemia,
+    aunque ciertos tipos pueden elevarla por activación adrenérgica,
+    con efectos que pueden prolongarse hasta 48 horas.
+  \end{itemize}
+  \item \textbf{Uso en el TFG:} Base científica para el diseño de las
+  variables de entrada de los modelos, en particular la creación de
+  \textit{lags} y variables acumuladas de insulina, hidratos de carbono
+  y ejercicio en el dataframe de características (véase apartado 4.2 y
+  Anexo G).
+\end{itemize}
+
+\subsection*{Interacción 3}
+\begin{itemize}
+  \item \textbf{Herramienta:} Antigravity \cite{google_antigravity}
+  \item \textbf{Fecha aproximada:} Febrero -- marzo 2026
+  \item \textbf{Solicitud:} Análisis del repositorio de código fuente
+  del simulador py-mgipsim para comprender el significado de las
+  variables de salida, el comportamiento interno del modelo fisiológico
+  y los parámetros de los pacientes virtuales, ante la ausencia de
+  documentación oficial detallada. Se realizaron múltiples consultas
+  sobre distintos aspectos del simulador, incluyendo el significado de
+  las variables fisiológicas de salida, los parámetros metabólicos
+  individuales de los pacientes virtuales, el efecto del ejercicio sobre
+  el modelo y el origen de los episodios críticos observados durante
+  las pruebas previas.
+  \item \textbf{Resultado:} Interpretación completa del modelo
+  T1DM.ExtHovorka y sus variables internas. A continuación se incluye
+  un extracto representativo de una de las respuestas generadas,
+  correspondiente al análisis de los parámetros metabólicos de los
+  pacientes virtuales.
+  \item \textbf{Uso en el TFG:} Fundamentó las decisiones de diseño
+  experimental descritas en el Anexo G, en particular la fijación de
+  \texttt{basal\_uncertainty = 0}, la selección de las variables de
+  interés para el pipeline de análisis (véase Anexo F) y la
+  comprensión de la heterogeneidad glucémica entre pacientes discutida
+  en el apartado 6.4 de la memoria.
+\end{itemize}
+
+\subsubsection*{Extracto de respuesta — Parámetros metabólicos de los
+pacientes virtuales}
+
+\begin{small}
+\begin{verbatim}
+PARÁMETROS METABÓLICOS OCULTOS (model_parameters)
+
+Sensibilidad y Producción:
+  kb1  Sensibilidad a la insulina respecto al flujo de glucosa.
+       Un valor muy bajo implica resistencia a la insulina.
+  kb2  Sensibilidad a la insulina respecto al consumo general.
+  kb3  Sensibilidad de la insulina para la supresión hepática.
+       Un valor bajo significa que el hígado no deja de soltar
+       glucosa incluso con insulina circulante suficiente.
+  EGP0 Producción endógena de glucosa basal (glucosa que suelta
+       el hígado en ayunas de forma natural).
+
+Dinámica y Absorción:
+  tmaxI Minutos hasta el pico de insulina en sangre.
+  ke    Tasa de eliminación de insulina.
+  tmaxG Tiempo de vaciado gástrico. Un estómago lento causa
+        hiperglucemias tardías.
+  VG/VI Volúmenes de distribución de glucosa e insulina.
+
+Impacto del Ejercicio (ExtHovorka):
+  HRrest/HRmax Frecuencia cardíaca en reposo y máxima.
+               Determinan la intensidad relativa del ejercicio.
+  a, beta,     Constantes que modifican la sensibilidad a la
+  p3, p4, p5   insulina (kb1, kb2) durante el ejercicio muscular.
+
+Tabla resumen — valores clave de los 20 pacientes virtuales:
+
+Paciente  Peso(kg)  Basal/día(U)  Ratio C/I  ISF   kb1       EGP0
+Patient_1   79.2      16.9          17.5      27.8  9.11e-05  1.00
+Patient_2   74.0      21.9          16.5      28.4  7.41e-05  1.04
+Patient_3   70.5      22.2          23.5      59.1  7.60e-05  2.87
+Patient_4   73.1      21.8          23.0      58.9  5.38e-05  2.68
+Patient_5   64.1      12.0          18.0      74.3  5.31e-05  1.17
+Patient_6   65.5       6.5          15.5      66.4  7.17e-05  0.56
+Patient_7   61.5      21.3          19.8      64.0  5.31e-05  1.97
+Patient_8   67.6      13.4          15.2      42.2  1.16e-04  0.74
+Patient_9   66.5      15.1          16.0      55.7  7.81e-05  1.51
+Patient_10  71.1       8.4          14.0      41.9  6.04e-05  0.81
+Patient_11  84.1      25.3          19.8      32.2  8.27e-05  2.45
+Patient_12  82.8      12.6          18.2      43.5  1.03e-04  1.27
+Patient_13  70.4      14.0          15.5      66.4  2.58e-05  1.58
+Patient_14  77.0       9.0          18.0      37.1  1.14e-04  0.93
+Patient_15  84.6      11.7          18.5      53.7  7.80e-05  1.61
+Patient_16  66.2       8.7          14.0      55.0  9.04e-05  0.81
+Patient_17  81.2      31.4          20.2      51.8  5.10e-05  2.41
+Patient_18  88.2      35.2          24.5      40.5  7.03e-05  2.72
+Patient_19  73.5      17.5          18.2      37.9  3.75e-05  2.13
+Patient_20  75.4      19.6          19.1      44.3  4.56e-05  2.40
+
+Observación: Patient_6 presenta la producción hepática más baja
+(EGP0 = 0.56) y menor requerimiento basal, resultando en un perfil
+estable. Patient_13 presenta la sensibilidad kb1 más baja de la
+cohorte (2.58e-05), lo que implica una resistencia a la insulina
+marcada y mayor dificultad de control glucémico.
+\end{verbatim}
+\end{small}
+
+\subsection*{Interacción 4}
+\begin{itemize}
+  \item \textbf{Herramienta:} Claude (Anthropic)
+  \item \textbf{Fecha aproximada:}  Finales abril -- mayo 2026
+  \item \textbf{Solicitud:} Generación de código Python para la
+  representación gráfica de los resultados, principalmente las gráficas
+  de la Clarke Error Grid (CEG).
+  \item \textbf{Resultado:} Código base para la visualización de las
+  zonas de la CEG y la distribución de predicciones.
+  \item \textbf{Uso en el TFG:} El código generado requirió modificaciones 
+  para ajustar las regiones según la bibliografía, y corregir errores. Se utilizó por
+  la ausencia de librerías disponibles o con los suficientes requisitos (ej: colores de significación) 
+\end{itemize}
+
+\subsection*{Interacción 5}
+\begin{itemize}
+  \item \textbf{Herramienta:} Claude (Anthropic)
+  \item \textbf{Fecha aproximada:} Mayo -- junio 2026
+  \item \textbf{Solicitud:} Revisión y ajuste de tono en apartados de
+  la memoria, con el objetivo de mejorar la coherencia y consistencia
+  del texto académico, eliminar incoherencias entre secciones y adecuar
+  el registro a los requisitos formales del documento.
+  \item \textbf{Resultado:} Sugerencias de reformulación de párrafos
+  específicos, aplicadas de forma selectiva.
+\end{itemize}
+
+
+\subsection*{Interacción 6}
+\begin{itemize}
+  \item \textbf{Herramienta:} Gemini (Google, modo razonamiento)
+  \item \textbf{Fecha aproximada:} Marzo -- junio 2026
+  \item \textbf{Solicitud:} Interpretación de errores durante la
+  compilación del documento y resolución de problemas de visualización
+  en el ajuste del código para la correcta renderización de apartados,
+  tablas y figuras.
+  \item \textbf{Resultado:} Explicación del origen de los errores de
+  compilación y propuestas de solución para los problemas de formato
+  identificados.
+\end{itemize}
+``` 
