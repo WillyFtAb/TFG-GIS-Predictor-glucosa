@@ -47,7 +47,6 @@ def juntar_datos(r_json, r_xlsx, n=20):
         # Función para eventos de un solo punto (comidas, snacks, bolos)
         def mapear_puntual(df, tiempos, magnitudes, columna):
             mapping = dict(zip(tiempos, magnitudes))
-            # Usamos update para no perder los ceros en las filas que no coinciden
             df[columna] = df['t_min'].map(mapping).fillna(df[columna])
 
         mapear_puntual(gluc, comidas_time, comidas_mag, 'meal_carb')
