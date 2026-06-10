@@ -21,12 +21,12 @@ cálculo de la ratio insulina/ración (I:R), tal como se recoge en la
 
 escenarios <- data.frame(
   Escenario = c("E1", "E2", "E3", "E4", "E5", "E6"),
-  Codigo    = c("HC$^{-}$ E$_{0}$ Er$_{0}$",
-                "HC$^{+}$ E$_{0}$ Er$_{0}$",
-                "HC$^{-}$ E$^{+}$ Er$_{0}$",
-                "HC$^{-}$ E$_{0}$ Er$^{+}$",
-                "HC$^{+}$ E$_{0}$ Er$^{+}$",
-                "HC$^{-}$ E$^{+}$ Er$^{+}$"),
+  Codigo    = c("HC$^{-}$ Ej$_{0}$ Er$_{0}$",
+                "HC$^{+}$ Ej$_{0}$ Er$_{0}$",
+                "HC$^{-}$ Ej$^{+}$ Er$_{0}$",
+                "HC$^{-}$ Ej$_{0}$ Er$^{+}$",
+                "HC$^{+}$ Ej$_{0}$ Er$^{+}$",
+                "HC$^{-}$ Ej$^{+}$ Er$^{+}$"),
   HC        = c("Baja (5%)", "Alta (25%)", "Baja (5%)", "Baja (5%)", "Alta (25%)", "Baja (5%)"),
   Ejercicio = c("No", "No", "S\u00ed", "No", "No", "S\u00ed"),
   Error_IR  = c("0\\%", "0\\%", "0\\%", "10\\%", "10\\%", "10\\%")
@@ -149,7 +149,7 @@ tests estadísticos y matplotlib para la visualización de resultados.
 Se valoró la incorporación de la librería SHAP para el análisis de
 importancia y explicabilidad de las variables de entrada. Sin embargo,
 su integración no pudo llevarse a cabo debido a incompatibilidades entre
-las versiones de las dependencias del entorno de desarrollo. Adicionalmente,
+las versiones de las dependencias del entorno de desarrollo. Además,
 una modificación de la versión de Python habría comprometido la
 reproducibilidad de los resultados al afectar al comportamiento de los
 generadores de números aleatorios de las librerías utilizadas. Por este

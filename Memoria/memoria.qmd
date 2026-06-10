@@ -63,14 +63,14 @@ knitr:
 \noindent D. \nombreTutor, profesor del departamento de Ingeniería Informática.
 
 
-\noindent D. \nombreTutorb, Jefe de Sección. Endocrinología y Nutrición.
+\noindent Dña. \nombreTutorb, Jefe de Sección, Endocrinología y Nutrición, Hospital Universitario de Burgos.
 
 
 
 \noindent Exponen:
 
 \noindent Que el alumno D. \nombre, con DNI \dni, ha realizado el Trabajo
-final de Grado en Ingeniería de la Salud titulado \textit{título del trabajo}.
+final de Grado en Ingeniería de la Salud titulado \textit{Estudio comparativo de modelos predictivos de glucemia a corto plazo mediante técnicas de aprendizaje automático en pacientes con diabetes tipo 1}.
 
 \noindent Y que dicho trabajo ha sido realizado por el alumno bajo la
 dirección de los que suscriben.
@@ -107,25 +107,28 @@ dirección de los que suscriben.
 
 \renewcommand*\abstractname{Resumen}
 \begin{abstract}
-En este primer apartado se hace una \textbf{breve} presentación del tema
-que se aborda en el proyecto.
+La diabetes mellitus tipo 1 obliga a quienes la padecen a gestionar de forma continua su glucemia mediante insulina exógena. En pacientes con múltiples dosis diarias de insulina (MDI) y monitorización continua de glucosa (MCG), disponer de predicciones fiables de glucemia a corto plazo puede marcar la diferencia en la toma de decisiones terapéuticas.
+Este trabajo compara dos modelos predictivos —ARIMAX y XGBoost— sobre series temporales de MCG con variables exógenas, para horizontes de 15 y 30 minutos. Los datos se generaron con el simulador py-mgipsim sobre una cohorte de 20 pacientes virtuales, reproduciendo seis escenarios que combinan variabilidad en la ingesta de hidratos de carbono, ejercicio físico y error en la dosis de insulina.
+XGBoost obtuvo menor error medio en condiciones favorables, pero resultó más sensible a las perturbaciones exógenas, especialmente al error en la dosis, donde ARIMAX fue significativamente más robusto. El rendimiento de XGBoost mostró además una fuerte dependencia del perfil glucémico del paciente, lo que apunta a la necesidad de personalización del modelo. La regularidad de los datos simulados limita la extrapolación de estos resultados a un entorno clínico real.
 \end{abstract}
 
 \renewcommand*\abstractname{Descriptores}
 \begin{abstract}
-Palabras separadas por comas que identifiquen el contenido del proyecto.
+diabetes mellitus tipo 1, predicción de glucemia, series temporales, monitorización continua de glucosa, ARIMAX, XGBoost, aprendizaje automático, múltiples dosis diarias de insulina, simulación de pacientes virtuales, Clarke Error Grid.
 \end{abstract}
 
 \clearpage
 
 \renewcommand*\abstractname{Abstract}
 \begin{abstract}
-A \textbf{brief} presentation of the topic addressed in the project.
+Type 1 diabetes mellitus requires continuous glucose management through exogenous insulin. In patients on multiple daily injections (MDI) with continuous glucose monitoring (CGM), accurate short-term glucose predictions can meaningfully support treatment decisions.
+This work compares two predictive models —ARIMAX and XGBoost— on CGM time series with exogenous inputs, for 15 and 30-minute prediction horizons. Data were generated using the py-mgipsim simulator on a cohort of 20 virtual patients across six scenarios combining variability in carbohydrate intake, physical exercise, and insulin dose error.
+XGBoost achieved lower mean error under favourable conditions but proved more sensitive to exogenous perturbations, particularly insulin dose errors, where ARIMAX was significantly more robust. XGBoost performance also showed a strong dependence on individual patient glucose profiles, suggesting that personalisation strategies may be necessary for equitable generalisation. The regularity of simulated data limits the direct applicability of these findings to real clinical settings.
 \end{abstract}
 
 \renewcommand*\abstractname{Keywords}
 \begin{abstract}
-keywords separated by commas.
+type 1 diabetes mellitus, blood glucose prediction, time series, continuous glucose monitoring, ARIMAX, XGBoost, machine learning, multiple daily injections, virtual patient simulation, Clarke Error Grid.
 \end{abstract}
 
 \clearpage

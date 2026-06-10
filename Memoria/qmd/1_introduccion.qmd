@@ -8,7 +8,7 @@ La diabetes mellitus tipo 1 (DM1) es una enfermedad autoinmune crónica caracter
 El tratamiento de la DM1 se apoya principalmente en dos modalidades: la terapia con múltiples dosis diarias de insulina (MDI) y la infusión subcutánea continua mediante bomba de insulina (ISCI). La incorporación de sistemas de monitorización continua de glucosa (MCG) ha supuesto un avance significativo en ambas modalidades: la evidencia disponible muestra mejoras en la hemoglobina glicada (HbA1c), incremento del tiempo en rango (TIR) y reducción de episodios hipoglucémicos [@rizos_continuous_2025]. Los sistemas de asa cerrada o páncreas artificial, que integran MCG, bomba de insulina y algoritmo de control, representan el estadio más avanzado de esta evolución tecnológica [@nwokolo_artificial_2023], aunque su implantación generalizada sigue limitada por barreras económicas, tecnológicas y de aceptación del paciente. En consecuencia, una proporción significativa de la población con DM1 continúa gestionando su tratamiento con MDI y MCG sin soporte algorítmico integrado.
 
 
-En este contexto surge la motivación del trabajo. La disponibilidad de series temporales de glucemia procedentes de dispositivos MCG abre la posibilidad de aplicar modelos predictivos que anticipen la evolución de la glucosa y, con ello, faciliten la toma de decisiones terapéuticas en pacientes con MDI. La capacidad de antinciapación es importante. Tomar estas decisiones a tiempo se traduce en una mejora del control metabólico, lo que a largo plazo, previene efectos adversos y tiene un impacto positivo en la calidad de vida del usuario.
+En este contexto surge la motivación del trabajo. La disponibilidad de series temporales de glucemia procedentes de dispositivos MCG abre la posibilidad de aplicar modelos predictivos que anticipen la evolución de la glucosa y, con ello, faciliten la toma de decisiones terapéuticas en pacientes con MDI. La capacidad de anticipación es importante. Tomar estas decisiones a tiempo se traduce en una mejora del control metabólico, lo que a largo plazo, previene efectos adversos y tiene un impacto positivo en la calidad de vida del usuario.
 
 
 ### Estructura del documento
@@ -24,4 +24,4 @@ La memoria se organiza en ocho capítulos cuya progresión refleja el ciclo meto
 - **Capítulo 8 - Líneas futuras:** identifica las direcciones de investigación y desarrollo que se derivan de los resultados obtenidos y de las limitaciones identificadas.
 
 ### Repositorio GitHub
-El trabajo está alojado en el repositorio de GitHUb [@github_platform] con enlace [https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git](https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git).
+El trabajo está alojado en el repositorio de GitHub [@github_platform] con enlace [https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git](https://github.com/WillyFtAb/TFG-GIS-Predictor-glucosa.git).

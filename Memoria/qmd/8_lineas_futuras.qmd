@@ -19,7 +19,7 @@ relevante, especialmente para XGBoost, cuyo rendimiento mostró una
 dependencia significativa del perfil glucémico individual. Una
 estrategia de optimización individualizada, o alternativamente el uso
 del TIR como criterio de selección del modelo más adecuado para cada
-paciente, podría mejorar la equidad predictiva de la solución sobre
+paciente, podría mejorar la equidad predictiva sobre
 cohortes heterogéneas.
 
 La comparativa de eficiencia computacional entre modelos merece
@@ -32,8 +32,8 @@ comparables. Una evaluación formal de los tiempos de cómputo bajo
 condiciones controladas aportaría información relevante para la
 selección del modelo en entornos con recursos limitados.
 
-La ampliación del diseño experimental es otra dirección de interés.
-El número de escenarios evaluados estuvo condicionado por la capacidad
+
+El número de escenarios evaluados se ha visto condicionado por la capacidad
 de cómputo disponible; futuros trabajos podrían explorar niveles
 adicionales de variabilidad en los factores estudiados, incorporar
 nuevas variables como el estrés o la variabilidad en los horarios de

@@ -16,7 +16,7 @@ paciente y escenario se recogen en el Anexo G.
 
 ### 5.1. Rendimiento global
 
-![Error Abosluto Medio (MAE) promedio por escenario y horizonte de predicción para ARIMAX y
+![Error Absoluto Medio (MAE) promedio por escenario y horizonte de predicción para ARIMAX y
 XGBoost.](img/Resultados/grafica_barras_mae.png){#fig-barras-mae}
 
 En términos de MAE, XGBoost superó a ARIMAX en todos los escenarios
@@ -84,8 +84,8 @@ escenario.](img/Resultados/grafica_clarke_15min.png){#fig-clarke}
 ARIMAX mostró una degradación prácticamente nula al pasar de 15 a 30
 minutos, con ratios MAE~30~/MAE~15~ iguales a 1,00 en todos los escenarios
 y ratios RMSE~30~/RMSE~15~ entre 0,99 y 1,03 (@fig-degradacion-mae,
-@fig-degradacion-rmse). XGBoost presentó una degradación moderada
-pero consistente, con ratios MAE~30~/MAE~15~ entre 1,05 y 1,12 y ratios
+@fig-degradacion-rmse). XGBoost presentó una degradación moderada 
+con ratios MAE~30~/MAE~15~ entre 1,05 y 1,12 y ratios
 RMSE~30~/RMSE~15~ entre 1,05 y 1,20 según el escenario. La degradación
 fue más pronunciada en los escenarios con mayor perturbación (E5 y
 E6), lo que sugiere que la complejidad del escenario amplifica el

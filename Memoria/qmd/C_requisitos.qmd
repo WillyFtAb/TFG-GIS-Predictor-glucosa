@@ -70,7 +70,7 @@ el desarrollo. Se identifican tres casos de uso principales:
 	\centering
 	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
 		\toprule
-		\textbf{CU-2}    & \textbf{Ejecutar función de visualizado de la series temporales}\\
+		\textbf{CU-2}    & \textbf{Ejecutar función de visualizado de las series temporales}\\
 		\toprule
 		\textbf{Versión}              & 1.0    \\
 		\textbf{Autor}                & Investigador \\
@@ -132,8 +132,8 @@ el desarrollo. Se identifican tres casos de uso principales:
 
 Las siguientes capturas muestran las dos modalidades de interacción
 con el simulador py-mgipsim [@siket_py-mgipsim_2025] disponibles para el 
-investigador y la salida de la ejecución de la función de visaulizado
-de las serires temporales de glucosa.
+investigador y la salida de la ejecución de la función de visualizado
+de las series temporales de glucosa.
 
 
 ```{=latex}

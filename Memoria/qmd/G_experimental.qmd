@@ -8,7 +8,7 @@
 
 ### Cuaderno de trabajo
 
-#### Diseño experimental inicial y pruebas previas
+#### Diseño experimental inicial
 
 El diseño experimental inicial contemplaba la creación de distintos
 grupos de pacientes virtuales con perfiles de control glucémico
@@ -18,23 +18,50 @@ con el objetivo de estudiar el efecto del perfil del paciente sobre
 el rendimiento predictivo de los modelos.
 
 Para implementar este diseño se modificaron las variables
-`basal_uncertainty` y `bolus_uncertainty` del archivo
-`pymgipsim/Controllers/StochasticOpenLoop/controller.py` del
-simulador:
+`basal_uncertainty` y `bolus_uncertainty` \footnote{archivo
+\texttt{pymgipsim/Controllers/StochasticOpenLoop/controller.py}} del
+simulador, ensayando distintas combinaciones de valores para ambas variables.
+Se exploró también la incorporación de un escenario de ayuno
+intermitente como caso de estudio adicional.
 
-```python
-self.basal_uncertainty = 0
-self.bolus_uncertainty = 2.0/20.0
+#### Resultados no exitosos
+
+Las pruebas con valores no nulos de `basal_uncertainty` generaron
+de forma sistemática series glucémicas con periodos prolongados de
+hipoglucemia severa, con valores continuos e iguales que evidenciaban
+un estado fisiológico irreal. La introducción de incertidumbre en
+la insulina basal resultó incompatible con la estabilidad del
+simulador para la mayoría de los pacientes virtuales de la cohorte 
+(ver Figura \ref{fig-episodios-criticos}).
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Escenariodescartado_2_Paciente_0.png}
+\caption{Ejemplo de serie glucémica obtenida durante las pruebas
+previas, con episodios de hipoglucemia severa sostenida.}
+\label{fig-episodios-criticos}
+\end{figure}
 ```
 
-Durante las pruebas previas se realizaron múltiples ejecuciones con
-distintos valores de estas variables. Los resultados iniciales no
-reflejaban el comportamiento glucémico esperado en un paciente con
-DM1: las series presentaban periodos prolongados de hipoglucemia
-severa, con valores continuos e iguales que evidenciaban un estado
-fisiológico irreal.
+El escenario de ayuno (Figura \ref{fig-ayuno-intermitente}) intermitente fue descartado porque su inclusión
+habría incrementado de forma significativa el número de combinaciones
+a evaluar, haciendo inviable su ejecución dentro de las restricciones
+de tiempo y capacidad de cómputo disponibles.
 
-La identificación de las causas de este comportamiento no fue
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Escenariodescartado_3_Paciente_2.png}
+\caption{Ejemplo de serie glucémica escenario de ayuno intermitente.}
+\label{fig-episodios-criticos}
+\end{figure}
+```
+
+
+#### Diseño experimental definitivo
+
+La identificación de las causas de los episodios críticos no fue
 inmediata. La escasa documentación oficial del simulador —limitada
 a una descripción funcional de las interfaces de usuario y sin
 referencia al significado de las variables internas ni a los
@@ -57,23 +84,34 @@ experimental inicial:
   del presente TFG.
 - El simulador no contempla la ingesta de hidratos de carbono de
   rescate ante hipoglucemia ni la administración de bolos correctores
-  ante hiperglucemia. La incorporación de estos mecanismos habría
-  implicado modificaciones sustanciales en el código fuente del
-  simulador validado. Esto provoca que, al introducir error
+  ante hiperglucemia. Esto provoca que, al introducir error
   estocástico en la insulina, algunos pacientes no sean capaces de
   estabilizarse dentro del patrón de variables establecido para
-  ellos, generando episodios críticos sostenidos.
+  ellos, generando los episodios críticos sostenidos observados.
 
-Ambas vías fueron descartadas en favor de un diseño experimental
-que aprovechase las capacidades del simulador dentro de sus
-limitaciones documentadas, basado en la variabilidad de las
-condiciones de manejo —variabilidad en la ingesta de HC, presencia
-de ejercicio y error en el cálculo de la ratio insulina/ración—
-manteniendo los parámetros fisiológicos de los 20 pacientes virtuales
-sin modificar, tal como se describe en el Capítulo 4.
+Ante estas limitaciones, se optó por fijar `basal_uncertainty` a 0
+para garantizar la estabilidad de las simulaciones, y establecer
+`bolus_uncertainty` en un valor equivalente al 10% de error. 
+Los valores definitivos utilizados en los escenarios con error en 
+la dosis (E4, E5 y E6) son:
 
-[INSERTAR figura con ejemplo de serie glucémica del diseño
-experimental inicial mostrando episodios críticos]
+```{python}
+#| eval: false
+#| echo: true
+#| code-overflow: wrap
+
+self.basal_uncertainty = 0        
+self.bolus_uncertainty = 2.0/20.0 
+```
+
+Para los escenarios sin error en la dosis (E1, E2 y E3), ambas
+variables se establecieron a 0. El diseño experimental definitivo
+se basó en la variabilidad de las condiciones de manejo
+—variabilidad en la ingesta de HC, presencia de ejercicio y error
+en el cálculo de la ratio insulina/ración— manteniendo los
+parámetros fisiológicos de los 20 pacientes virtuales sin modificar,
+tal como se describe en el Capítulo 4.
+
 
 #### Desarrollo e implementación de los modelos
 
@@ -92,7 +130,7 @@ La optimización de hiperparámetros de ambos modelos se realizó de
 forma independiente sobre el paciente 1 del escenario E3. La
 elección de este paciente de referencia respondió a dos criterios:
 presentar un perfil glucémico con un tiempo en rango adecuado y una
-variabilidad glucémica ni excesivamente reducida ni elevada; e incluir
+variabilidad glucémica ni excesivamente reducida ni elevada (Figura \ref{fig-paciente-referencia}); e incluir
 la variable de ejercicio físico, garantizando que el modelo pudiera
 capturar la importancia de dicha variable durante el entrenamiento.
 Se descartó utilizar el mismo paciente en el escenario E6 —que
@@ -101,8 +139,15 @@ modelo se entrenase sobre condiciones perturbadas, prefiriendo
 entrenar sobre el caso ideal y evaluar posteriormente el efecto de
 las perturbaciones de forma controlada.
 
-[INSERTAR figura con serie glucémica del paciente de referencia
-(paciente 1, escenario E3)]
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/serie_vis.png}
+\caption{Serie glucémica del paciente de referencia (paciente 1, escenario E3) utilizado para la optimización de hiperparámetros.}
+\label{fig-paciente-referencia}
+\end{figure}
+```
 
 #### Optimización del tiempo de cómputo
 
@@ -126,18 +171,11 @@ Con estas medidas se consiguió una reducción aproximada del 30–40%
 del tiempo de cómputo. El uso del equipo para otras tareas de forma
 paralela durante las ejecuciones resultó prácticamente inviable.
 
-#### Resultados no exitosos
 
-La integración de SHAP para el análisis de explicabilidad y la
-extracción sistemática de importancia de características durante el
-backtesting no pudieron completarse por incompatibilidades de
-dependencias y restricciones de tiempo y capacidad de cómputo
-respectivamente. Ambas se identifican como líneas futuras en el
-Capítulo 8.
 
 ### Configuración y parametrización de las técnicas
 
-#### Parámetros comunes a todos los escenarios
+#### Parámetros de configuración comunes a todos los escenarios
 
 Todos los escenarios comparten los siguientes parámetros de
 simulación:
@@ -156,8 +194,24 @@ simulación:
 
 #### Horarios de ingesta
 
-Los rangos horarios de inicio de cada ingesta, expresados en minutos
+os rangos horarios de inicio de cada ingesta se establecieron
+modificando el archivo `py-mgipsim-main/scenarios_default.py` del
+simulador:
+
+```{python}
+#| eval: false
+#| echo: true
+#| code-overflow: wrap
+
+scenario["input_generation"]['breakfast_time_range']  = [495, 525]
+scenario["input_generation"]['am_snack_time_range']   = [645, 675]
+scenario["input_generation"]['lunch_time_range']      = [855, 885]
+scenario["input_generation"]['pm_snack_time_range']   = [1035, 1065]
+scenario["input_generation"]['dinner_time_range']     = [1245, 1275]
+```
 desde el inicio de la simulación, son comunes a todos los escenarios:
+Estos valores son comunes a todos los escenarios y se recogen en
+la @tbl-horarios-ingesta con su equivalencia horaria:
 
 | Ingesta | Inicio mínimo (min) | Inicio máximo (min) | Equivalencia horaria |
 |---------|------------------:|------------------:|---------------------|
@@ -177,9 +231,9 @@ por defecto del simulador.
 Las cantidades de hidratos de carbono se establecieron a partir de
 una dieta de referencia de 2.000 kcal diarias para población adulta,
 valor coherente con las referencias para mujeres adultas españolas
-[@consumer2011]. La Autoridad Europea de Seguridad Alimentaria (EFSA)
+[@medlineplus_carbohidratos_2026]. La Autoridad Europea de Seguridad Alimentaria (EFSA)
 establece que los hidratos de carbono deben aportar entre el 45 y el
-60% de la energía total consumida [@aesan_efsa2010]. Se adoptó el
+60% de la energía total consumida [@aesan_efsa2010, @medlineplus_carbohidratos_2026]. Se adoptó el
 límite inferior del rango (45%), que corresponde a 900 kcal y equivale
 a 225 g de HC diarios (a razón de 4 kcal/g). La distribución
 porcentual por ingesta se basó en las recomendaciones del Ministerio
@@ -235,18 +289,6 @@ figura \ref{fig-tabla-insulinas} recoge las principales insulinas comercializada
 en España con sus tiempos de inicio, pico máximo y duración de
 acción.
 
-
-```{=latex}
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{img/tabla_insulinas.png}
-\caption{Principales insulinas comercializadas en España (noviembre 2022),
-con tiempos de inicio, pico máximo y duración de acción. Fuente:
-redGDPS \cite{mora2022insulinas}.}
-\label{fig-tabla-insulinas}
-\end{figure}
-```
-
 Para la insulina en bolo (de acción rápida o ultrarrápida), el pico
 de efecto se produce entre 1 y 2 horas tras la administración y la
 duración total es de 2 a 4 horas [@mora2022insulinas, @cdcespanol_tipos_2024 ]. 
@@ -259,9 +301,20 @@ de carbono y el ejercicio físico, capturando así el perfil temporal
 completo de acción de cada variable sobre la glucemia.
 
 La insulina basal es el único caso especial, se administra
-a las 00:00 de cada día, y tiene un duración entorano a un día completo. Por este motivo, su acumulación
-se estableció sobre las últimas 24 horas.
+a las 00:00 de cada día, y tiene un duración entorano a un día completo. 
+Por este motivo, la acumulación de los datos se estableció sobre las 
+últimas 24 horas.
 
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/tabla_insulinas.png}
+\caption{Principales insulinas comercializadas en España (noviembre 2022),
+con tiempos de inicio, pico máximo y duración de acción. Fuente:
+redGDPS \cite{mora2022insulinas}.}
+\label{fig-tabla-insulinas}
+\end{figure}
+```
 
 
 #### Rangos de búsqueda de hiperparámetros, valores obtenidos y justificación
@@ -322,7 +375,7 @@ de cada hiperparámetro:
 
 | Hiperparámetro | Rango | Tipo | Justificación |
 |------------|------|------|---------------------|
-| `lags` | {3, 6, 12, 24, 36} | Categórico | Equivalen a 15, 30, 60, 120 y 180 min de historia glucémica. Se exploran desde el mínimo equivalente al horizonte de predicción hasta 3 horas de historia |
+| `lags` | {3, 6, 12, 24, 36} | Categórico | Equivalen a 15, 30, 60, 120 y 180 min de historia glucémica.
 | `n_estimators` | [50, 500] | Entero | Número de árboles del ensemble; valores bajos pueden producir underfitting y valores altos overfitting |
 | `max_depth` | [3, 10] | Entero | Profundidad máxima de cada árbol; controla la complejidad del modelo y el riesgo de overfitting |
 | `learning_rate` | [0,01, 0,3] | Real (log) | Tasa de aprendizaje; escala logarítmica para explorar mejor los valores bajos, que producen modelos más robustos |
@@ -387,7 +440,7 @@ apartado 6.4).
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/TIR/rangos_s1.png}
-\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E1 (HC\textsuperscript{$-$} E\textsubscript{0} Er\textsubscript{0}).}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E1 (HC\textsuperscript{$-$} Ej\textsubscript{0} Er\textsubscript{0}).}
 \label{fig-tir-e1}
 \end{figure}
 ```
@@ -396,7 +449,7 @@ apartado 6.4).
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/TIR/rangos_s2.png}
-\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E2 (HC\textsuperscript{$+$} E\textsubscript{0} Er\textsubscript{0}).}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E2 (HC\textsuperscript{$+$} Ej\textsubscript{0} Er\textsubscript{0}).}
 \label{fig-tir-e2}
 \end{figure}
 ```
@@ -405,7 +458,7 @@ apartado 6.4).
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/TIR/rangos_s3.png}
-\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E3 (HC\textsuperscript{$-$} E\textsuperscript{$+$} Er\textsubscript{0}).}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E3 (HC\textsuperscript{$-$} Ej\textsuperscript{$+$} Er\textsubscript{0}).}
 \label{fig-tir-e3}
 \end{figure}
 ```
@@ -414,7 +467,7 @@ apartado 6.4).
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/TIR/rangos_s4.png}
-\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E4 (HC\textsuperscript{$-$} E\textsubscript{0} Er\textsuperscript{$+$}).}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E4 (HC\textsuperscript{$-$} Ej\textsubscript{0} Er\textsuperscript{$+$}).}
 \label{fig-tir-e4}
 \end{figure}
 ```
@@ -423,7 +476,7 @@ apartado 6.4).
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/TIR/rangos_s5.png}
-\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E5 (HC\textsuperscript{$+$} E\textsubscript{0} Er\textsuperscript{$+$}).}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E5 (HC\textsuperscript{$+$} Ej\textsubscript{0} Er\textsuperscript{$+$}).}
 \label{fig-tir-e5}
 \end{figure}
 ```
@@ -432,7 +485,7 @@ apartado 6.4).
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/TIR/rangos_s6.png}
-\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E6 (HC\textsuperscript{$-$} E\textsuperscript{$+$} Er\textsuperscript{$+$}).}
+\caption{Distribución de TIR, TAR y TBR por paciente --- Escenario E6 (HC\textsuperscript{$-$} Ej\textsuperscript{$+$} Er\textsuperscript{$+$}).}
 \label{fig-tir-e6}
 \end{figure}
 ```
@@ -449,8 +502,8 @@ interpaciente y la presencia de valores atípicos.
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{img/Resultados/grafica3_boxplot_mae.png}
-\caption{Distribución del Error Absoluto Medio (MAE) por escenario.\protect\\ Izda: horizonte 15 minutos. Dcha: horizonte 30 minutos}
+\includegraphics[width=\textwidth]{img/Resultados/grafica_boxplot_mae.png}
+\caption[Distribución del Error Absoluto Medio (MAE) por escenario.]{Distribución del Error Absoluto Medio (MAE) por escenario. Izda.: horizonte 15 minutos. Dcha.: horizonte 30 minutos}
 \label{fig-boxplot-mae}
 \end{figure}
 ```
@@ -458,8 +511,8 @@ interpaciente y la presencia de valores atípicos.
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{img/Resultados/grafica3_boxplot_rmse.png}
-\caption{Distribución del Error Cuadrático Medio (RMSE) por escenario.\protect\\ Izda: horizonte 15 minutos. Dcha: horizonte 30 minutos}
+\includegraphics[width=\textwidth]{img/Resultados/grafica_boxplot_rmse.png}
+\caption[Distribución de la Raíz Error Cuadrático Medio (RMSE) por escenario.]{Distribución de la Raíz Error Cuadrático Medio (RMSE) por escenario. Izda.: horizonte 15 minutos. Dcha.: horizonte 30 minutos}
 \label{fig-boxplot-rmse}
 \end{figure}
 
@@ -477,7 +530,7 @@ en zona A en todos los escenarios y modelos.
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{img/Resultados/grafica6_clarke_30min.png}
+\includegraphics[width=\textwidth]{img/Resultados/grafica_clarke_30min.png}
 \caption{Distribución de las predicciones según la Clarke Error Grid (CEG) por escenario.}
 \label{fig-clarke-30}
 \end{figure}
@@ -495,8 +548,8 @@ el apartado 5.4 del Capítulo 5.
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica8_scatter_mae_tir_15min.png}
-\caption{Correlación de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR). Horizonte 15 minutos.}
+\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica_scatter_mae_tir_15min.png}
+\caption[Correlación de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR). Horizonte 15 minutos.]{Correlación de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR). Horizonte 15 minutos. Cada punto representa la métrica de error de un paciente.}
 \label{fig-scatter-mae-15}
 \end{figure}
 ```
@@ -504,8 +557,8 @@ el apartado 5.4 del Capítulo 5.
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica8_scatter_mae_tir_30min.png}
-\caption{Correlación de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR). Horizonte 30 minutos.}
+\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica_scatter_mae_tir_30min.png}
+\caption[Correlación de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR). Horizonte 30 minutos.]{Correlación de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR). Horizonte 30 minutos. Cada punto representa la métrica de error de un paciente.}
 \label{fig-scatter-mae-30}
 \end{figure}
 ```
@@ -513,8 +566,8 @@ el apartado 5.4 del Capítulo 5.
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica8_scatter_rmse_tir_15min.png}
-\caption{Correlación de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR). Horizonte 15 minutos.}
+\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica_scatter_rmse_tir_15min.png}
+\caption[Correlación de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR). Horizonte 15 minutos.]{Correlación de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR). Horizonte 15 minutos. Cada punto representa la métrica de error de un paciente.}
 \label{fig-scatter-rmse-15}
 \end{figure}
 ```
@@ -522,56 +575,121 @@ el apartado 5.4 del Capítulo 5.
 ```{=latex}
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica8_scatter_rmse_tir_30min.png}
-\caption{Correlación de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR). Horizonte 30 minutos.}
+\includegraphics[height=0.9\textheight, keepaspectratio]{img/Resultados/grafica_scatter_rmse_tir_30min.png}
+\caption[Correlación de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR). Horizonte 30 minutos.]{Correlación de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR). Horizonte 30 minutos. Cada punto representa la métrica de error de un paciente.}
 \label{fig-scatter-rmse-30}
 \end{figure}
 ```
 
 
-Las tablas @tbl-spearman-mae y @tbl-spearman-rmse recogen los
-coeficientes de correlación de Spearman y sus p-valores para cada
-combinación de escenario, modelo y horizonte.
+Las tablas \ref{tbl-spearman-mae} y \ref{tbl-spearman-rmse} recogen
+los coeficientes de correlación de Spearman y sus p-valores para
+cada combinación de escenario, modelo y horizonte.
 
-[INSERTAR @tbl-spearman-mae — tabla correlaciones Spearman MAE vs TIR]
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/grafica_spearman_mae.png}
+\caption[Correlaciones de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR) por escenario, modelo y horizonte]{Correlaciones de Spearman entre Error Absoluto Medio (MAE) y Tiempo en rango (TIR) por escenario, modelo y horizonte. Verde: correlación negativa significativa Rojo: correlación positiva significativa   p<0.05}
+\label{tbl-spearman-mae}
+\end{figure}
+```
 
-[INSERTAR @tbl-spearman-rmse — tabla correlaciones Spearman RMSE
-vs TIR]
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/grafica_spearman_rmse.png}
+\caption[Correlaciones de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR) por escenario,modelo y horizonte.]{Correlaciones de Spearman entre la Raíz del Error Cuadrático Medio (RMSE) y Tiempo en rango (TIR) por escenario,modelo y horizonte. Verde: correlación negativa significativa Rojo: correlación positiva significativa   p<0.05}
+\label{tbl-spearman-rmse}
+\end{figure}
+```
 
 #### Resultados del test de Wilcoxon
 
-Las tablas @tbl-wilcoxon-intersim-mae y @tbl-wilcoxon-intersim-rmse
-recogen los resultados del test de Wilcoxon inter-simulación,
-que evalúa el efecto de cada factor experimental sobre el rendimiento
-predictivo dentro de cada modelo. Las tablas
-@tbl-wilcoxon-intermodelo-mae y @tbl-wilcoxon-intermodelo-rmse
-recogen los resultados del test inter-modelo, que compara el
-rendimiento de ARIMAX y XGBoost en cada escenario.
+Las tablas \ref{tbl-wilcoxon-intersim-mae} y \ref{tbl-wilcoxon-intersim-rmse}
+recogen los resultados del test de Wilcoxon inter-simulación, que evalúa 
+el efecto de cada factor experimental sobre el rendimiento predictivo 
+dentro de cada modelo. Las tablas \ref{tbl-wilcoxon-intermodelo-mae} y 
+\ref{tbl-wilcoxon-intermodelo-rmse} recogen los resultados del test 
+inter-modelo, que compara el rendimiento de ARIMAX y XGBoost en cada escenario.
 
-[INSERTAR @tbl-wilcoxon-intersim-mae — Wilcoxon inter-simulación MAE]
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/wilcoxon_intersim_tabla_mae.png}
+\caption{Test de Wilcoxon inter-simulación — MAE.}
+\label{tbl-wilcoxon-intersim-mae}
+\end{figure}
+```
 
-[INSERTAR @tbl-wilcoxon-intersim-rmse — Wilcoxon inter-simulación
-RMSE]
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/wilcoxon_intersim_tabla_rmse.png}
+\caption{Test de Wilcoxon inter-simulación — RMSE.}
+\label{tbl-wilcoxon-intersim-rmse}
+\end{figure}
+```
 
-[INSERTAR @tbl-wilcoxon-intermodelo-mae — Wilcoxon inter-modelo MAE]
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/wilcoxon_intermodelo_tabla_mae.png}
+\caption{Test de Wilcoxon inter-modelo — MAE.}
+\label{tbl-wilcoxon-intermodelo-mae}
+\end{figure}
+```
 
-[INSERTAR @tbl-wilcoxon-intermodelo-rmse — Wilcoxon inter-modelo RMSE]
+```{=latex}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/Resultados/wilcoxon_intermodelo_tabla_rmse.png}
+\caption{Test de Wilcoxon inter-modelo — RMSE.}
+\label{tbl-wilcoxon-intermodelo-rmse}
+\end{figure}
+```
 
 #### Importancia de características — paciente de referencia
 
-Las tablas @tbl-feat-arimax y @tbl-feat-xgb muestran la importancia
-de las características de entrada para cada modelo, calculada sobre
-el paciente de referencia (paciente 1, escenario E3). Dado que el
-análisis de importancia no se integró en el pipeline de backtesting
-completo (véase apartado 6.6), estos resultados son únicamente
-ilustrativos y no representan el comportamiento promedio sobre toda
-la cohorte.
+Las [@tbl-imp-xg] y [@tbl-imp-am] muestran la
+importancia de las 10 principales características de entrada para cada modelo,
+calculada sobre el paciente de referencia (paciente 1, escenario E3).
+Dado que el análisis de importancia no se integró en el pipeline de
+backtesting completo (véase apartado 6.6), estos resultados son
+únicamente ilustrativos y no representan el comportamiento promedio
+sobre toda la cohorte.
 
-[INSERTAR \ref{fig-feat-arimax} — importancia de características ARIMAX,
-paciente de referencia]
+| feature | importance |
+| :--- | :----- |
+| glu_mmol | 0.983555 |
+| lag_1 | 0.011125 |
+| snack_carb_-40m | 0.000566 |
+| lag_3 | 0.000359 |
+| meal_carb_-80m | 0.000291 |
+| meal_carb_-100m | 0.000280 |
+| meal_carb_-60m | 0.000271 |
+| meal_carb_-120m | 0.000218 |
+| running_speed_-40m | 0.000187 |
+| running_speed_-120m | 0.000155 |
 
-[INSERTAR \ref{fig-feat-xgb} — importancia de características XGBoost,
-paciente de referencia]
+:Importancia de las 10 principales variables para XGBoost {#tbl-imp-xg}
+
+| feature | importance |
+| :--- | :--- |
+| glu_mmol | 0.986074 |
+| sigma2 | 0.004453 |
+| ar.L2 | 0.002733 |
+| ma.L2 | 0.002709 |
+| ma.L3 | 0.001636 |
+| running_speed | 0.001342 |
+| ma.L1 | 0.000907 |
+| ar.L1 | 0.000841 |
+| running_speed_-120m | 0.000305 |
+| running_speed_-240m | 0.000262 |
+
+:Importancia de las 10 principales variables para ARIMAX {#tbl-imp-am}
+
+
 
 
 

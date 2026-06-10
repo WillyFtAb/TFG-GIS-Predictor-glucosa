@@ -64,7 +64,7 @@ fichero JSON del escenario. Ambas fuentes se integraron en un único
 dataframe por paciente y escenario antes de aplicar el
 preprocesamiento. Las series resultantes se remuestrearon a 5 minutos,
 resolución habitual de los dispositivos MCG comerciales
-[@rodbard2025], reduciendo el volumen de datos en un factor de 5 sin
+[@rizos_continuous_2025], reduciendo el volumen de datos en un factor de 5 sin
 pérdida de información relevante para el horizonte de predicción
 analizado.
 
@@ -87,7 +87,7 @@ significado clínico en el contexto de la DM1 en régimen MDI:
 Representa la concentración de glucosa en el líquido intersticial,
 medida por los dispositivos MCG. Presenta un retardo fisiológico
 de aproximadamente 5–15 minutos respecto a la glucemia capilar
-[@rodbard2025]. Los valores de referencia clínica son: rango
+[@rizos_continuous_2025]. Los valores de referencia clínica son: rango
 normoglucémico 70–180 mg/dL (TIR), hipoglucemia <70 mg/dL (TBR)
 e hiperglucemia >180 mg/dL (TAR).
 
@@ -157,7 +157,7 @@ como se discute en el apartado 6.4 de la memoria.
 | 18 | 158.00 | 18.03 | 108.0 | 196.0 |
 | 19 | 195.86 | 20.34 | 108.0 | 227.0 |
 
-:Estadísticas glucosa pacientes Escenario 1 ($\text{HC}^-$  $\text{E}_0$  $\text{Er}_0$
+:Estadísticas glucosa pacientes Escenario 1 ($\text{HC}^-$  $\text{Ej}_0$  $\text{Er}_0$
 ) {#tbl-est_e1}
 
 | Paciente | Media | Desv. típica | Mín. | Máx. |
@@ -183,7 +183,7 @@ como se discute en el apartado 6.4 de la memoria.
 | 18 | 158.11 | 18.52 | 108.0 | 202.0 |
 | 19 | 196.61 | 21.53 | 108.0 | 232.0 |
 
-:Estadísticas glucosa pacientes Escenario 2 ($\text{HC}^+$  $\text{E}_0$  $\text{Er}_0$
+:Estadísticas glucosa pacientes Escenario 2 ($\text{HC}^+$  $\text{Ej}_0$  $\text{Er}_0$
 ) {#tbl-est_e2}
 
 
@@ -209,7 +209,7 @@ como se discute en el apartado 6.4 de la memoria.
 | 17 | 167.69 | 16.83 | 108.0 | 207.0 |
 | 18 | 158.53 | 17.79 | 108.0 | 196.0 |
 | 19 | 186.31 | 21.59 | 106.0 | 220.0 |
-:Estadísticas glucosa pacientes Escenario 3 ($\text{HC}^-$  $\text{E}^+$  $\text{Er}_0$
+:Estadísticas glucosa pacientes Escenario 3 ($\text{HC}^-$  $\text{Ej}^+$  $\text{Er}_0$
 ) {#tbl-est_e3}
 
 
@@ -235,7 +235,7 @@ como se discute en el apartado 6.4 de la memoria.
 | 17 | 170.56 | 19.70 | 108.0 | 230.0 |
 | 18 | 157.65 | 18.86 | 108.0 | 202.0 |
 | 19 | 194.61 | 23.28 | 108.0 | 244.0 |
-:Estadísticas glucosa pacientes Escenario 4 ($\text{HC}^-$  $\text{E}_0$  $\text{Er}^+$
+:Estadísticas glucosa pacientes Escenario 4 ($\text{HC}^-$  $\text{Ej}_0$  $\text{Er}^+$
 ) {#tbl-est_e4}
 
 | Paciente | Media | Desv. típica | Mín. | Máx. |
@@ -260,7 +260,7 @@ como se discute en el apartado 6.4 de la memoria.
 | 17 | 169.21 | 19.57 | 108.0 | 231.0 |
 | 18 | 158.11 | 19.82 | 108.0 | 202.0 |
 | 19 | 198.09 | 24.23 | 108.0 | 246.0 |
-:Estadísticas glucosa pacientes Escenario 5 ($\text{HC}^+$  $\text{E}_0$  $\text{Er}^+$
+:Estadísticas glucosa pacientes Escenario 5 ($\text{HC}^+$  $\text{Ej}_0$  $\text{Er}^+$
 ) {#tbl-est_e5}
 
 
@@ -286,5 +286,5 @@ como se discute en el apartado 6.4 de la memoria.
 | 17 | 166.83 | 19.78 | 108.0 | 217.0 |
 | 18 | 159.17 | 18.69 | 108.0 | 204.0 |
 | 19 | 188.70 | 23.92 | 105.0 | 235.0 |
-:Estadísticas glucosa pacientes Escenario 6 ($\text{HC}^-$  $\text{E}^+$  $\text{Er}^+$
+:Estadísticas glucosa pacientes Escenario 6 ($\text{HC}^-$  $\text{Ej}^+$  $\text{Er}^+$
 ) {#tbl-est_e6}

@@ -81,13 +81,13 @@ configuración del entorno y simuladores, diseño experimental,
 generación de datasets virtuales y validación clínica de los datos
 generados con la cotutora especialista.
 
-**M2 — Preprocesamiento de los datos** (feb. – mar. 2026):
+**M2 — Preprocesamiento de los datos** (mar. – abr. 2026):
 implementación de un parser multiformato para la lectura de los
 archivos del simulador, resampling y ajuste temporal de las series
 a 5 minutos, y exploración de funciones de estandarización y
 normalización.
 
-**M3 — Desarrollo y entrenamiento del predictor** (mar. – abr. 2026):
+**M3 — Desarrollo y entrenamiento del predictor** (abr. – abr. 2026):
 implementación de XGBoost, implementación de ARIMAX, implementación
 y descarte de Prophet por incompatibilidad con el entorno, y ajuste
 de hiperparámetros mediante búsqueda bayesiana y grid search.
@@ -120,11 +120,11 @@ milestones <- data.frame(
     "M5: Escritura de memoria y entrega final"
   ),
   Inicio = c(
-    "Oct 2025", "Ene 2026", "Feb 2026",
-    "Mar 2026", "Abr 2026", "May 2026"
+    "Oct 2025", "Ene 2026", "Mar 2026",
+    "Abr 2026", "Abr 2026", "May 2026"
   ),
   Fin = c(
-    "Ene 2026", "Mar 2026", "Mar 2026",
+    "Ene 2026", "Mar 2026", "Abr 2026",
     "Abr 2026", "May 2026", "Jun 2026"
   )
 )
@@ -215,7 +215,7 @@ se calcula según la expresión recogida en la figura
 | Ordenador personal secundario | 930 | 6 | 2 | 25,83 |
 | **Total hardware** | | | | **70,33** |
 
-:Desglose económico de los costes de hardware {costes_hardware}
+:Desglose económico de los costes de hardware {#tbl-costes_hardware}
 
 #### Consideraciones sobre el uso de hardware personal
 
@@ -240,12 +240,12 @@ de modelos (aproximadamente 3 meses), a un precio de 51,12 €/mes
 |----------|-------------:|------:|------:|
 | Google Colab Pro+ | 51,12  | 2 | 102,24  |
 
-:Desglose económico de los costes de computación en la nube {tbl-costes_cloud}.
+:Desglose económico de los costes de computación en la nube.
 
 #### Resumen económico
-A continuación, se muestran las 2 opciones de contratación. La primera, (@tbl-tatal_personal) 
-conlleva el uso del hardaware personal, mientras que la segunda (@tbl-total_nube) 
-utiliza la opción de GoogleColab [@googlecolab].
+A continuación, se muestran las 2 opciones de contratación. La primera, (Tabla \ref{tbl-total_personal}) 
+conlleva el uso del hardware personal, mientras que la segunda (Tabla \ref{tbl-total_nube}) 
+utiliza la opción de Google Colab [@googlecolab].
 
 | Concepto | Total (€) |
 |----------------|----------:|
@@ -254,7 +254,7 @@ utiliza la opción de GoogleColab [@googlecolab].
 | Software y licencias | 0,00 |
 | **Total del proyecto** | **10486,36** |
 
-:Coste total del proyecto con hardware personal. {tbl-total_personal}
+:Coste total del proyecto con hardware personal. {#tbl-total_personal}
 
 | Concepto | Total (€) |
 |----------|----------:|
@@ -263,7 +263,7 @@ utiliza la opción de GoogleColab [@googlecolab].
 | Cloud | 102,24 |
 | **Total del proyecto** | **10528,27** |
 
-:Coste total del proyecto con computación en la nube. {tbl-total_nube}
+:Coste total del proyecto con computación en la nube. {#tbl-total_nube}
 
 ### Viabilidad legal
 

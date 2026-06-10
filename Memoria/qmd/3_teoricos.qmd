@@ -23,11 +23,8 @@ a largo plazo. El control glucémico estricto, cuantificado principalmente
 mediante la hemoglobina glicada (HbA1c) y el tiempo en rango (TIR),
 constituye el principal objetivo terapéutico [@calvo2004diabetes; @gpc_dm1_2026]. El TIR se define
 como el porcentaje de tiempo en que la glucemia se mantiene entre 70 y
-180 mg/dL, y se ha consolidado como indicador clínico 
+180 mg/dL, y utiliza como indicador clínico 
 gracias a su correlación con el riesgo de complicaciones [@rizos_continuous_2025].
-La magnitud epidemiológica de la enfermedad, con una prevalencia global
-estimada en 9,5 millones de personas en 2025 [@ogle2025], subraya la
-necesidad de desarrollar herramientas tecnológicas que mejoren su gestión.
 
 
 ### 3.2. Tratamiento con múltiples dosis diarias de insulina

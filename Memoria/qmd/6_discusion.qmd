@@ -15,19 +15,19 @@ del escenario, que se manifiesta en una variabilidad interpaciente
 notablemente superior y, en particular, en un RMSE más elevado bajo
 condiciones de error en la dosis de insulina.
 
-ARIMAX exhibe un comportamiento notablemente estable en todos los
-escenarios y horizontes. Esta estabilidad refleja que el modelo captura
+ARIMAX exhibe un comportamiento estable en todos los
+escenarios y horizontes. Esto refleja que el modelo captura
 fundamentalmente la componente autorregresiva de la serie glucémica,
 cuya estructura es altamente regular en los datos simulados, sin que
 las variables exógenas aporten valor predictivo adicional significativo.
 En escenarios con perturbaciones exógenas, su linealidad actúa como
-mecanismo de regularización implícito, evitando los errores puntuales
-de gran magnitud que acumula XGBoost.
+mecanismo de regularización implícito, evitando los errores 
+de mayor magnitud que acumula XGBoost.
 
-La divergencia entre MAE y RMSE como criterios de comparación tiene
+La diferencia entre MAE y RMSE como criterios de comparación tiene
 implicaciones clínicas directas: el RMSE amplifica los errores grandes,
 que son precisamente los más peligrosos en el contexto de la predicción
-de glucemia. Desde esta perspectiva, ARIMAX ofrece un perfil de
+de glucemia. Desde esta perspectiva, ARIMAX puede ofrecer un perfil de
 seguridad más conservador en escenarios de perturbación, mientras que
 XGBoost resulta más preciso en condiciones favorables.
 
@@ -71,18 +71,17 @@ modelo Bi-LSTM, y la revisión sistemática de @liu2023 cifra el RMSE
 medio para ese mismo horizonte en 21,40 mg/dL sobre 46 estudios, lo
 que hace que la comparación directa no sea válida. Esta discrepancia
 se atribuye a la naturaleza periódica de los datos generados por
-py-mgipsim [@siket_py-mgipsim_2025]: las series simuladas presentan
+py-mgipsim [@siket_py-mgipsim_2025]. Las series simuladas presentan
 patrones de ingesta y actividad altamente regulares que facilitan el
-aprendizaje de la tendencia glucémica y eliminan el ruido e
-imprevisibilidad propios de los datos reales. La ausencia total de
+aprendizaje de la tendencia glucémica y eliminan la
+imprevisibilidad propia de los datos reales. La ausencia total de
 predicciones en zonas B, C, D o E confirma que el problema de
-predicción planteado sobre datos simulados es intrínsecamente más
+predicción planteado sobre datos simulados es más
 sencillo que sobre datos reales, y que los resultados de la CEG no son
 extrapolables a un contexto clínico sin validación previa. A modo de
 referencia, @cano2025 reporta que el 98% de las predicciones caen en
 zonas clínicamente aceptables (A+B) a 30 minutos sobre datos reales de
-pacientes, lo que ilustra la brecha existente entre el contexto
-simulado y el real.
+pacientes.
 
 Desde el punto de vista del diseño experimental, este trabajo se
 distingue de los precedentes en el análisis sistemático del efecto
@@ -167,8 +166,8 @@ como Prophet [@taylor2018].
 Finalmente, los dos análisis de explicabilidad previstos inicialmente no
 pudieron completarse. El análisis mediante SHAP no pudo implementarse
 por incompatibilidades entre las versiones de las dependencias del
-entorno de desarrollo. Por su parte, la extracción sistemática de la
-importancia de características de ambos modelos sobre toda la cohorte
+entorno de desarrollo. Por otra parte, la extracción sistemática de la
+importancia de características de ambos modelos 
 no se integró en el pipeline de backtesting, lo que habría requerido
 reprocesar los 120 escenarios con un coste computacional inasumible
 en el tiempo disponible. Ambos análisis habrían permitido cuantificar
@@ -176,4 +175,4 @@ la contribución de cada variable exógena al rendimiento predictivo de
 cada modelo, complementando los resultados del análisis de variabilidad
 experimental. A modo ilustrativo, se incluye en el Anexo G la
 importancia de características obtenida para el paciente de referencia
-en ambos modelos.
+en ambos modelos en el horizonte de predicción de 15 minutos.

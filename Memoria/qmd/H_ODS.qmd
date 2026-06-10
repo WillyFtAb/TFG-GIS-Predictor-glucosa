@@ -9,7 +9,7 @@
 ### Introducción
 
 La diabetes mellitus tipo 1 afecta a millones de personas en todo el
-mundo y su gestión supone una carga continua para el paciente, el
+mundo [@gregory2022] y su gestión supone una carga continua para el paciente, el
 sistema sanitario y la sociedad. En este trabajo se aborda el
 desarrollo de herramientas predictivas que podrían contribuir a
 mejorar la calidad de vida de las personas con DM1 en régimen MDI,
@@ -45,8 +45,8 @@ decisiones automatizadas.
 ### Utilización sostenible de recursos (SOS2)
 
 El trabajo ha sido desarrollado íntegramente con herramientas de
-software libre y de código abierto —Python, skforecast,
-py-mgipsim— sin incurrir en costes de licencias. Esta elección no
+software libre y de código abierto —Python [@python2025], skforecast [@skforecast],
+py-mgipsim [@siket_py-mgipsim_2025]— sin incurrir en costes de licencias. Esta elección no
 fue únicamente pragmática: el uso de software abierto garantiza la
 reproducibilidad del estudio, facilita su verificación por parte de
 la comunidad científica y elimina barreras económicas para futuros
